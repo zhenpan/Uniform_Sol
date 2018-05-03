@@ -2,7 +2,7 @@ using Dierckx
 using LsqFit
 
 
-function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, ils::LS, lsn::LS_neighbors; maxitr = 5, omega = 0.5, ϵ = 1.0e-5)
+function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors; maxitr = 5, omega = 0.5, ϵ = 1.0e-5)
     a = grd.aa
     b = grd.bb
     c = grd.cc
@@ -53,33 +53,42 @@ function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, ils::LS, lsn::LS_nei
         #omega = 1./(1.-omega*ρ2_jcb/4.)
 
         U += dU
-        U, U_H, dU  = Bounds!(U, dU, crd, ils, lsn)
+        U, U_H, dU  = Bounds!(U, dU, crd, Ω_I, ils, lsn)
     end
     return U, U_H, Res, dU
 end
 
-function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
+function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
     #lsn bounds
-    U = USmooth!(U, lsn, crd)                           #smooth the neighbors before interpolation
+    U = USmooth!(U, lsn, crd)    
 
-    #horizon and inf r boundary values
-    U[:,1]   = U[:,2]
-
-    # Uhz     = Znajek(crd, Ω_I, U[1,1])
-    # dU[:,1] = Uhz - U[:,1]
-    # U[:,1] += 0.005*dU[:,1]
-    # U[:,2] += 0.005*dU[:,1]
-
+    # horizon/inf bounds
+    U[:,1]   = U[:,2]             #horizon r boundary values
     U[:,end] = U[:,end-1]         #inf r boundary is not used due to xbd
 
-    #equator boundary values (beyond ils and within)
+    #equator bounds ( within and beyond r2)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
 
-    U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]
+    U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]       # ∂μ = 0, for r > 2
 
-    U_H = U[1, idx_r2+1]*(1-0.001)
-    U[1, 1:idx_r2] = U_H
+    Ispl = I_solver(Ω_I)
+    Ωspl = Ω_I.Ωspl
+    Uhe  = U[1,1]                       #U in the horizon/equator cornor
+    Ωhe  = Ωspl(Uhe)
+    Ihe  = Ispl(Uhe)
+
+    Ω_H  = crd.Ω_H
+    rmin = crd.rmin
+
+    ∂μ    = zeros(idx_r2)
+    ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
+    ∂μ[1:idx_r2] = ∂μ[1]*(crd.rcol[1:idx_r2]-2.0)/(rmin-2.0)  #initial guess: ∂μ ∈ [∂μ[1], 0] linear in r
+
+    U[1, 1:idx_r2] = U[2, 1:idx_r2] - ∂μ[1:idx_r2]*crd.δμ       #r < 2
+
+    δr  = crd.rcol[idx_r2+1]-crd.rcol[idx_r2]
+    U_H = U[1, idx_r2]*(crd.rcol[idx_r2+1]-2.0)/δr + U[1, idx_r2+1]*(2.0-crd.rcol[idx_r2])/δr
 
     return U, U_H, dU
 end
