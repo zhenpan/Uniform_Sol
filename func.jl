@@ -218,36 +218,11 @@ function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; xbd = 4.)
     # return Spline1D(Ubm, Ωbm)
 end
 
-function Init(crd::Cord, mtr::Geom; U_H = 5.0, xbd = 4.0)
+function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
 
     z = crd.r .* crd.μ
     x = sqrt(crd.r.^2 - z.^2)
     U = x.^2
-
-    #initialize equator values
-    rmin = 1.+sqrt(1.-crd.a^2)
-    xeq  = vcat( linspace(0., 4., 512), logspace(log10(4.01), log10(crd.r[1,end]), 512) )
-    Ueq  = zeros(xeq)
-
-    for i = 1:length(Ueq)
-        if xeq[i] < rmin
-            Ueq[i] =  U_H * (1. - (xeq[i]/rmin-1)^2)
-        elseif xeq[i] < 2.
-            Ueq[i] = U_H
-        elseif xeq[i] < xbd^2
-            Ueq[i] = xeq[i]^2 + exp(2^2-xeq[i]^2)
-        else
-            Ueq[i] = xeq[i].^2
-        end
-    end
-    Uspl = Spline1D(xeq, Ueq, k=1)
-
-    #initialize all grid points via interpolation
-    for j = 1:crd.μlen
-        for l = 1:crd.Rlen
-            U[j,l] = U[j,l] + (Uspl(x[j,l])-U[j,l]).*exp(-5*crd.μ[j,l]^2).*(1-crd.μ[j,l])^2
-        end
-    end
 
     #initialize Ω_and_I
     Ubm, Ωbm = Ω_gen(U_H, crd)
