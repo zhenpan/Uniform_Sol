@@ -60,7 +60,7 @@ end
 
 function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
     #lsn bounds
-    U = USmooth!(U, lsn, crd)    
+    U = USmooth!(U, lsn, crd)
 
     # horizon/inf bounds
     U[:,1]   = U[:,2]             #horizon r boundary values
@@ -292,7 +292,7 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum =
     levels = linspace(0.005, Umax, cnum)
     figure(figsize=(5,6))
     contour(Uxy, levels, extent = (0, xmax, 0, ymax), colors = "k")
-    plot(xILS, yILS, lw = 3, "k")
+    #plot(xILS, yILS, lw = 3, "k")
     plot(xIRS, yIRS, lw = 3, "k--")
     fill_between(xhz, 0., yhz, color = "black")
     xlabel(L"$X/M$", fontsize = 20)
