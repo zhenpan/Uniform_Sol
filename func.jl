@@ -2,7 +2,7 @@ using Dierckx
 using LsqFit
 
 
-function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, ils::LS, lsn::LS_neighbors; maxitr = 5, omega = 0.5, ϵ = 1.0e-5)
+function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors; maxitr = 5, omega = 0.5, ϵ = 1.0e-5)
     a = grd.aa
     b = grd.bb
     c = grd.cc
@@ -53,34 +53,46 @@ function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, ils::LS, lsn::LS_nei
         #omega = 1./(1.-omega*ρ2_jcb/4.)
 
         U += dU
-        U, U_H, dU  = Bounds!(U, dU, crd, ils, lsn)
+        U, U_H, dU  = Bounds!(U, dU, crd, Ω_I, ils, lsn)
     end
     return U, U_H, Res, dU
 end
 
-function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
+function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
     #lsn bounds
     U = USmooth!(U, lsn, crd)                           #smooth the neighbors before interpolation
 
     #horizon and inf r boundary values
     U[:,1]   = U[:,2]
-
-    # Uhz     = Znajek(crd, Ω_I, U[1,1])
-    # dU[:,1] = Uhz - U[:,1]
-    # U[:,1] += 0.005*dU[:,1]
-    # U[:,2] += 0.005*dU[:,1]
-
     U[:,end] = U[:,end-1]         #inf r boundary is not used due to xbd
 
     #equator boundary values (beyond ils and within)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
 
-    U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]
+    # U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]
+    # U_H = U[1, idx_r2+1]*(1-0.001)
+    # U[1, 1:idx_r2] = U_H
 
-    U_H = U[1, idx_r2+1]*(1-0.001)
-    U[1, 1:idx_r2] = U_H
+    U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]       # ∂μ = 0, for r > 2
 
+    Ispl = I_solver(Ω_I)
+    Ωspl = Ω_I.Ωspl
+    Uhe  = U[1,1]                       #U in the horizon/equator cornor
+    Ωhe  = Ωspl(Uhe)
+    Ihe  = Ispl(Uhe)
+
+    Ω_H  = crd.Ω_H
+    rmin = crd.rmin
+
+    ∂μ    = zeros(idx_r2)
+    ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
+    ∂μ[1:idx_r2] = ∂μ[1]*(crd.rcol[1:idx_r2]-2.0)/(rmin-2.0)  #initial guess: ∂μ ∈ [∂μ[1], 0] linear in r
+
+    U[1, 1:idx_r2] = U[2, 1:idx_r2] - ∂μ[1:idx_r2]*crd.δμ       #r < 2
+
+    δr  = crd.rcol[idx_r2+1]-crd.rcol[idx_r2]
+    U_H = U[1, idx_r2]*(crd.rcol[idx_r2+1]-2.0)/δr + U[1, idx_r2+1]*(2.0-crd.rcol[idx_r2])/δr
     return U, U_H, dU
 end
 
@@ -150,10 +162,10 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.01, xbd = 4.0)
     Uils = 0.5 * (Upls + Umns)
     δU   = Upls - Umns
 
-    Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
-                            + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
-    Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
-    Uils = Umodel(crd.μcol, Ufit.param)
+    # Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
+    #                         + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
+    # Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
+    # Uils = Umodel(crd.μcol, Ufit.param)
 
     IIpnew = ils.IIp - Isf * δU
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
@@ -222,32 +234,7 @@ function Init(crd::Cord, mtr::Geom; U_H = 5.0, xbd = 4.0)
 
     z = crd.r .* crd.μ
     x = sqrt(crd.r.^2 - z.^2)
-    U = x.^2
-
-    #initialize equator values
-    rmin = 1.+sqrt(1.-crd.a^2)
-    xeq  = vcat( linspace(0., 4., 512), logspace(log10(4.01), log10(crd.r[1,end]), 512) )
-    Ueq  = zeros(xeq)
-
-    for i = 1:length(Ueq)
-        if xeq[i] < rmin
-            Ueq[i] =  U_H * (1. - (xeq[i]/rmin-1)^2)
-        elseif xeq[i] < 2.
-            Ueq[i] = U_H
-        elseif xeq[i] < xbd^2
-            Ueq[i] = xeq[i]^2 + exp(2^2-xeq[i]^2)
-        else
-            Ueq[i] = xeq[i].^2
-        end
-    end
-    Uspl = Spline1D(xeq, Ueq, k=1)
-
-    #initialize all grid points via interpolation
-    for j = 1:crd.μlen
-        for l = 1:crd.Rlen
-            U[j,l] = U[j,l] + (Uspl(x[j,l])-U[j,l]).*exp(-5*crd.μ[j,l]^2).*(1-crd.μ[j,l])^2
-        end
-    end
+    U = x.^2 + 1.5*acos(crd.μ).*exp(-crd.r.^2)
 
     #initialize Ω_and_I
     Ubm, Ωbm = Ω_gen(U_H, crd)
@@ -308,7 +295,7 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum =
     levels = linspace(0.005, Umax, cnum)
     figure(figsize=(5,6))
     contour(Uxy, levels, extent = (0, xmax, 0, ymax), colors = "k")
-    plot(xILS, yILS, lw = 3, "k")
+    #plot(xILS, yILS, lw = 3, "k")
     plot(xIRS, yIRS, lw = 3, "k--")
     fill_between(xhz, 0., yhz, color = "black")
     xlabel(L"$X/M$", fontsize = 20)

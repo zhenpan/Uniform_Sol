@@ -13,7 +13,7 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 
 for Ωloop = 1:200
     for Iloop = 1:10
-        U, U_H, Res, dU = Solver!(U, crd, grd, ils, lsn, maxitr = 2, omega = 0.8)
+        U, U_H, Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
         ils, Ω_I, δU    = I_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.02)   #update IIp in ils and Ω_I
         grd             = Grid!(grd, crd, mtr, Ω_I)           #update IIp in grd
         println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H")
