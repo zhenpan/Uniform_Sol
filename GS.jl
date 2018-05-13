@@ -46,6 +46,7 @@ immutable Grid
     ∂2κ::Array{Float64,2}
     Cr::Array{Float64,2}
     Cμ::Array{Float64,2}
+    Cμ_esn::Array{Float64,2}
 end
 
 immutable Ω_and_I
@@ -61,12 +62,8 @@ end
 immutable LS_neighbors
     lsn_idx::Array{Int, 2}     # (Ridx_lhs, μidx)
     lsn_map::Array{Int, 2}
-    ILS_lt::Array{Float64, 2}  # (R, μ)
-    ILS_rt::Array{Float64, 2}
-    ILS_ow::Array{Float64, 2}  # (Rintr, μintr, xintr, xon)
-    ILS_iw::Array{Float64, 2}
-    ILS_lon::Array{Float64, 2} # (Ron, μon, Son)
-    ILS_ron::Array{Float64, 2}
+    ILS_lt::Array{Float64, 2}  # (Rlt, μlt, xlt)
+    ILS_rt::Array{Float64, 2}  # (Rrt, μrt, xrt)
 end
 
 immutable LS
@@ -75,6 +72,9 @@ immutable LS
     ULS::Array{Float64, 1}
     IIp::Array{Float64, 1}
     S::Array{Float64, 1}
+    Cr::Array{Float64, 1}
+    Cμ::Array{Float64, 1}
+    Cμ_esn::Array{Float64, 1}
 end
 
 function Cord(; Rlen = 512, μlen = 64, a = 1., rmax = 100.,  xbd = 4.0)
@@ -191,7 +191,7 @@ function Grid(crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
     Crr = κ
   	Cr  = ∂1κ + ∂Ωκ_hf .* ∂1Ω
     Cμμ = κ .* (sst./Δ)
-    Cμ  = (∂2κ + ∂Ωκ_hf .* ∂2Ω) .* (sst./Δ)
+    Cμ  = (∂2κ + ∂Ωκ_hf .* ∂2Ω) .* (sst./Δ);     Cμ_esn = ∂2κ + ∂Ωκ_hf .* ∂2Ω
 
     δ   = min(δR, δμ)
     S   = Σ_Δ .*  IIp
@@ -220,7 +220,7 @@ function Grid(crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
     # ee_rgl[rgt] = ee[rgt] + sign(ee[rgt]) * (2.e-4) .* tanh(8./(crd.r[rgt] - 0.999)).^4
 
 
-    grd = Grid(aa, bb, cc, dd, ee, ee_rgl, ff, S, κ, ∂1κ, ∂2κ, Cr, Cμ)
+    grd = Grid(aa, bb, cc, dd, ee, ee_rgl, ff, S, κ, ∂1κ, ∂2κ, Cr, Cμ, Cμ_esn)
     return grd
 end
 
@@ -236,13 +236,13 @@ function Grid!(grd::Grid, crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
     ∂1κ = grd.∂1κ
     ∂2κ = grd.∂2κ
     Cr  = grd.Cr
-    Cμ  = grd.Cμ
+    Cμ  = grd.Cμ; Cμ_esn = grd.Cμ_esn
 
     S  = (mtr.Σ_Δ) .* (Ω_I.IIp)
     δ  = min(crd.δR, crd.δμ)
     ff =  S .* δ^2
 
-    grd = Grid(aa, bb, cc, dd, ee, ee_rgl, ff, S, κ, ∂1κ, ∂2κ, Cr, Cμ)
+    grd = Grid(aa, bb, cc, dd, ee, ee_rgl, ff, S, κ, ∂1κ, ∂2κ, Cr, Cμ, Cμ_esn)
     return grd
 end
 
@@ -251,12 +251,22 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
     idx_r2 = crd.idx_r2 + 1
     RILS   = zeros(crd.μlen)
     μILS   = crd.μcol
+    Cr     = zeros(crd.μlen)
+    Cμ     = zeros(crd.μlen)
+    Cμ_esn = zeros(crd.μlen)
 
     for μidx = 1: length(RILS)
         κcol = reshape(-grd.κ[μidx, 1:idx_r2], idx_r2)
         Rcol = reshape(crd.R[μidx, 1:idx_r2], idx_r2)
         spl_in  = Spline1D(κcol, Rcol, k = 2)
         RILS[μidx] = spl_in(0.)
+
+        Crcol = reshape(grd.Cr[μidx, 1:idx_r2], idx_r2)
+        Cμcol = reshape(grd.Cμ_esn[μidx, 1:idx_r2], idx_r2)
+        spl_Cr      = Spline1D(Rcol, Crcol, k = 2)
+        spl_Cμesn   = Spline1D(Rcol, Cμcol, k = 2)
+        Cr[μidx]     = spl_Cr(RILS[μidx])
+        Cμ_esn[μidx] = spl_Cμesn(RILS[μidx])
     end
 
     Uspl = Spline2D( crd.μcol, crd.Rcol, U, kx =1, ky=1 )
@@ -265,10 +275,15 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
     Σ_Δ  = (rILS.^2 + crd.a^2 * μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
     IIp  = Ω_I.IIpspl(UILS)
     S    = Σ_Δ .* IIp
+    Cμ   = Cμ_esn .* (1.-μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
 
     ILS_loc = hcat(RILS, μILS)
-    return LS(ILS_loc, Σ_Δ, UILS, IIp, S)
+    return LS(ILS_loc, Σ_Δ, UILS, IIp, S, Cr, Cμ, Cμ_esn)
 end
+
+#=#########################################
+        update IIp related part only
+=##########################################
 
 function LS!(ils::LS, Uils::Array{Float64,1}, IIpspl::Dierckx.Spline1D)
     Loc   = ils.Loc
@@ -276,7 +291,10 @@ function LS!(ils::LS, Uils::Array{Float64,1}, IIpspl::Dierckx.Spline1D)
     UILS  = Uils
     IIp   = IIpspl(UILS)
     S     = Σ_Δ .* IIp
-    return LS(Loc, Σ_Δ, UILS, IIp, S)
+    Cr    = ils.Cr
+    Cμ    = ils.Cμ
+    Cμ_esn= ils.Cμ_esn
+    return LS(Loc, Σ_Δ, UILS, IIp, S, Cr, Cμ, Cμ_esn)
 end
 
 function LS_neighbors(U::Array{Float64,2}, ils::LS, grd::Grid, crd::Cord)
@@ -291,21 +309,47 @@ function LS_neighbors(U::Array{Float64,2}, ils::LS, grd::Grid, crd::Cord)
 
     for μidx = 1:μlen
         Ridx = Int( floor( (RILS[μidx] - crd.R[1,1])/crd.δR + 1) )
-        lsn_idx[μidx,           :] = [Ridx, μidx]
-        lsn_map[μidx, Ridx:Ridx+1] = 1
+        lsn_idx[μidx,:] = [Ridx, μidx]
 
-        ILS_lt[μidx, 1] = crd.R[μidx, Ridx]
-        ILS_lt[μidx, 2] = crd.μ[μidx, Ridx]
-        ILS_rt[μidx, 1] = crd.R[μidx, Ridx+1]
-        ILS_rt[μidx, 2] = crd.μ[μidx, Ridx+1]
+        Rlow = max(Ridx-1, 1)
+        Rhgh = min(Ridx+2, Rlen)
+        lsn_map[μidx, Rlow:Rhgh] = 1
     end
 
-    ILS_iw, ILS_lon = Sngl_helper1(grd, crd, ils, lsn_idx[:,1]  , lsn_idx[:,2], opt = :ILS_lt)
-    ILS_ow, ILS_ron = Sngl_helper1(grd, crd, ils, lsn_idx[:,1]+1, lsn_idx[:,2], opt = :ILS_rt)
-
-    lsn = LS_neighbors(lsn_idx, lsn_map, ILS_lt, ILS_rt, ILS_ow, ILS_iw, ILS_lon, ILS_ron)
+    ILS_lt, ILS_rt = Sngl_helper(grd, crd, ils)
+    lsn = LS_neighbors(lsn_idx, lsn_map, ILS_lt, ILS_rt)
     return lsn
 end
+
+function Sngl_helper(grd::Grid, crd::Cord, ils::LS; ϵ = 2.)
+    RILS  = ils.Loc[:,1]
+    μILS  = ils.Loc[:,2]
+    norm1 = ils.Cr.* (1 - RILS).^2
+    norm2 = ils.Cμ
+
+    hp1 = norm1 ./ crd.δR
+    hp2 = norm2 ./ crd.δμ; hp2[end] = hp2[end-1]
+    hp3 = sqrt(hp1.^2 + hp2.^2)
+
+    ϵmax1 = (μILS-1.)./(crd.δμ * hp2 ./hp3)           #avoid μrt > 1 or μlt < 0
+    ϵmax2 = (-μILS)./(crd.δμ * hp2 ./hp3)
+    ϵsaf  = min(ϵmax1, ϵmax2, ϵ)
+
+    dR  = ϵsaf.*crd.δR .* hp1 ./hp3                   #dR negative
+    dμ  = ϵsaf.*crd.δμ .* hp2 ./hp3                   #dμ negative
+
+    Rlt = RILS + dR           #iw point wants smaller R and smaller μ
+    μlt = μILS + dμ
+    xlt = -ϵsaf ./hp3         #Umns = Ult+ xlt * S
+
+    Rrt = RILS - dR           #iw point wants larger R and larger μ
+    μrt = μILS - dμ
+    xrt = ϵsaf ./hp3          #Upls = Urt+ xrt * S  
+
+    return hcat(Rlt, μlt, xlt), hcat(Rrt, μrt, xrt)
+end
+
+
 
 #=#########################################################################
 
