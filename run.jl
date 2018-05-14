@@ -4,8 +4,7 @@ include("func.jl")
 
 crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100.)
 mtr      = Geom(crd)
-U_H      = 4.2
-U, Ω_I   = Init(crd, mtr, U_H = U_H)
+U, U_H, Ω_I   = Init(crd, mtr)
 grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
