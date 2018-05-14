@@ -200,8 +200,8 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
         if Ubm[iter] <= Uils[1]
             IIpbm[iter] = IIpspl(Ubm[iter])
         elseif Ubm[iter] <=  Uils[1] * (1.+ drc)
-            α = (6/(Uils[1]*drc)^3) * Isq_hf
-            IIpbm[iter] = α*(Uils[1]-Ubm[iter])*( Uils[1] * (1.+ drc)-Ubm[iter])
+             α = (6/(Uils[1]*drc)^3) * Isq_hf
+             IIpbm[iter] = α*(Uils[1]-Ubm[iter])*( Uils[1] * (1.+ drc)-Ubm[iter])
             #U_H = Uils[1]; IIp_H = IIpspl(U_H)
             # c   = (1.+ drc)*U_H
             # b   = U_H + IIp_H*(U_H-c)^2/3/(2*Isq_hf - IIp_H*(U_H-c))
@@ -304,7 +304,11 @@ end
 
 function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
     idx = lsn.lsn_idx[1,1]
-    ∂2U = reshape( (U[2, 1:idx] - U[1, 1:idx]) ./ crd.δμ, idx)
+    ∂1U = (U[1, 2:idx+1] - U[1, 1:idx]) ./ crd.δR
+    ∂2U = (U[2, 1:idx] - U[1, 1:idx]) ./ crd.δμ
+
+    Rcol = crd.R[1, 1:idx]
+    ∂rU  = ∂1U .* (1-Rcol).^2; ∂μU = ∂2U
 
     μ = 0.
     r = crd.rcol[1:idx]
@@ -313,13 +317,12 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
     β = Δ .* Σ + 2r .*(r.^2+crd.a^2)
 
     Ispl = I_solver(Ω_I)
-    I    = evaluate(Ispl, U[1,1])
-
+    Icol = evaluate(Ispl, U[1,1:idx])
     κcol = reshape(grd.κ[1,1:idx], idx)
 
-    B2mE2 = -κcol .* ∂2U.^2 + Σ .* I.^2
-    B2pE2 = (κcol  + Δ .* Σ ./β ).* ∂2U.^2 +  Σ .* I.^2
-    fsq   = B2mE2./B2pE2 #; fsq[1] = 0.
+    B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
+    B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* Icol.^2
+    fsq   = B2mE2./B2pE2
 
     wspl = Spline1D(r[2:end], sqrt( (Σ.*β./Δ)[2:end]) )
     fspl = Spline1D(r[2:end], sqrt( (Σ.*β./Δ)[2:end]) .* fsq[2:end])
