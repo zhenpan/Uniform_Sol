@@ -66,14 +66,7 @@ function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils:
     return U, U_H, Res, dU
 end
 
-<<<<<<< HEAD
-function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
-    #lsn bounds
-    U = USmooth!(U, lsn, crd)
 
-    # horizon/inf bounds
-    U[:,1]   = U[:,2]             #horizon r boundary values
-=======
 # function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
 #     #lsn bounds
 #     U = USmooth!(U, lsn, crd)
@@ -100,7 +93,6 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
 
     #horizon and inf r boundary values
     U[:,1]   = U[:,2]
->>>>>>> master
     U[:,end] = U[:,end-1]         #inf r boundary is not used due to xbd
 
     #equator bounds ( within and beyond r2)
@@ -108,7 +100,6 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
     idx_bd  = crd.idx_xbd[1]
 
     U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]       # ∂μ = 0, for r > 2
-<<<<<<< HEAD
 
     Ispl = I_solver(Ω_I)
     Ωspl = Ω_I.Ωspl
@@ -118,26 +109,6 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
 
     Ω_H  = crd.Ω_H
     rmin = crd.rmin
-
-    ∂μ    = zeros(idx_r2)
-    ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
-    ∂μ[1:idx_r2] = ∂μ[1]*(crd.rcol[1:idx_r2]-2.0)/(rmin-2.0)  #initial guess: ∂μ ∈ [∂μ[1], 0] linear in r
-
-    U[1, 1:idx_r2] = U[2, 1:idx_r2] - ∂μ[1:idx_r2]*crd.δμ       #r < 2
-
-    δr  = crd.rcol[idx_r2+1]-crd.rcol[idx_r2]
-    U_H = U[1, idx_r2]*(crd.rcol[idx_r2+1]-2.0)/δr + U[1, idx_r2+1]*(2.0-crd.rcol[idx_r2])/δr
-=======
-
-    Ispl = I_solver(Ω_I)
-    Ωspl = Ω_I.Ωspl
-    Uhe  = U[1,1]                       #U in the horizon/equator cornor
-    Ωhe  = Ωspl(Uhe)
-    Ihe  = Ispl(Uhe)
-
-    Ω_H  = crd.Ω_H
-    rmin = crd.rmin
->>>>>>> master
 
     ∂μ    = zeros(idx_r2)
     ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
@@ -259,16 +230,6 @@ function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; xbd = 4.)
 end
 
 function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
-
-<<<<<<< HEAD
-    z = crd.r .* crd.μ
-    x = sqrt(crd.r.^2 - z.^2)
-    U = x.^2
-
-    #initialize Ω_and_I
-    Ubm, Ωbm = Ω_gen(U_H, crd)
-    Ibm      = 2*Ωbm.*Ubm
-=======
         z = crd.r .* crd.μ
         x = sqrt(crd.r.^2 - z.^2)
         U = x.^2 + 1.5*acos(crd.μ).*exp(-crd.r.^2)
@@ -276,7 +237,6 @@ function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
         #initialize Ω_and_I
         Ubm, Ωbm = Ω_gen(U_H, crd)
         Ibm      = 2*Ωbm.*Ubm
->>>>>>> master
 
         Ωspl = Spline1D(Ubm, Ωbm, k =1, bc = "zero")
         Ispl = Spline1D(Ubm, Ibm, k =1, bc = "zero")
@@ -333,13 +293,8 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum =
     levels = linspace(0.005, Umax, cnum)
     figure(figsize=(5,6))
     contour(Uxy, levels, extent = (0, xmax, 0, ymax), colors = "k")
-<<<<<<< HEAD
-    #plot(xILS, yILS, lw = 3, "k")
-    plot(xIRS, yIRS, lw = 3, "k--")
-=======
     plot(xILS, yILS,  "k--")
     #plot(xIRS, yIRS, lw = 3, "k--")
->>>>>>> master
     fill_between(xhz, 0., yhz, color = "black")
     xlabel(L"$X/M$", fontsize = 20)
     ylabel(L"$Z/M$", fontsize = 20)

@@ -4,11 +4,7 @@ include("func.jl")
 
 crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100.)
 mtr      = Geom(crd)
-<<<<<<< HEAD
-U_H      = 4.0                        # Don't change the initial U_H = 4.0 value
-=======
 U_H      = 4.2
->>>>>>> master
 U, Ω_I   = Init(crd, mtr, U_H = U_H)
 grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
@@ -18,11 +14,7 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 for Ωloop = 1:100
     for Iloop = 1:10
         U, U_H, Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
-<<<<<<< HEAD
-        ils, Ω_I, δU    = I_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.02)   #update IIp in ils and Ω_I
-=======
         ils, Ω_I, δU    = I_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.1)   #update IIp in ils and Ω_I
->>>>>>> master
         grd             = Grid!(grd, crd, mtr, Ω_I)           #update IIp in grd
         println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H")
     end
