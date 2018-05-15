@@ -255,16 +255,19 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
     Cμ     = zeros(crd.μlen)
     Cμ_esn = zeros(crd.μlen)
 
+    LS_ridx = LS_finder(grd, crd)
+
     for μidx = 1: length(RILS)
-        κcol = reshape(-grd.κ[μidx, 1:idx_r2], idx_r2)
-        Rcol = reshape(crd.R[μidx, 1:idx_r2], idx_r2)
-        spl_in  = Spline1D(κcol, Rcol, k = 2)
+        ridx = LS_ridx[μidx]
+        κcol = -grd.κ[μidx, ridx:ridx+1]
+        Rcol =  crd.R[μidx, ridx:ridx+1]
+        spl_in  = Spline1D(κcol, Rcol, k = 1)
         RILS[μidx] = spl_in(0.)
 
-        Crcol = reshape(grd.Cr[μidx, 1:idx_r2], idx_r2)
-        Cμcol = reshape(grd.Cμ_esn[μidx, 1:idx_r2], idx_r2)
-        spl_Cr      = Spline1D(Rcol, Crcol, k = 2)
-        spl_Cμesn   = Spline1D(Rcol, Cμcol, k = 2)
+        Crcol = grd.Cr[μidx, ridx:ridx+1]
+        Cμcol = grd.Cμ_esn[μidx, ridx:ridx+1]
+        spl_Cr      = Spline1D(Rcol, Crcol, k = 1)
+        spl_Cμesn   = Spline1D(Rcol, Cμcol, k = 1)
         Cr[μidx]     = spl_Cr(RILS[μidx])
         Cμ_esn[μidx] = spl_Cμesn(RILS[μidx])
     end
@@ -279,6 +282,19 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
 
     ILS_loc = hcat(RILS, μILS)
     return LS(ILS_loc, Σ_Δ, UILS, IIp, S, Cr, Cμ, Cμ_esn)
+end
+
+function LS_finder(grd::Grid, crd::Cord)
+    idx_r2 = crd.idx_r2 + 1
+    LS_ridx = zeros(Int, crd.μlen)           #the left r idx of LS for each μ
+    for μidx = 1:crd.μlen
+        ridx = 1
+        while grd.κ[μidx, ridx+1] >=0. && ridx <idx_r2
+             ridx = ridx +1
+        end
+        LS_ridx[μidx] = ridx
+    end
+    return LS_ridx
 end
 
 #=#########################################
@@ -333,7 +349,7 @@ function Sngl_helper(grd::Grid, crd::Cord, ils::LS; ϵ = 2.)
 
     ϵmax1 = (μILS-1.)./(crd.δμ * hp2 ./hp3)           #avoid μrt > 1 or μlt < 0
     ϵmax2 = (-μILS)./(crd.δμ * hp2 ./hp3)
-    ϵsaf  = min(ϵmax1, ϵmax2, ϵ)
+    ϵsaf  = min(abs(ϵmax1), abs(ϵmax2), ϵ)
 
     dR  = ϵsaf.*crd.δR .* hp1 ./hp3                   #dR negative
     dμ  = ϵsaf.*crd.δμ .* hp2 ./hp3                   #dμ negative
@@ -344,7 +360,7 @@ function Sngl_helper(grd::Grid, crd::Cord, ils::LS; ϵ = 2.)
 
     Rrt = RILS - dR           #iw point wants larger R and larger μ
     μrt = μILS - dμ
-    xrt = ϵsaf ./hp3          #Upls = Urt+ xrt * S  
+    xrt = ϵsaf ./hp3          #Upls = Urt+ xrt * S
 
     return hcat(Rlt, μlt, xlt), hcat(Rrt, μrt, xrt)
 end

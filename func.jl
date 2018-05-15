@@ -175,9 +175,7 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
                                     + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
                                     + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
-    # IIpmodel(x, p) =                (x-Uils[1]) .*  (p[1] .* x    + p[2] .* x.^2
-    #                                 + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
-    #                                 + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
+
     IIpfit = curve_fit(IIpmodel, Uils, IIpnew, [0., 0., 0., 0., 0., 0., 0., 0.])
     IIpnew = IIpmodel(Uils, IIpfit.param)
 
@@ -213,26 +211,54 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
         end
     end
 
-    IIpspl = Spline1D(Ubm, IIpbm, k=1)
+    IIpspl = Spline1D(Ubm, IIpbm, k=1, bc="zero")
     return IIpspl
 end
 
 
-function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; xbd = 4.)
+function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, U_H::Float64; xbd = 4.)
     Ubm  = collect(linspace(0., xbd^2, 2048))
     Ispl = I_solver(Ω_I)
     Ωbm  = Ispl(Ubm) ./ (2Ubm); Ωbm[1] = 0.5*crd.Ω_H
     Ωold = Ω_I.Ωspl(Ubm)
     Ωnew = Ωold + 0.1*(Ωbm-Ωold)
+
+    # for iter = 300:length(Ubm)-21
+    #     Ωnew[iter] = max(0.5*(Ωnew[iter-20]+Ωnew[iter+20]), Ωnew[iter])
+    # end
+
     Ωspl = Spline1D(Ubm, Ωnew)
 
     return Ω_and_I(U, crd, Ωspl, Ω_I.IIpspl)
 end
 
+
+function I_solver(Ω_I::Ω_and_I; xbd = 4.0)
+    Ubm = collect(linspace(0., xbd^2, 2048))
+    δU  = (Ubm[end]-Ubm[1])/(length(Ubm)-1)
+    IIp = Ω_I.IIpspl(Ubm)
+    Isq = zeros(Ubm)
+
+    # for iter = 2:length(Isq)
+    #     Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
+    # end
+
+    iter = 2
+    while iter <= length(Isq) && Isq[iter-1] >= 0.
+        Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
+        iter = iter + 1
+    end
+
+    Isq = max(Isq, 0.)
+
+    Ispl = Spline1D(Ubm, sqrt(Isq), bc = "zero")
+    return Ispl
+end
+
 function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
         z = crd.r .* crd.μ
         x = sqrt(crd.r.^2 - z.^2)
-        U = x.^2 + 1.5*acos(crd.μ).*exp(-crd.r.^2)
+        U = x.^2 + 1.5*acos(crd.μ).*exp(-crd.r.^2); U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
         Ubm, Ωbm = Ω_gen(U_H, crd)
@@ -244,7 +270,7 @@ function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
         IIpspl= Spline1D(Ubm, Ibm.*Ipbm, k =1, bc = "zero")
         Ω_I   = Ω_and_I(U, crd, Ωspl, IIpspl)
 
-        return U, Ω_I
+        return U, Ω_I, U_H
 end
 
 function Ω_gen(U_H::Float64, crd::Cord; xbd = 4.0)
@@ -255,7 +281,6 @@ function Ω_gen(U_H::Float64, crd::Cord; xbd = 4.0)
     end
     return Ubm, Ωbm
 end
-
 
 
 function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum = 30)
@@ -330,53 +355,39 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
     return r, fsq, favg
 end
 
-function I_solver(Ω_I::Ω_and_I; xbd = 4.0)
-    Ubm = collect(linspace(0., xbd^2, 2048))
-    δU  = (Ubm[end]-Ubm[1])/(length(Ubm)-1)
-    IIp = Ω_I.IIpspl(Ubm)
-    Isq = zeros(Ubm)
-
-    for iter = 2:length(Isq)
-        Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
-    end
-
-    Ispl = Spline1D(Ubm, sqrt(abs(Isq)), bc = "zero")
-    return Ispl
-end
-
 function cplot(ils, lsn)
     plot(ils.Loc[:,1], ils.Loc[:,2])
     plot(lsn.ILS_lon[:,1], lsn.ILS_lon[:,2], ".")
     plot(lsn.ILS_ron[:,1], lsn.ILS_ron[:,2], ".")
 end
 
-function Znajek(crd::Cord, Ω_I::Ω_and_I, U_H::Float64)
-    a   = crd.a
-    Ω_H = crd.Ω_H
-    μcol= crd.μcol
-
-    Ispl = I_solver(Ω_I)
-    Ωspl = Ω_I.Ωspl
-
-    Utmp = linspace(0., U_H, 512)
-    Ispl_nm = Spline1D(Utmp/U_H, Ispl(Utmp)/U_H)
-    Ωspl_nm = Spline1D(Utmp/U_H, Ωspl(Utmp))
-
-    rmin = 1. + sqrt(1. - a^2)
-    Gμ   = (1-μcol)./(1+μcol) .* exp(a^2/rmin * μcol)
-
-    A  = collect(linspace(1., 0., 1024))
-    δA = (A[end]-A[1])/(length(A)-1)
-    IA = Ispl_nm(A); IA[end] = 0.
-    fA = IA ./ 2 ./ (Ω_H - Ωspl_nm(A))
-
-    tmp = zeros(A)
-    for i = 2:length(fA)
-        tmp[i] =  0.5*(1/fA[i-1] + 1/fA[i])
-    end
-    FA = exp(cumsum(tmp) .* δA)
-
-    Aspl = Spline1D(reverse(FA), reverse(A))
-    U_bc = Aspl(Gμ)
-    return U_H*U_bc
-end
+# function Znajek(crd::Cord, Ω_I::Ω_and_I, U_H::Float64)
+#     a   = crd.a
+#     Ω_H = crd.Ω_H
+#     μcol= crd.μcol
+#
+#     Ispl = I_solver(Ω_I)
+#     Ωspl = Ω_I.Ωspl
+#
+#     Utmp = linspace(0., U_H, 512)
+#     Ispl_nm = Spline1D(Utmp/U_H, Ispl(Utmp)/U_H)
+#     Ωspl_nm = Spline1D(Utmp/U_H, Ωspl(Utmp))
+#
+#     rmin = 1. + sqrt(1. - a^2)
+#     Gμ   = (1-μcol)./(1+μcol) .* exp(a^2/rmin * μcol)
+#
+#     A  = collect(linspace(1., 0., 1024))
+#     δA = (A[end]-A[1])/(length(A)-1)
+#     IA = Ispl_nm(A); IA[end] = 0.
+#     fA = IA ./ 2 ./ (Ω_H - Ωspl_nm(A))
+#
+#     tmp = zeros(A)
+#     for i = 2:length(fA)
+#         tmp[i] =  0.5*(1/fA[i-1] + 1/fA[i])
+#     end
+#     FA = exp(cumsum(tmp) .* δA)
+#
+#     Aspl = Spline1D(reverse(FA), reverse(A))
+#     U_bc = Aspl(Gμ)
+#     return U_H*U_bc
+# end
