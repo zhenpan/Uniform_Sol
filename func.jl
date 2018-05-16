@@ -24,10 +24,6 @@ function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils:
     Upls = zeros(crd.μlen)
     Umns = zeros(crd.μlen)
 
-    #ρ_jcb  = ( cos(pi/μlen) * crd.δμ^2 + cos(pi/Rlen) * crd.δR^2 ) / (crd.δμ^2 + crd.δR^2)
-    #ρ2_jcb = ρ_jcb.^2                                       #estimating ρ2_jcb is hard
-    #ρ2_jcb = 0.05
-
     for n = 1:maxitr
         Res     = zeros(μlen, Rlen)
         dU      = zeros(U)
@@ -52,40 +48,12 @@ function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils:
         end
         #omega = 1./(1.-omega*ρ2_jcb/4.)
 
-
-        # tmp = deepcopy(dU)
-        # for j = 2:crd.μlen - 1
-        #     for l = 2:idx_xbd[j]-1
-        #         dU[j,l] = 0.5*tmp[j,l] + 0.5*(tmp[j+1,l] + tmp[j-1, l] + tmp[j,l+1] + tmp[j,l-1])/4
-        #     end
-        # end
-
         U += dU
         U, U_H, dU  = Bounds!(U, dU, crd, Ω_I, ils, lsn)
     end
     return U, U_H, Res, dU
 end
 
-
-# function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
-#     #lsn bounds
-#     U = USmooth!(U, lsn, crd)
-#
-#     #horizon and inf r boundary values
-#     U[:,1]   = U[:,2]
-#     U[:,end] = U[:,end-1]         #inf r boundary is not used due to xbd
-#
-#     #equator boundary values (beyond ils and within)
-#     idx_r2  = crd.idx_r2
-#     idx_bd  = crd.idx_xbd[1]
-#
-#     U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]
-#
-#     U_H = U[1, idx_r2+1]*(1-0.001)
-#     U[1, 1:idx_r2] = U_H
-#
-#     return U, U_H, dU
-# end
 
 function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
     #lsn bounds
@@ -163,13 +131,15 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
 
-    Uils = 0.5 * (Upls + Umns)
-    δU   = Upls - Umns; δU[1] = 0.                  # we expect ∂ᵣU = 0 where the LS crossing the equator
+    Uils = 0.5 * (Upls + Umns)  ###Not good. Needs interpolation from grid points nearby
+    δU   = Upls - Umns
+
 
     Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
                             + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
     Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
     Uils = Umodel(crd.μcol, Ufit.param)
+    δU   = δU_rescale!(Uils, δU, crd.μcol)
 
     IIpnew = ils.IIp - Isf * δU
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
@@ -186,6 +156,20 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     Ω_I     = Ω_and_I!(U, Ω_I, IIpspl)
     return ils, Ω_I, δU
 end
+
+
+#rescale δU to ensure a approximate $\int δU dU = 0$
+function δU_rescale!(Uils, δU, μcol)
+    δU = δU .* sqrt(1-μcol.^2)
+    δUspl = Spline1D(reverse(Uils), reverse(δU))
+    δUInt = integrate(δUspl, Uils[end], Uils[1])
+    δU2spl = Spline1D(reverse(Uils), reverse(δU.^2))
+    δU2Int = integrate(δU2spl, Uils[end], Uils[1])
+    x = -δUInt/δU2Int
+
+    return  δU + x*δU.^2
+end
+
 
 function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd = 4.)
 
@@ -324,7 +308,7 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum =
     xlabel(L"$X/M$", fontsize = 20)
     ylabel(L"$Z/M$", fontsize = 20)
     tight_layout()
-    savefig("f1.pdf")
+    #savefig("f1.pdf")
 end
 
 function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
@@ -354,12 +338,12 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
     favg = integrate(fspl, r[2], r[end]) / integrate(wspl, r[2], r[end])
     return r, fsq, favg
 end
-
-function cplot(ils, lsn)
-    plot(ils.Loc[:,1], ils.Loc[:,2])
-    plot(lsn.ILS_lon[:,1], lsn.ILS_lon[:,2], ".")
-    plot(lsn.ILS_ron[:,1], lsn.ILS_ron[:,2], ".")
-end
+#
+# function cplot(ils, lsn)
+#     plot(ils.Loc[:,1], ils.Loc[:,2])
+#     plot(lsn.ILS_lon[:,1], lsn.ILS_lon[:,2], ".")
+#     plot(lsn.ILS_ron[:,1], lsn.ILS_ron[:,2], ".")
+# end
 
 # function Znajek(crd::Cord, Ω_I::Ω_and_I, U_H::Float64)
 #     a   = crd.a

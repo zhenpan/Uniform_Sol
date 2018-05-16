@@ -10,7 +10,7 @@ ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
 
 
-for Ωloop = 1:100
+for Ωloop = 1:2
     for Iloop = 1:10
         U, U_H, Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
         ils, Ω_I, δU    = I_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.1)   #update IIp in ils and Ω_I
@@ -23,8 +23,8 @@ for Ωloop = 1:100
     lsn   = LS_neighbors(U, ils, grd, crd)
     println("Ωloop = $Ωloop")
     Ubm = linspace(0., 1.1U_H, 2048)
-    plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/U_H)
-    plot(Ubm/U_H, Ω_I.Ωspl(Ubm))
+    plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
+    plot(Ubm, Ω_I.Ωspl(Ubm))
 end
 
 Ubm = linspace(0., U_H, 2048)
