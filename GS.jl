@@ -67,7 +67,7 @@ immutable LS_neighbors
 end
 
 immutable LS
-    Loc::Array{Float64, 2}
+    Loc::Array{Float64, 2}  #(R,μ,r)
     Σ_Δ::Array{Float64, 1}
     ULS::Array{Float64, 1}
     IIp::Array{Float64, 1}
@@ -280,7 +280,7 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
     S    = Σ_Δ .* IIp
     Cμ   = Cμ_esn .* (1.-μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
 
-    ILS_loc = hcat(RILS, μILS)
+    ILS_loc = hcat(RILS, μILS, rILS)
     return LS(ILS_loc, Σ_Δ, UILS, IIp, S, Cr, Cμ, Cμ_esn)
 end
 

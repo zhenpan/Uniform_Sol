@@ -84,8 +84,8 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
 
     U[1, 1:idx_r2] = U[2, 1:idx_r2] - ∂μ[1:idx_r2]*crd.δμ       #r < 2
 
-    δr  = crd.rcol[idx_r2+1]-crd.rcol[idx_r2]
-    U_H = U[1, idx_r2]*(crd.rcol[idx_r2+1]-2.0)/δr + U[1, idx_r2+1]*(2.0-crd.rcol[idx_r2])/δr
+    δR = crd.δR
+    U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
     return U, U_H, dU
 end
 
@@ -131,23 +131,33 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
 
-    Uils = 0.5 * (Upls + Umns)  ###Not good. Needs interpolation from grid points nearby
+    # Uils = 0.5 * (Upls + Umns)
+    # Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
+    #                         + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
+    # Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
+    # Uils = Umodel(crd.μcol, Ufit.param)
+
+    Ridx = lsn.lsn_idx[:,1]
+    RILS = ils.Loc[:,1]
+    Uils = zeros(RILS)
+    for μidx = 1: length(RILS)
+        ridx = Ridx[μidx]
+        Rcol = crd.R[μidx, ridx:ridx+1]
+        Ucol = U[μidx, ridx:ridx+1]
+        Uspl = Spline1D(Rcol, Ucol, k=1)
+        Uils[μidx] = Uspl(RILS[μidx])
+    end
+
     δU   = Upls - Umns
-
-
-    Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
-                            + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
-    Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
-    Uils = Umodel(crd.μcol, Ufit.param)
-    δU   = δU_rescale!(Uils, δU, crd.μcol)
+    δU   = δU_rescale!(Uils, δU, ils)
 
     IIpnew = ils.IIp - Isf * δU
-    IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
-                                    + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
-                                    + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
-
-    IIpfit = curve_fit(IIpmodel, Uils, IIpnew, [0., 0., 0., 0., 0., 0., 0., 0.])
-    IIpnew = IIpmodel(Uils, IIpfit.param)
+    # IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
+    #                                 + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
+    #                                 + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
+    #
+    # IIpfit = curve_fit(IIpmodel, Uils, IIpnew, [0., 0., 0., 0., 0., 0., 0., 0.])
+    # IIpnew = IIpmodel(Uils, IIpfit.param)
 
     IIpspl = IIp_gen(Uils, IIpnew)
 
@@ -159,8 +169,8 @@ end
 
 
 #rescale δU to ensure a approximate $\int δU dU = 0$
-function δU_rescale!(Uils, δU, μcol)
-    δU = δU .* sqrt(1-μcol.^2)
+function δU_rescale!(Uils, δU, ils)
+    δU = δU.* ils.Σ_Δ[1] ./ils.Σ_Δ
     δUspl = Spline1D(reverse(Uils), reverse(δU))
     δUInt = integrate(δUspl, Uils[end], Uils[1])
     δU2spl = Spline1D(reverse(Uils), reverse(δU.^2))
@@ -205,11 +215,7 @@ function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, U_H::Float6
     Ispl = I_solver(Ω_I)
     Ωbm  = Ispl(Ubm) ./ (2Ubm); Ωbm[1] = 0.5*crd.Ω_H
     Ωold = Ω_I.Ωspl(Ubm)
-    Ωnew = Ωold + 0.1*(Ωbm-Ωold)
-
-    # for iter = 300:length(Ubm)-21
-    #     Ωnew[iter] = max(0.5*(Ωnew[iter-20]+Ωnew[iter+20]), Ωnew[iter])
-    # end
+    Ωnew = Ωbm #Ωold + 0.1*(Ωbm-Ωold)
 
     Ωspl = Spline1D(Ubm, Ωnew)
 
@@ -303,7 +309,7 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum =
     figure(figsize=(5,6))
     contour(Uxy, levels, extent = (0, xmax, 0, ymax), colors = "k")
     plot(xILS, yILS,  "k--")
-    #plot(xIRS, yIRS, lw = 3, "k--")
+    plot(xIRS, yIRS, lw = 3, "k-")
     fill_between(xhz, 0., yhz, color = "black")
     xlabel(L"$X/M$", fontsize = 20)
     ylabel(L"$Z/M$", fontsize = 20)
