@@ -251,7 +251,12 @@ function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
         U = x.^2 + 1.5*acos(crd.μ).*exp(-crd.r.^2); U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
-        Ubm, Ωbm = Ω_gen(U_H, crd)
+        Ubm = collect(linspace(0., xbd, 2048)).^2; Ωbm = zeros(Ubm)
+        for i = 1:length(Ubm)
+            #Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
+            Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-Ubm[i]/U_H) : 0.
+        end
+
         Ibm      = 2*Ωbm.*Ubm
 
         Ωspl = Spline1D(Ubm, Ωbm, k =1, bc = "zero")
@@ -263,17 +268,9 @@ function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
         return U, Ω_I, U_H
 end
 
-function Ω_gen(U_H::Float64, crd::Cord; xbd = 4.0)
-    Ubm = collect(linspace(0., xbd, 2048)).^2
-    Ωbm = zeros(Ubm)
-    for i = 1:length(Ubm)
-        Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
-    end
-    return Ubm, Ωbm
-end
 
 
-function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum = 30)
+function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 1024, Umax = 9.0, cnum = 30)
     spl = Spline2D( crd.μcol, crd.Rcol, U)
     rmin= 1. + sqrt(1-crd.a^2)
 
@@ -288,33 +285,37 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum =
       for j = 1:len
         if r[i,j] > rmin
           Uxy[i,j] = evaluate(spl, cos(Θ[i,j]), r2R(r[i,j]))
+       else
+          Uxy[i,j] = evaluate(spl, cos(Θ[i,j]), r2R(rmin))
         end
       end
     end
 
-    rILS = R2r(ils.Loc[:,1])
-    μILS = ils.Loc[:,2]
-    yILS = rILS .* μILS
+    μcol = linspace(0., 1., len)
+
+    ils_spl = Spline1D(ils.Loc[:,2], R2r(ils.Loc[:,1]))
+    rILS = Spline1D(μcol)
+    yILS = rILS .* μcol
     xILS = sqrt(rILS.^2 - yILS.^2)
 
-    rIRS = 1.+sqrt(1-crd.a^2 * μILS.^2)
-    yIRS = rIRS .* μILS
+    rIRS = 1.+sqrt(1-crd.a^2 * μcol.^2)
+    yIRS = rIRS .* μcol
     xIRS = sqrt(rIRS.^2 - yIRS.^2)
 
-    rhz = crd.rmin*1.01
-    yhz = rhz * μILS
+    rhz = rmin
+    yhz = rhz * μcol
     xhz = sqrt(rhz^2 - yhz.^2)
 
     levels = linspace(0.005, Umax, cnum)
     figure(figsize=(5,6))
     contour(Uxy, levels, extent = (0, xmax, 0, ymax), colors = "k")
+    plot(xIRS, yIRS, "r-")
     plot(xILS, yILS,  "k--")
-    plot(xIRS, yIRS, lw = 3, "k-")
     fill_between(xhz, 0., yhz, color = "black")
     xlabel(L"$X/M$", fontsize = 20)
     ylabel(L"$Z/M$", fontsize = 20)
     tight_layout()
-    #savefig("f1.pdf")
+    savefig("f1.pdf")
 end
 
 function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
