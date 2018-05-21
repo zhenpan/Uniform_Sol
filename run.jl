@@ -8,6 +8,7 @@ U, U_H, Ω_I   = Init(crd, mtr)
 grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
+δU       = zeros(crd.μlen)
 
 
 for Ωloop = 1:100
@@ -17,14 +18,15 @@ for Ωloop = 1:100
         grd             = Grid!(grd, crd, mtr, Ω_I)           #update IIp in grd
         println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H")
     end
-    Ω_I   = Ω_updater!(U, crd, Ω_I)
+    Ω_I   = Ω_updater!(U, crd, Ω_I, ils)
     grd   = Grid(crd, mtr, Ω_I)
     ils   = LS(U, grd, crd, Ω_I)
     lsn   = LS_neighbors(U, ils, grd, crd)
     println("loop = $Ωloop")
     Ubm = linspace(0., 1.1U_H, 2048)
-    plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/U_H)
-    plot(Ubm/U_H, Ω_I.Ωspl(Ubm))
+    plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
+    plot(Ubm, Ω_I.Ωspl(Ubm))
+    plot(Ubm, Ω_I.Ispl(Ubm))
 end
 
 Ubm = linspace(0., U_H, 2048)
