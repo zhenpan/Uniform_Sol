@@ -178,16 +178,24 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.04, xbd = 4.0)
 end
 
 function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
-    Ωmodel(x, p) =       (0.5*crd.Ω_H + p[1] .* x + p[2] .* x.^2 + p[3] .* x.^3)
-    Imodel(x, p) =  2*x.*(0.5*crd.Ω_H + p[1] .* x + p[2] .* x.^2 + p[3] .* x.^3)
+    U_H = ils.ULS[1]
 
-    Ifit = curve_fit(Imodel, ils.ULS, ils.I, [0., 0., 0.])
+    Ωmodel(x, p) =       (U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
+    Imodel(x, p) =  2*x.*(U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
+
+    Ifit = curve_fit(Imodel, ils.ULS, ils.I, [0., 0., 0., 0.])
     Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
     # Ωold = Ω_I.Ωspl(ils.Uils)
     # Ωnew = Ωold + 0.1*(Ωnew-Ωold)
-    Ωspl = Spline1D(Ubm, Ωnew, bc="zeros")
 
-    return Ω_and_I(U, crd, Ωspl, Ispl, Ω_I.IIpspl)
+    Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
+    Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")
+    Ipnew = derivative(Ispl, ils.ULS)
+    IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
+
+    Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
+
+    return Ω_and_I(U, crd, Ωspl, Ispl, IIpspl)
 end
 
 function Init(crd::Cord, mtr::Geom; xbd = 4.0)

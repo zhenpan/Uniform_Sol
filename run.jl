@@ -23,13 +23,13 @@ for Ωloop = 1:100
     ils   = LS(U, grd, crd, Ω_I)
     lsn   = LS_neighbors(U, ils, grd, crd)
     println("loop = $Ωloop")
-    Ubm = linspace(0., 1.1U_H, 2048)
+    Ubm = linspace(0., U_H, 128)
     plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
     plot(Ubm, Ω_I.Ωspl(Ubm))
     plot(Ubm, Ω_I.Ispl(Ubm))
 end
 
-Ubm = linspace(0., U_H, 2048)
+Ubm = linspace(0., U_H, 1024)
 fig = figure(figsize=(8,10))
 subplot(311)
 plot(Ubm/U_H, Ω_I.Ωspl(Ubm)/crd.Ω_H, lw = 3, "k")
