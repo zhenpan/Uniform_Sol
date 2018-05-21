@@ -214,8 +214,16 @@ function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, U_H::Float6
     Ubm  = collect(linspace(0., xbd^2, 2048))
     Ispl = I_solver(Ω_I)
     Ωbm  = Ispl(Ubm) ./ (2Ubm); Ωbm[1] = 0.5*crd.Ω_H
+
     Ωold = Ω_I.Ωspl(Ubm)
     Ωnew = Ωbm #Ωold + 0.1*(Ωbm-Ωold)
+
+    # Ωmodel(x, p) = (U_H -x ).* ( 0.5*Ω_H/U_H  + p[1] .* x    + p[2] .* x.^2
+    #                            + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5) # fix Ω values at θ = 0 and π/2
+    #Imodel(x, p) = 2x .* (U_H -x ).* ( 0.5*Ω_H/U_H  + p[1] .* x    + p[2] .* x.^2
+    #                                 + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5)
+    # Ifit = curve_fit(Imodel, Uils, Inew, [0., 0., 0., 0., 0.])
+    # Inew = Imodel(Uils, Ifit.param)
 
     Ωspl = Spline1D(Ubm, Ωnew)
 
@@ -245,24 +253,23 @@ function I_solver(Ω_I::Ω_and_I; xbd = 4.0)
     return Ispl
 end
 
-function Init(crd::Cord, mtr::Geom; U_H = 4.0, xbd = 4.0)
+function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         z = crd.r .* crd.μ
         x = sqrt(crd.r.^2 - z.^2)
         U = x.^2 + 1.5*acos(crd.μ).*exp(-crd.r.^2); U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
-        Ubm = collect(linspace(0., xbd, 2048)).^2; Ωbm = zeros(Ubm)
+        Ubm = collect(linspace(0., U_H, 2048)); Ωbm = zeros(Ubm)
         for i = 1:length(Ubm)
             #Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
             Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-Ubm[i]/U_H) : 0.
         end
 
-        Ibm      = 2*Ωbm.*Ubm
-
-        Ωspl = Spline1D(Ubm, Ωbm, k =1, bc = "zero")
-        Ispl = Spline1D(Ubm, Ibm, k =1, bc = "zero")
-        Ipbm  = derivative(Ispl, Ubm)
-        IIpspl= Spline1D(Ubm, Ibm.*Ipbm, k =1, bc = "zero")
+        Ibm  = 2*Ωbm.*Ubm
+        Ωspl = Spline1D(Ubm, Ωbm, bc = "zero")
+        Ispl = Spline1D(Ubm, Ibm, bc = "zero")
+        Ipbm = derivative(Ispl, Ubm)
+        IIpspl= Spline1D(Ubm, Ibm.*Ipbm, bc = "zero")
         Ω_I   = Ω_and_I(U, crd, Ωspl, IIpspl)
 
         return U, Ω_I, U_H
@@ -294,7 +301,7 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 1024, Umax = 9.0, cnum 
     μcol = linspace(0., 1., len)
 
     ils_spl = Spline1D(ils.Loc[:,2], R2r(ils.Loc[:,1]))
-    rILS = Spline1D(μcol)
+    rILS = ils_spl(μcol)
     yILS = rILS .* μcol
     xILS = sqrt(rILS.^2 - yILS.^2)
 
