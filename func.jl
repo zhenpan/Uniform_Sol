@@ -126,7 +126,7 @@ function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
     return U
 end
 
-function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
+function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     #update IIp
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
@@ -162,7 +162,7 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     IIpspl = IIp_gen(Uils, IIpnew)
 
     #update ils and lsn (only IIpspl related part)
-    ils     = LS!(ils, Uils, IIpspl)
+    ils     = LS!(ils, Uils, Ω_I.Ispl, IIpspl)
     Ω_I     = Ω_and_I!(U, Ω_I, IIpspl)
     return ils, Ω_I, δU
 end
@@ -210,13 +210,35 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
 end
 
 
-function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, U_H::Float64; xbd = 4.)
-    Ubm  = collect(linspace(0., xbd^2, 2048))
-    Ispl = I_solver(Ω_I)
-    Ωbm  = Ispl(Ubm) ./ (2Ubm); Ωbm[1] = 0.5*crd.Ω_H
+function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
+    U_H = ils.ULS[1]
 
-    Ωold = Ω_I.Ωspl(Ubm)
-    Ωnew = Ωbm #Ωold + 0.1*(Ωbm-Ωold)
+    Ωmodel(x, p) =       (U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
+    Imodel(x, p) =  2*x.*(U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
+
+    Ifit = curve_fit(Imodel, ils.ULS, ils.I, [0., 0., 0., 0.])
+    Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
+    Ωold = Ω_I.Ωspl(ils.ULS)
+    Ωnew = Ωold + 0.1*(Ωnew-Ωold)
+
+    Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
+    Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")
+    Ipnew = derivative(Ispl, ils.ULS)
+    IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
+
+    Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
+
+    return Ω_and_I(U, crd, Ωspl, Ispl, IIpspl)
+end
+
+#
+# function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, U_H::Float64; xbd = 4.)
+#     Ubm  = collect(linspace(0., xbd^2, 2048))
+#     Ispl = I_solver(Ω_I)
+#     Ωbm  = Ispl(Ubm) ./ (2Ubm); Ωbm[1] = 0.5*crd.Ω_H
+#
+#     Ωold = Ω_I.Ωspl(Ubm)
+#     Ωnew = Ωbm #Ωold + 0.1*(Ωbm-Ωold)
 
     # Ωmodel(x, p) = (U_H -x ).* ( 0.5*Ω_H/U_H  + p[1] .* x    + p[2] .* x.^2
     #                            + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5) # fix Ω values at θ = 0 and π/2
@@ -225,10 +247,10 @@ function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, U_H::Float6
     # Ifit = curve_fit(Imodel, Uils, Inew, [0., 0., 0., 0., 0.])
     # Inew = Imodel(Uils, Ifit.param)
 
-    Ωspl = Spline1D(Ubm, Ωnew)
-
-    return Ω_and_I(U, crd, Ωspl, Ω_I.IIpspl)
-end
+#     Ωspl = Spline1D(Ubm, Ωnew)
+#
+#     return Ω_and_I(U, crd, Ωspl, Ω_I.IIpspl)
+# end
 
 
 function I_solver(Ω_I::Ω_and_I; xbd = 4.0)
@@ -270,7 +292,7 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         Ispl = Spline1D(Ubm, Ibm, bc = "zero")
         Ipbm = derivative(Ispl, Ubm)
         IIpspl= Spline1D(Ubm, Ibm.*Ipbm, bc = "zero")
-        Ω_I   = Ω_and_I(U, crd, Ωspl, IIpspl)
+        Ω_I   = Ω_and_I(U, crd, Ωspl, Ispl, IIpspl)
 
         return U, Ω_I, U_H
 end

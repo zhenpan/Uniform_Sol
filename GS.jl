@@ -55,6 +55,7 @@ immutable Ω_and_I
     ∂2Ω::Array{Float64,2}
     IIp::Array{Float64,2}       #II'
     Ωspl::Dierckx.Spline1D
+    Ispl::Dierckx.Spline1D
     IIpspl::Dierckx.Spline1D
 end
 
@@ -70,6 +71,7 @@ immutable LS
     Loc::Array{Float64, 2}  #(R,μ,r)
     Σ_Δ::Array{Float64, 1}
     ULS::Array{Float64, 1}
+    I::Array{Float64, 1}
     IIp::Array{Float64, 1}
     S::Array{Float64, 1}
     Cr::Array{Float64, 1}
@@ -131,7 +133,7 @@ function Geom(crd::Cord)
     return mtr
 end
 
-function Ω_and_I(U::Array{Float64,2}, crd::Cord, Ωspl::Dierckx.Spline1D, IIpspl::Dierckx.Spline1D)
+function Ω_and_I(U::Array{Float64,2}, crd::Cord, Ωspl::Dierckx.Spline1D, Ispl::Dierckx.Spline1D, IIpspl::Dierckx.Spline1D)
     Ω   = evaluate(Ωspl, reshape(U,  length(U)) )
     IIp = evaluate(IIpspl, reshape(U, length(U) ))
     Ω   = reshape(Ω, size(U))
@@ -158,7 +160,7 @@ function Ω_and_I(U::Array{Float64,2}, crd::Cord, Ωspl::Dierckx.Spline1D, IIpsp
     end
 
     ∂1Ω  = ∂1Ω  .* (1-crd.R).^2                         # ∂1 = ∂r,  ∂2 = ∂μ
-    return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, IIpspl)
+    return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
 end
 
 
@@ -167,9 +169,10 @@ function Ω_and_I!(U::Array{Float64,2}, Ω_I::Ω_and_I, IIpspl::Dierckx.Spline1D
     ∂1Ω = Ω_I.∂1Ω
     ∂2Ω = Ω_I.∂2Ω
     Ωspl= Ω_I.Ωspl
+    Ispl= Ω_I.Ispl
     IIp = evaluate(IIpspl, reshape(U, length(U) ))
     IIp = reshape(IIp, size(U))
-    return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, IIpspl)
+    return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
 end
 
 function Grid(crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
@@ -276,12 +279,13 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
     UILS = evaluate( Uspl, μILS, RILS )
     rILS = R2r(RILS)
     Σ_Δ  = (rILS.^2 + crd.a^2 * μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
+    I    = Ω_I.Ispl(UILS)
     IIp  = Ω_I.IIpspl(UILS)
     S    = Σ_Δ .* IIp
     Cμ   = Cμ_esn .* (1.-μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
 
     ILS_loc = hcat(RILS, μILS, rILS)
-    return LS(ILS_loc, Σ_Δ, UILS, IIp, S, Cr, Cμ, Cμ_esn)
+    return LS(ILS_loc, Σ_Δ, UILS, I, IIp, S, Cr, Cμ, Cμ_esn)
 end
 
 function LS_finder(grd::Grid, crd::Cord)
@@ -303,16 +307,17 @@ end
         update IIp related part only
 =##########################################
 
-function LS!(ils::LS, Uils::Array{Float64,1}, IIpspl::Dierckx.Spline1D)
+function LS!(ils::LS, Uils::Array{Float64,1}, Ispl::Dierckx.Spline1D, IIpspl::Dierckx.Spline1D)
     Loc   = ils.Loc
     Σ_Δ   = ils.Σ_Δ
     UILS  = Uils
+    I     = Ispl(UILS)
     IIp   = IIpspl(UILS)
     S     = Σ_Δ .* IIp
     Cr    = ils.Cr
     Cμ    = ils.Cμ
     Cμ_esn= ils.Cμ_esn
-    return LS(Loc, Σ_Δ, UILS, IIp, S, Cr, Cμ, Cμ_esn)
+    return LS(Loc, Σ_Δ, UILS, I, IIp, S, Cr, Cμ, Cμ_esn)
 end
 
 function LS_neighbors(U::Array{Float64,2}, ils::LS, grd::Grid, crd::Cord)
