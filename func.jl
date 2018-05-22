@@ -69,7 +69,7 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
 
     U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]       # ∂μ = 0, for r > 2
 
-    Ispl = I_solver(Ω_I)
+    Ispl = Ω_I.Ispl #I_solver(Ω_I)
     Ωspl = Ω_I.Ωspl
     Uhe  = U[1,1]                       #U in the horizon/equator cornor
     Ωhe  = Ωspl(Uhe)
@@ -80,7 +80,7 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
 
     ∂μ    = zeros(idx_r2)
     ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
-    ∂μ[1:idx_r2] = ∂μ[1]*(crd.rcol[1:idx_r2]-2.0)/(rmin-2.0)  #initial guess: ∂μ ∈ [∂μ[1], 0] linear in r
+    ∂μ[1:idx_r2] = ∂μ[1] #*(crd.rcol[1:idx_r2]-2.0)/(rmin-2.0)  #initial guess: ∂μ ∈ [∂μ[1], 0] a constant
 
     U[1, 1:idx_r2] = U[2, 1:idx_r2] - ∂μ[1:idx_r2]*crd.δμ       #r < 2
 
@@ -149,9 +149,9 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     end
 
     δU   = Upls - Umns
-    δU   = δU_rescale!(Uils, δU, ils)
+    δU   = δU_rescale!(Uils, δU, ils, Isf)
 
-    IIpnew = ils.IIp - Isf * δU
+    IIpnew = ils.IIp -  δU
     # IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
     #                                 + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
     #                                 + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
@@ -169,8 +169,8 @@ end
 
 
 #rescale δU to ensure a approximate $\int δU dU = 0$
-function δU_rescale!(Uils, δU, ils)
-    δU = δU.* ils.Σ_Δ[1] ./ils.Σ_Δ
+function δU_rescale!(Uils, δU, ils, Isf)
+    δU = Isf *δU #.* ils.Σ_Δ[1] ./ils.Σ_Δ
     δUspl = Spline1D(reverse(Uils), reverse(δU))
     δUInt = integrate(δUspl, Uils[end], Uils[1])
     δU2spl = Spline1D(reverse(Uils), reverse(δU.^2))
@@ -211,24 +211,47 @@ end
 
 
 function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
-    U_H = ils.ULS[1]
+    U_H  = ils.ULS[1]
+    Ispl = I_solver(Ω_I, U_H)
 
     Ωmodel(x, p) =       (U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
     Imodel(x, p) =  2*x.*(U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
 
-    Ifit = curve_fit(Imodel, ils.ULS, ils.I, [0., 0., 0., 0.])
+    Ifit = curve_fit(Imodel, ils.ULS, Ispl(ils.ULS), [0., 0., 0., 0.])
     Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
     Ωold = Ω_I.Ωspl(ils.ULS)
     Ωnew = Ωold + 0.1*(Ωnew-Ωold)
 
     Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
     Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")
-    Ipnew = derivative(Ispl, ils.ULS)
-    IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
+    # Ipnew = derivative(Ispl, ils.ULS)
+    # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
 
-    return Ω_and_I(U, crd, Ωspl, Ispl, IIpspl)
+    return Ω_and_I(U, crd, Ωspl, Ispl, Ω_I.IIpspl)
+end
+
+function I_solver(Ω_I::Ω_and_I, U_H::Float64)
+    Ubm = linspace(0., U_H, 1024)
+    δU  = U_H/(length(Ubm)-1)
+    IIp = Ω_I.IIpspl(Ubm)
+    Isq = zeros(Ubm)
+
+    # for iter = 2:length(Isq)
+    #     Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
+    # end
+
+    iter = 2
+    while iter <= length(Isq) && Isq[iter-1] >= 0.
+        Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
+        iter = iter + 1
+    end
+
+    Isq  = max(Isq, 0.)
+    Ispl = Spline1D(Ubm, sqrt(Isq), bc = "zero")
+
+    return Ispl
 end
 
 #
@@ -253,32 +276,11 @@ end
 # end
 
 
-function I_solver(Ω_I::Ω_and_I; xbd = 4.0)
-    Ubm = collect(linspace(0., xbd^2, 2048))
-    δU  = (Ubm[end]-Ubm[1])/(length(Ubm)-1)
-    IIp = Ω_I.IIpspl(Ubm)
-    Isq = zeros(Ubm)
-
-    # for iter = 2:length(Isq)
-    #     Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
-    # end
-
-    iter = 2
-    while iter <= length(Isq) && Isq[iter-1] >= 0.
-        Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
-        iter = iter + 1
-    end
-
-    Isq = max(Isq, 0.)
-
-    Ispl = Spline1D(Ubm, sqrt(Isq), bc = "zero")
-    return Ispl
-end
 
 function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         z = crd.r .* crd.μ
         x = sqrt(crd.r.^2 - z.^2)
-        U = x.^2 + 1.5*acos(crd.μ).*exp(-crd.r.^2); U_H = U[1, crd.idx_r2]
+        U = x.^2 + 1.5*acos(crd.μ).*exp(-(crd.r-0.5).^2).*exp(-z); U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
         Ubm = collect(linspace(0., U_H, 2048)); Ωbm = zeros(Ubm)
@@ -361,9 +363,9 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
     Σ = r.^2 + crd.a^2 * μ.^2
     β = Δ .* Σ + 2r .*(r.^2+crd.a^2)
 
-    Ispl = I_solver(Ω_I)
+    Ispl = Ω_I.Ispl                 #I_solver(Ω_I)
     Icol = evaluate(Ispl, U[1,1:idx])
-    κcol = reshape(grd.κ[1,1:idx], idx)
+    κcol = grd.κ[1,1:idx]
 
     B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
     B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* Icol.^2

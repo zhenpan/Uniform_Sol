@@ -10,7 +10,7 @@ ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
 
 
-for Ωloop = 1:2
+for Ωloop = 1:100
     for Iloop = 1:10
         U, U_H, Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
         ils, Ω_I, δU    = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.1)   #update IIp in ils and Ω_I
@@ -52,9 +52,6 @@ tight_layout()
 savefig("f2.pdf")
 
 
-
-
-#plot(Ubm/U_H, sqrt(1-Ubm/U_H/1.1)./(1.+sqrt(1-Ubm/U_H/1.1)))
 
 # r, fsq, favg = Fsq(U, crd, grd, lsn)
 # plot(r, fsq, lw = 2)
