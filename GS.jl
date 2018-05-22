@@ -356,10 +356,10 @@ function Sngl_helper(grd::Grid, crd::Cord, ils::LS; ϵ = 2.)
 
     ϵmax1 = (μILS-1.)./(crd.δμ * hp2 ./hp3)           #avoid μrt > 1 or μlt < 0
     ϵmax2 = (-μILS)./(crd.δμ * hp2 ./hp3)
-    ϵsaf  = min(abs(ϵmax1), abs(ϵmax2), ϵ)
+    ϵsaf  = min(abs(ϵmax1), abs(ϵmax2), ϵ);   ϵsaf[1] = ϵsaf[2]
 
     dR  = ϵsaf.*crd.δR .* hp1 ./hp3                   #dR negative
-    dμ  = ϵsaf.*crd.δμ .* hp2 ./hp3                   #dμ negative
+    dμ  = ϵsaf.*crd.δμ .* hp2 ./hp3; dμ[1] = 0.       #dμ negative except the ILS/equator point
 
     Rlt = RILS + dR           #iw point wants smaller R and smaller μ
     μlt = μILS + dμ

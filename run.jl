@@ -22,7 +22,7 @@ for Ωloop = 1:100
     grd   = Grid(crd, mtr, Ω_I)
     ils   = LS(U, grd, crd, Ω_I)
     lsn   = LS_neighbors(U, ils, grd, crd)
-    println("loop = $Ωloop")
+    println("Ωloop = $Ωloop")
     Ubm = linspace(0., U_H, 128)
     plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
     plot(Ubm, Ω_I.Ωspl(Ubm))

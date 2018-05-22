@@ -142,23 +142,23 @@ function I_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.04, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
 
-    # Uils = 0.5 * (Upls + Umns)
+    Uils = 0.5 * (Upls + Umns)
     #
     # Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
     #                         + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
     # Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
     # Uils = Umodel(crd.μcol, Ufit.param)
 
-    Ridx = lsn.lsn_idx[:,1]
-    RILS = ils.Loc[:,1]
-    Uils = zeros(RILS)
-    for μidx = 1: length(RILS)
-        ridx = Ridx[μidx]
-        Rcol = crd.R[μidx, ridx:ridx+1]
-        Ucol = U[μidx, ridx:ridx+1]
-        Uspl = Spline1D(Rcol, Ucol, k=1)
-        Uils[μidx] = Uspl(RILS[μidx])
-    end
+    # Ridx = lsn.lsn_idx[:,1]
+    # RILS = ils.Loc[:,1]
+    # Uils = zeros(RILS)
+    # for μidx = 1: length(RILS)
+    #     ridx = Ridx[μidx]
+    #     Rcol = crd.R[μidx, ridx:ridx+1]
+    #     Ucol = U[μidx, ridx:ridx+1]
+    #     Uspl = Spline1D(Rcol, Ucol, k=1)
+    #     Uils[μidx] = Uspl(RILS[μidx])
+    # end
 
     δU   = Upls - Umns
     #δU   = δU .* ils.Σ_Δ[1]./ils.Σ_Δ
@@ -185,8 +185,8 @@ function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
 
     Ifit = curve_fit(Imodel, ils.ULS, ils.I, [0., 0., 0., 0.])
     Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
-    # Ωold = Ω_I.Ωspl(ils.Uils)
-    # Ωnew = Ωold + 0.1*(Ωnew-Ωold)
+    Ωold = Ω_I.Ωspl(ils.ULS)
+    Ωnew = Ωold + 0.1*(Ωnew-Ωold)
 
     Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
     Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")
@@ -208,8 +208,8 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         Ubm = collect(linspace(0., xbd, 2048)).^2
         Ωbm = zeros(Ubm)
         for i = 1:length(Ubm)
-            #Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
-             Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-Ubm[i]/U_H) : 0.
+            Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
+             #Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-Ubm[i]/U_H) : 0.
         end
         Ibm = 2*Ωbm.*Ubm
 
@@ -258,13 +258,13 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 512, Umax = 9.0, cnum =
     levels = linspace(0.005, Umax, cnum)
     figure(figsize=(5,6))
     contour(Uxy, levels, extent = (0, xmax, 0, ymax), colors = "k")
-    plot(xILS, yILS,  "k--")
+    plot(xILS, yILS,  ".")
     plot(xIRS, yIRS,  "r-")
     fill_between(xhz, 0., yhz, color = "black")
     xlabel(L"$X/M$", fontsize = 20)
     ylabel(L"$Z/M$", fontsize = 20)
     tight_layout()
-    savefig("f1.pdf")
+    #savefig("f1.pdf")
 end
 
 function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
