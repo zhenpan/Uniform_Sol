@@ -71,6 +71,7 @@ immutable LS
     Loc::Array{Float64, 2}  #(R,μ,r)
     Σ_Δ::Array{Float64, 1}
     ULS::Array{Float64, 1}
+    Ω::Array{Float64, 1}
     I::Array{Float64, 1}
     IIp::Array{Float64, 1}
     S::Array{Float64, 1}
@@ -163,7 +164,7 @@ function Ω_and_I(U::Array{Float64,2}, crd::Cord, Ωspl::Dierckx.Spline1D, Ispl:
     return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
 end
 
-
+## update IIp
 function Ω_and_I!(U::Array{Float64,2}, Ω_I::Ω_and_I, IIpspl::Dierckx.Spline1D)
     Ω   = Ω_I.Ω
     ∂1Ω = Ω_I.∂1Ω
@@ -174,6 +175,19 @@ function Ω_and_I!(U::Array{Float64,2}, Ω_I::Ω_and_I, IIpspl::Dierckx.Spline1D
     IIp = reshape(IIp, size(U))
     return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
 end
+
+
+## update Ωspl
+function Ω_and_I!(Ω_I::Ω_and_I, Ωspl::Dierckx.Spline1D)
+    Ω   = Ω_I.Ω
+    ∂1Ω = Ω_I.∂1Ω
+    ∂2Ω = Ω_I.∂2Ω
+    IIp = Ω_I.IIp
+    Ispl= Ω_I.Ispl
+    IIpspl= Ω_I.IIpspl
+    return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
+end
+
 
 function Grid(crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
     R, μ,  δR, δμ,  r, a     = crd.R, crd.μ, crd.δR, crd.δμ, crd.r, crd.a
@@ -250,7 +264,7 @@ function Grid!(grd::Grid, crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
 end
 
 
-function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
+function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)   #for exact Ω_I
     idx_r2 = crd.idx_r2 + 1
     RILS   = zeros(crd.μlen)
     μILS   = crd.μcol
@@ -279,14 +293,59 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
     UILS = evaluate( Uspl, μILS, RILS )
     rILS = R2r(RILS)
     Σ_Δ  = (rILS.^2 + crd.a^2 * μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
+    Ω    = Ω_I.Ωspl(UILS)
     I    = Ω_I.Ispl(UILS)
     IIp  = Ω_I.IIpspl(UILS)
     S    = Σ_Δ .* IIp
     Cμ   = Cμ_esn .* (1.-μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
 
     ILS_loc = hcat(RILS, μILS, rILS)
-    return LS(ILS_loc, Σ_Δ, UILS, I, IIp, S, Cr, Cμ, Cμ_esn)
+    return LS(ILS_loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn)
 end
+
+function LS_updater!(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I, ils::LS)   #for approx Ω_I
+    idx_r2 = crd.idx_r2 + 1
+    RILS   = zeros(crd.μlen)
+    μILS   = crd.μcol
+    Cr     = zeros(crd.μlen)
+    Cμ     = zeros(crd.μlen)
+    Cμ_esn = zeros(crd.μlen)
+
+    LS_ridx = LS_finder(grd, crd)
+
+    for μidx = 1: length(RILS)
+        ridx = LS_ridx[μidx]
+        κcol = -grd.κ[μidx, ridx:ridx+1]
+        Rcol =  crd.R[μidx, ridx:ridx+1]
+        spl_in  = Spline1D(κcol, Rcol, k = 1)
+        RILS[μidx] = spl_in(0.)
+
+        Crcol = grd.Cr[μidx, ridx:ridx+1]
+        Cμcol = grd.Cμ_esn[μidx, ridx:ridx+1]
+        spl_Cr      = Spline1D(Rcol, Crcol, k = 1)
+        spl_Cμesn   = Spline1D(Rcol, Cμcol, k = 1)
+        Cr[μidx]     = spl_Cr(RILS[μidx])
+        Cμ_esn[μidx] = spl_Cμesn(RILS[μidx])
+    end
+
+    Uspl = Spline2D( crd.μcol, crd.Rcol, U, kx =1, ky=1 )
+    UILS = evaluate( Uspl, μILS, RILS )
+    rILS = R2r(RILS)
+    Σ_Δ  = (rILS.^2 + crd.a^2 * μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
+    Ω    = ils.Ω                     # avoid using ils.Ωspl to keep zero Omega on r2
+    I    = Ω_I.Ispl(UILS)
+    IIp  = Ω_I.IIpspl(UILS)
+    S    = Σ_Δ .* IIp
+    Cμ   = Cμ_esn .* (1.-μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
+
+    ILS_loc = hcat(RILS, μILS, rILS)
+
+    Ωspl = Spline1D(reverse(UILS), reverse(Ω), bc="zero")
+    Ω_I  = Ω_and_I!(Ω_I, Ωspl)
+
+    return LS(ILS_loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn), Ω_I
+end
+
 
 function LS_finder(grd::Grid, crd::Cord)
     idx_r2 = crd.idx_r2 + 1
@@ -311,13 +370,14 @@ function LS!(ils::LS, Uils::Array{Float64,1}, Ispl::Dierckx.Spline1D, IIpspl::Di
     Loc   = ils.Loc
     Σ_Δ   = ils.Σ_Δ
     UILS  = Uils
+    Ω     = ils.Ω
     I     = Ispl(UILS)
     IIp   = IIpspl(UILS)
     S     = Σ_Δ .* IIp
     Cr    = ils.Cr
     Cμ    = ils.Cμ
     Cμ_esn= ils.Cμ_esn
-    return LS(Loc, Σ_Δ, UILS, I, IIp, S, Cr, Cμ, Cμ_esn)
+    return LS(Loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn)
 end
 
 function LS_neighbors(U::Array{Float64,2}, ils::LS, grd::Grid, crd::Cord)

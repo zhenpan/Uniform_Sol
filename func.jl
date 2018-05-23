@@ -131,33 +131,33 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
 
-    # Uils = 0.5 * (Upls + Umns)
+    Uils = 0.5 * (Upls + Umns)
     # Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
     #                         + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
     # Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
     # Uils = Umodel(crd.μcol, Ufit.param)
 
-    Ridx = lsn.lsn_idx[:,1]
-    RILS = ils.Loc[:,1]
-    Uils = zeros(RILS)
-    for μidx = 1: length(RILS)
-        ridx = Ridx[μidx]
-        Rcol = crd.R[μidx, ridx:ridx+1]
-        Ucol = U[μidx, ridx:ridx+1]
-        Uspl = Spline1D(Rcol, Ucol, k=1)
-        Uils[μidx] = Uspl(RILS[μidx])
-    end
+    # Ridx = lsn.lsn_idx[:,1]
+    # RILS = ils.Loc[:,1]
+    # Uils = zeros(RILS)
+    # for μidx = 1: length(RILS)
+    #     ridx = Ridx[μidx]
+    #     Rcol = crd.R[μidx, ridx:ridx+1]
+    #     Ucol = U[μidx, ridx:ridx+1]
+    #     Uspl = Spline1D(Rcol, Ucol, k=1)
+    #     Uils[μidx] = Uspl(RILS[μidx])
+    # end
 
     δU   = Upls - Umns
     δU   = δU_rescale!(Uils, δU, ils, Isf)
 
     IIpnew = ils.IIp -  δU
-    # IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
-    #                                 + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
-    #                                 + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
-    #
-    # IIpfit = curve_fit(IIpmodel, Uils, IIpnew, [0., 0., 0., 0., 0., 0., 0., 0.])
-    # IIpnew = IIpmodel(Uils, IIpfit.param)
+    IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
+                                    + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
+                                    + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
+
+    IIpfit = curve_fit(IIpmodel, Uils, IIpnew, [0., 0., 0., 0., 0., 0., 0., 0.])
+    IIpnew = IIpmodel(Uils, IIpfit.param)
 
     IIpspl = IIp_gen(Uils, IIpnew)
 
@@ -219,11 +219,12 @@ function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
 
     Ifit = curve_fit(Imodel, ils.ULS, Ispl(ils.ULS), [0., 0., 0., 0.])
     Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
-    Ωold = Ω_I.Ωspl(ils.ULS)
+    Ωold = ils.Ω  #Ω_I.Ωspl(ils.ULS)
     Ωnew = Ωold + 0.1*(Ωnew-Ωold)
 
     Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
-    Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")
+    Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")   #Ispl here is only an approx,
+                                                                    #since ils.ULS will be updated when new LS is located 
     # Ipnew = derivative(Ispl, ils.ULS)
     # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 
