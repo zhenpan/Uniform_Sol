@@ -67,8 +67,6 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
 
-    U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]       # ∂μ = 0, for r > 2
-
     Ispl = Ω_I.Ispl #I_solver(Ω_I)
     Ωspl = Ω_I.Ωspl
     Uhe  = U[1,1]                       #U in the horizon/equator cornor
@@ -78,11 +76,13 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
     Ω_H  = crd.Ω_H
     rmin = crd.rmin
 
-    ∂μ    = zeros(idx_r2)
+    ∂μ    = zeros(idx_bd)
     ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
-    ∂μ[1:idx_r2] = ∂μ[1] #*(crd.rcol[1:idx_r2]-2.0)/(rmin-2.0)  #initial guess: ∂μ ∈ [∂μ[1], 0] a constant
+    ∂μ[1:idx_r2]     = ∂μ[1]             # initial guess: ∂μ ∈ [∂μ[1], 0] a constant
+    ∂μ[idx_r2+1:end] = ∂μ[1].*exp(-4*(crd.rcol[idx_r2+1:idx_bd]- crd.rcol[idx_r2]).^2)
 
-    U[1, 1:idx_r2] = U[2, 1:idx_r2] - ∂μ[1:idx_r2]*crd.δμ       #r < 2
+    Utmp = U[2, 1:idx_bd] - ∂μ[1:idx_bd]*crd.δμ
+    U[1, 1:idx_bd] = U[1, 1:idx_bd] + 0.1*(Utmp - U[1, 1:idx_bd])
 
     δR = crd.δR
     U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
@@ -123,6 +123,26 @@ function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
         U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
         U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
     end
+    #more smooth
+
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+
+        U[μidx, Ridx-1] = (U[μidx, Ridx-1] < U[μidx-1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
+        U[μidx, Ridx]   = (U[μidx, Ridx  ] < U[μidx-1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
+        U[μidx, Ridx+1] = (U[μidx, Ridx+1] < U[μidx-1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
+        U[μidx, Ridx+2] = (U[μidx, Ridx+2] < U[μidx-1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
+    end
+
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+
+        U[μidx, Ridx-1] = (U[μidx, Ridx-1] > U[μidx+1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
+        U[μidx, Ridx]   = (U[μidx, Ridx  ] > U[μidx+1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
+        U[μidx, Ridx+1] = (U[μidx, Ridx+1] > U[μidx+1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
+        U[μidx, Ridx+2] = (U[μidx, Ridx+2] > U[μidx+1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
+    end
+
     return U
 end
 
@@ -224,7 +244,7 @@ function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
 
     Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
     Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")   #Ispl here is only an approx,
-                                                                    #since ils.ULS will be updated when new LS is located 
+                                                                    #since ils.ULS will be updated when new LS is located
     # Ipnew = derivative(Ispl, ils.ULS)
     # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 

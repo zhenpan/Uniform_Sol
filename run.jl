@@ -29,6 +29,12 @@ for Ωloop = 1:10
     plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
 end
 
+plot(U[1, 145:154])
+plot(U[2, 145:154], "--")
+plot(U[3, 145:154], "k")
+plot(U[4, 145:154], "k--")
+
+
 Ubm = linspace(0., U_H, 2048)
 fig = figure(figsize=(8,10))
 subplot(311)
