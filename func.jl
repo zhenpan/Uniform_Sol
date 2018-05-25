@@ -56,20 +56,20 @@ end
 
 
 function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
-    #lsn bounds
-    U = USmooth!(U, lsn, crd)                           #smooth the neighbors before interpolation
+    #lsn bounds, updated via interior points
+    U = USmooth!(U, lsn, crd)
 
     #horizon and inf r boundary values
     U[:,1]   = U[:,2]
-    U[:,end] = U[:,end-1]         #inf r boundary is not used due to xbd
+    U[:,end] = U[:,end-1]         #inf r boundary is in fact not used due to xbd
 
     #equator bounds ( within and beyond r2)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
 
-    Ispl = Ω_I.Ispl #I_solver(Ω_I)
+    Ispl = Ω_I.Ispl     #I_solver(Ω_I)
     Ωspl = Ω_I.Ωspl
-    Uhe  = U[1,1]                       #U in the horizon/equator cornor
+    Uhe  = U[1,1]       #U in the horizon/equator cornor
     Ωhe  = Ωspl(Uhe)
     Ihe  = Ispl(Uhe)
 
@@ -79,10 +79,11 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
     ∂μ    = zeros(idx_bd)
     ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
     ∂μ[1:idx_r2]     = ∂μ[1]             # initial guess: ∂μ ∈ [∂μ[1], 0] a constant
-    ∂μ[idx_r2+1:end] = ∂μ[1].*exp(-4*(crd.rcol[idx_r2+1:idx_bd]- crd.rcol[idx_r2]).^2)
+    ∂μ[idx_r2+1:end] = ∂μ[1].*exp(-16*(crd.rcol[idx_r2+1:idx_bd]- crd.rcol[idx_r2]).^2)
 
     Utmp = U[2, 1:idx_bd] - ∂μ[1:idx_bd]*crd.δμ
-    U[1, 1:idx_bd] = U[1, 1:idx_bd] + 0.1*(Utmp - U[1, 1:idx_bd])
+    U[1, 1:idx_bd] = Utmp
+    #U[1, 1:idx_bd] = U[1, 1:idx_bd] + 0.1*(Utmp - U[1, 1:idx_bd])
 
     δR = crd.δR
     U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
@@ -123,7 +124,6 @@ function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
         U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
         U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
     end
-    #more smooth
 
     for μidx = 2:crd.μlen-1
         Ridx = lsn.lsn_idx[μidx]
@@ -146,8 +146,8 @@ function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
     return U
 end
 
+#update IIp
 function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
-    #update IIp
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
 

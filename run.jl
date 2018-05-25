@@ -17,6 +17,8 @@ for Ωloop = 1:10
         ils, Ω_I, δU    = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.1)   #update IIp in ils and Ω_I
         grd             = Grid!(grd, crd, mtr, Ω_I)                        #update IIp in grd
         println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H")
+        plot(ils.ULS, δU)
+        plot(ils.ULS, ils.IIp/10)
     end
     Ω_I      = ΩI_updater!(U, crd, Ω_I, ils)
     grd      = Grid(crd, mtr, Ω_I)
@@ -44,14 +46,14 @@ ylabel(L"$\Omega/ \Omega_{\rm H}$", fontsize = 20)
 tick_params(axis="both", which="major", labelsize=14)
 
 subplot(312)
-plot(Ubm/U_H, Ω_I.IIpspl(Ubm), lw = 3, "k")
-ylim(0., 0.21)
+plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/U_H, lw = 3, "k")
+ylim(-0.025, 0.025)
 ylabel(L"$II'/ A_\phi^{\rm H}$", fontsize = 20)
 tick_params(axis="both", which="major", labelsize=14)
 
 subplot(313)
 plot(Ubm/U_H, 2*Ω_I.Ωspl(Ubm).*Ubm/U_H, lw = 3, "k")
-ylim(0., 0.3)
+ylim(0., 0.12)
 xlabel(L"$A_\phi/ A_\phi^{\rm H}$", fontsize = 20)
 ylabel(L"$I/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
 tick_params(axis="both", which="major", labelsize=14)
