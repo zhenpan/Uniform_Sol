@@ -79,11 +79,17 @@ function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_
     ∂μ    = zeros(idx_bd)
     ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
     ∂μ[1:idx_r2]     = ∂μ[1]             # initial guess: ∂μ ∈ [∂μ[1], 0] a constant
-    ∂μ[idx_r2+1:end] = ∂μ[1].*exp(-16*(crd.rcol[idx_r2+1:idx_bd]- crd.rcol[idx_r2]).^2)
+    ∂μ[idx_r2+1:end] = 0.                #∂μ[1].*exp(-16*(crd.rcol[idx_r2+1:idx_bd]- crd.rcol[idx_r2]).^2)
 
-    Utmp = U[2, 1:idx_bd] - ∂μ[1:idx_bd]*crd.δμ
-    U[1, 1:idx_bd] = Utmp
-    #U[1, 1:idx_bd] = U[1, 1:idx_bd] + 0.1*(Utmp - U[1, 1:idx_bd])
+    # Utmp = U[2, 1:idx_bd] - ∂μ[1:idx_bd]*crd.δμ
+    # U[1, 1:idx_bd] = Utmp
+
+    U[1, idx_r2+1:idx_bd]= U[2, idx_r2+1:idx_bd] - ∂μ[idx_r2+1:idx_bd]*crd.δμ
+    U[1, idx_r2]         = U[1, idx_r2+1]
+    U[1,1]               = U[2,1]-∂μ[1]*crd.δμ
+
+    A = (U[1,1]-U[1,idx_r2])/(rmin-2)^2
+    U[1,2:idx_r2-1] = A*(crd.rcol[2:idx_r2-1]-2).^2 + U[1, idx_r2]
 
     δR = crd.δR
     U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
