@@ -281,28 +281,6 @@ function I_solver(Ω_I::Ω_and_I, U_H::Float64)
     return Ispl
 end
 
-#
-# function Ω_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, U_H::Float64; xbd = 4.)
-#     Ubm  = collect(linspace(0., xbd^2, 2048))
-#     Ispl = I_solver(Ω_I)
-#     Ωbm  = Ispl(Ubm) ./ (2Ubm); Ωbm[1] = 0.5*crd.Ω_H
-#
-#     Ωold = Ω_I.Ωspl(Ubm)
-#     Ωnew = Ωbm #Ωold + 0.1*(Ωbm-Ωold)
-
-    # Ωmodel(x, p) = (U_H -x ).* ( 0.5*Ω_H/U_H  + p[1] .* x    + p[2] .* x.^2
-    #                            + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5) # fix Ω values at θ = 0 and π/2
-    #Imodel(x, p) = 2x .* (U_H -x ).* ( 0.5*Ω_H/U_H  + p[1] .* x    + p[2] .* x.^2
-    #                                 + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5)
-    # Ifit = curve_fit(Imodel, Uils, Inew, [0., 0., 0., 0., 0.])
-    # Inew = Imodel(Uils, Ifit.param)
-
-#     Ωspl = Spline1D(Ubm, Ωnew)
-#
-#     return Ω_and_I(U, crd, Ωspl, Ω_I.IIpspl)
-# end
-
-
 
 function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         z = crd.r .* crd.μ
