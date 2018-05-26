@@ -68,9 +68,13 @@ immutable LS_neighbors
 end
 
 immutable LS
-    Loc::Array{Float64, 2}
+    Loc::Array{Float64, 2}  #(R,μ,r)
     Σ_Δ::Array{Float64, 1}
     ULS::Array{Float64, 1}
+<<<<<<< HEAD
+=======
+    Ω::Array{Float64, 1}
+>>>>>>> master
     I::Array{Float64, 1}
     IIp::Array{Float64, 1}
     S::Array{Float64, 1}
@@ -163,16 +167,35 @@ function Ω_and_I(U::Array{Float64,2}, crd::Cord, Ωspl::Dierckx.Spline1D, Ispl:
     return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
 end
 
+<<<<<<< HEAD
 #update IIp
 function Ω_and_I!(U::Array{Float64,2}, Ω_I::Ω_and_I, Ispl::Dierckx.Spline1D, IIpspl::Dierckx.Spline1D)
+=======
+## update IIp
+function Ω_and_I!(U::Array{Float64,2}, Ω_I::Ω_and_I, IIpspl::Dierckx.Spline1D)
+>>>>>>> master
     Ω   = Ω_I.Ω
     ∂1Ω = Ω_I.∂1Ω
     ∂2Ω = Ω_I.∂2Ω
     Ωspl= Ω_I.Ωspl
+    Ispl= Ω_I.Ispl
     IIp = evaluate(IIpspl, reshape(U, length(U) ))
     IIp = reshape(IIp, size(U))
     return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
 end
+
+
+## update Ωspl
+function Ω_and_I!(Ω_I::Ω_and_I, Ωspl::Dierckx.Spline1D)
+    Ω   = Ω_I.Ω
+    ∂1Ω = Ω_I.∂1Ω
+    ∂2Ω = Ω_I.∂2Ω
+    IIp = Ω_I.IIp
+    Ispl= Ω_I.Ispl
+    IIpspl= Ω_I.IIpspl
+    return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
+end
+
 
 function Grid(crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
     R, μ,  δR, δμ,  r, a     = crd.R, crd.μ, crd.δR, crd.δμ, crd.r, crd.a
@@ -249,7 +272,7 @@ function Grid!(grd::Grid, crd::Cord, mtr::Geom, Ω_I::Ω_and_I)
 end
 
 
-function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
+function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)   #for exact Ω_I
     idx_r2 = crd.idx_r2 + 1
     RILS   = zeros(crd.μlen)
     μILS   = crd.μcol
@@ -278,14 +301,59 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)
     UILS = evaluate( Uspl, μILS, RILS )
     rILS = R2r(RILS)
     Σ_Δ  = (rILS.^2 + crd.a^2 * μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
+    Ω    = Ω_I.Ωspl(UILS)
     I    = Ω_I.Ispl(UILS)
     IIp  = Ω_I.IIpspl(UILS)
     S    = Σ_Δ .* IIp
     Cμ   = Cμ_esn .* (1.-μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
 
-    ILS_loc = hcat(RILS, μILS)
-    return LS(ILS_loc, Σ_Δ, UILS, I, IIp, S, Cr, Cμ, Cμ_esn)
+    ILS_loc = hcat(RILS, μILS, rILS)
+    return LS(ILS_loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn)
 end
+
+function LS_updater!(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I, ils::LS)   #for approx Ω_I
+    idx_r2 = crd.idx_r2 + 1
+    RILS   = zeros(crd.μlen)
+    μILS   = crd.μcol
+    Cr     = zeros(crd.μlen)
+    Cμ     = zeros(crd.μlen)
+    Cμ_esn = zeros(crd.μlen)
+
+    LS_ridx = LS_finder(grd, crd)
+
+    for μidx = 1: length(RILS)
+        ridx = LS_ridx[μidx]
+        κcol = -grd.κ[μidx, ridx:ridx+1]
+        Rcol =  crd.R[μidx, ridx:ridx+1]
+        spl_in  = Spline1D(κcol, Rcol, k = 1)
+        RILS[μidx] = spl_in(0.)
+
+        Crcol = grd.Cr[μidx, ridx:ridx+1]
+        Cμcol = grd.Cμ_esn[μidx, ridx:ridx+1]
+        spl_Cr      = Spline1D(Rcol, Crcol, k = 1)
+        spl_Cμesn   = Spline1D(Rcol, Cμcol, k = 1)
+        Cr[μidx]     = spl_Cr(RILS[μidx])
+        Cμ_esn[μidx] = spl_Cμesn(RILS[μidx])
+    end
+
+    Uspl = Spline2D( crd.μcol, crd.Rcol, U, kx =1, ky=1 )
+    UILS = evaluate( Uspl, μILS, RILS )
+    rILS = R2r(RILS)
+    Σ_Δ  = (rILS.^2 + crd.a^2 * μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
+    Ω    = ils.Ω                     # avoid using ils.Ωspl to keep zero Omega on r2
+    I    = Ω_I.Ispl(UILS)
+    IIp  = Ω_I.IIpspl(UILS)
+    S    = Σ_Δ .* IIp
+    Cμ   = Cμ_esn .* (1.-μILS.^2)./(rILS.^2 - 2rILS + crd.a^2)
+
+    ILS_loc = hcat(RILS, μILS, rILS)
+
+    Ωspl = Spline1D(reverse(UILS), reverse(Ω), bc="zero")
+    Ω_I  = Ω_and_I!(Ω_I, Ωspl)
+
+    return LS(ILS_loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn), Ω_I
+end
+
 
 function LS_finder(grd::Grid, crd::Cord)
     idx_r2 = crd.idx_r2 + 1
@@ -310,14 +378,15 @@ end
 function LS!(ils::LS, Uils::Array{Float64,1}, Ispl::Dierckx.Spline1D, IIpspl::Dierckx.Spline1D)
     Loc   = ils.Loc
     Σ_Δ   = ils.Σ_Δ
-    ULS   = Uils
-    I     = Ispl(ULS)
-    IIp   = IIpspl(ULS)
+    UILS  = Uils
+    Ω     = ils.Ω
+    I     = Ispl(UILS)
+    IIp   = IIpspl(UILS)
     S     = Σ_Δ .* IIp
     Cr    = ils.Cr
     Cμ    = ils.Cμ
     Cμ_esn= ils.Cμ_esn
-    return LS(Loc, Σ_Δ, ULS, I, IIp, S, Cr, Cμ, Cμ_esn)
+    return LS(Loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn)
 end
 
 function LS_neighbors(U::Array{Float64,2}, ils::LS, grd::Grid, crd::Cord)
@@ -347,7 +416,7 @@ end
 function Sngl_helper(grd::Grid, crd::Cord, ils::LS; ϵ = 2.)
     RILS  = ils.Loc[:,1]
     μILS  = ils.Loc[:,2]
-    norm1 = ils.Cr.* (1 - RILS).^2
+    norm1 = ils.Cr.* (1 - RILS).^2           #∂R = ∂r*(dR/dr)
     norm2 = ils.Cμ
 
     hp1 = norm1 ./ crd.δR
@@ -355,11 +424,12 @@ function Sngl_helper(grd::Grid, crd::Cord, ils::LS; ϵ = 2.)
     hp3 = sqrt(hp1.^2 + hp2.^2)
 
     ϵmax1 = (μILS-1.)./(crd.δμ * hp2 ./hp3)           #avoid μrt > 1 or μlt < 0
-    ϵmax2 = (-μILS)./(crd.δμ * hp2 ./hp3)
-    ϵsaf  = min(abs(ϵmax1), abs(ϵmax2), ϵ);   ϵsaf[1] = ϵsaf[2]
+    ϵmax2 = (0.-μILS)./(crd.δμ * hp2 ./hp3)
+    ϵsaf  = min(abs(ϵmax1), abs(ϵmax2), ϵ);  ϵsaf[1] = ϵsaf[2]
 
     dR  = ϵsaf.*crd.δR .* hp1 ./hp3                   #dR negative
     dμ  = ϵsaf.*crd.δμ .* hp2 ./hp3; dμ[1] = 0.       #dμ negative except the ILS/equator point
+
 
     Rlt = RILS + dR           #iw point wants smaller R and smaller μ
     μlt = μILS + dμ
@@ -370,96 +440,6 @@ function Sngl_helper(grd::Grid, crd::Cord, ils::LS; ϵ = 2.)
     xrt = ϵsaf ./hp3          #Upls = Urt+ xrt * S
 
     return hcat(Rlt, μlt, xlt), hcat(Rrt, μrt, xrt)
-end
-
-
-
-#=#########################################################################
-
-find the right pair of points perpendicularly crossing LS
-
-=##########################################################################
-
-function Sngl_helper1(grd::Grid, crd::Cord, ils::LS, lsn_Ridx, lsn_μidx; opt = :ILS_lt, ϵ = 1.)
-    R     = zeros(crd.μlen)
-    μ     = zeros(crd.μlen)
-    norm1 = zeros(crd.μlen)
-    norm2 = zeros(crd.μlen)
-
-    for i = 1:crd.μlen
-        Ridx = lsn_Ridx[i]
-        μidx = lsn_μidx[i]
-        R[i] = crd.R[μidx, Ridx]
-        μ[i] = crd.μ[μidx, Ridx]
-
-        norm1[i] = grd.Cr[μidx, Ridx] .* (1 - R[i]).^2
-        norm2[i] = grd.Cμ[μidx, Ridx]
-    end
-
-    hp1 = norm1 ./ crd.δR
-    hp2 = norm2 ./ crd.δμ; hp2[end] = hp2[end-1]
-    hp3 = sqrt(hp1.^2 + hp2.^2)
-    dR  = ϵ*crd.δR * hp1 ./hp3                      #dR negative
-    dμ  = ϵ*crd.δμ * hp2 ./hp3                      #dμ negative
-    Ωspl= Spline2D(crd.μcol, crd.Rcol, Ω_I.Ω)
-
-    if opt == :ILS_lt
-        Ron, μon, ϵon = Perp_solver(R, μ, -dR, -dμ, crd, ils, Ωspl)    # pair points on LS, wants larger R and μ
-        Rintr = R + dR                                              #iw wants smaller R and smaller μ
-        μintr = μ + dμ
-        xintr = - ϵ ./hp3                                 #Uproj = Uintr + xintr * S
-        xon   = - (ϵ + ϵon) ./ hp3                        #Uon   = Uintr + xon * S
-    elseif opt == :ILS_rt
-        Ron, μon, ϵon  = Perp_solver(R, μ, dR, dμ, crd, ils, Ωspl)
-        Rintr = R - dR
-        μintr = μ - dμ
-        xintr = ϵ ./hp3
-        xon   = (ϵ + ϵon) ./ hp3
-    else
-        println("Wrong Option: Sngl_helper1")
-        return
-    end
-    return hcat(Rintr, μintr, xintr), hcat(Ron, μon, xon)
-end
-
-function Perp_solver(R::Array, μ::Array, dR::Array, dμ::Array, crd::Cord, ils::LS, Ωspl::Dierckx.Spline2D)
-    ϵon  = zeros(μ)
-    ϵ    = collect(linspace(0., 1., 16))
-    for i = 1:length(μ)
-        Rsamp = R[i] + ϵ.*dR[i]
-        μsamp = μ[i] + ϵ.*dμ[i]
-
-        κ  = κ_solver(Rsamp, μsamp, crd, Ωspl)
-        if κ[end] > κ[1]
-            spl = Spline1D(κ,  ϵ)
-        else
-            spl = Spline1D(-κ, ϵ)
-        end
-        ϵon[i]  = spl(0.)
-    end
-
-    Ron = R + ϵon.*dR
-    μon = μ + ϵon.*dμ
-    return Ron, μon, ϵon
-end
-
-
-
-function κ_solver(R::Array, μ::Array, crd::Cord, Ωspl::Dierckx.Spline2D)
-    r = R2r(R)
-    a = crd.a
-
-    Σ = r.^2 + a^2 .* μ.^2
-    Δ = r.^2 - 2r + a^2
-    β = Δ .* Σ + 2r .* (r.^2+a^2)
-
-    β_Σ = β ./ Σ
-    r_Σ = r ./ Σ
-    sst = 1-μ.^2
-
-    Ω   = evaluate(Ωspl, μ, R)
-    κ   = (β_Σ .* Ω.^2 - 4a .* r_Σ .* Ω) .* sst - (1- 2*r_Σ)
-    return κ
 end
 
 function r2R(r::Array)
@@ -477,3 +457,93 @@ end
 function R2r(R::Real)
     return R /(1. - R)
 end
+
+
+
+#=#########################################################################
+
+find the right pair of points perpendicularly crossing LS
+
+=##########################################################################
+
+# function Sngl_helper1(grd::Grid, crd::Cord, ils::LS, lsn_Ridx, lsn_μidx; opt = :ILS_lt, ϵ = 1.)
+#     R     = zeros(crd.μlen)
+#     μ     = zeros(crd.μlen)
+#     norm1 = zeros(crd.μlen)
+#     norm2 = zeros(crd.μlen)
+#
+#     for i = 1:crd.μlen
+#         Ridx = lsn_Ridx[i]
+#         μidx = lsn_μidx[i]
+#         R[i] = crd.R[μidx, Ridx]
+#         μ[i] = crd.μ[μidx, Ridx]
+#
+#         norm1[i] = grd.Cr[μidx, Ridx] .* (1 - R[i]).^2
+#         norm2[i] = grd.Cμ[μidx, Ridx]
+#     end
+#
+#     hp1 = norm1 ./ crd.δR
+#     hp2 = norm2 ./ crd.δμ; hp2[end] = hp2[end-1]
+#     hp3 = sqrt(hp1.^2 + hp2.^2)
+#     dR  = ϵ*crd.δR * hp1 ./hp3                      #dR negative
+#     dμ  = ϵ*crd.δμ * hp2 ./hp3                      #dμ negative
+#     Ωspl= Spline2D(crd.μcol, crd.Rcol, Ω_I.Ω)
+#
+#     if opt == :ILS_lt
+#         Ron, μon, ϵon = Perp_solver(R, μ, -dR, -dμ, crd, ils, Ωspl)    # pair points on LS, wants larger R and μ
+#         Rintr = R + dR                                              #iw wants smaller R and smaller μ
+#         μintr = μ + dμ
+#         xintr = - ϵ ./hp3                                 #Uproj = Uintr + xintr * S
+#         xon   = - (ϵ + ϵon) ./ hp3                        #Uon   = Uintr + xon * S
+#     elseif opt == :ILS_rt
+#         Ron, μon, ϵon  = Perp_solver(R, μ, dR, dμ, crd, ils, Ωspl)
+#         Rintr = R - dR
+#         μintr = μ - dμ
+#         xintr = ϵ ./hp3
+#         xon   = (ϵ + ϵon) ./ hp3
+#     else
+#         println("Wrong Option: Sngl_helper1")
+#         return
+#     end
+#     return hcat(Rintr, μintr, xintr), hcat(Ron, μon, xon)
+# end
+#
+# function Perp_solver(R::Array, μ::Array, dR::Array, dμ::Array, crd::Cord, ils::LS, Ωspl::Dierckx.Spline2D)
+#     ϵon  = zeros(μ)
+#     ϵ    = collect(linspace(0., 1., 16))
+#     for i = 1:length(μ)
+#         Rsamp = R[i] + ϵ.*dR[i]
+#         μsamp = μ[i] + ϵ.*dμ[i]
+#
+#         κ  = κ_solver(Rsamp, μsamp, crd, Ωspl)
+#         if κ[end] > κ[1]
+#             spl = Spline1D(κ,  ϵ)
+#         else
+#             spl = Spline1D(-κ, ϵ)
+#         end
+#         ϵon[i]  = spl(0.)
+#     end
+#
+#     Ron = R + ϵon.*dR
+#     μon = μ + ϵon.*dμ
+#     return Ron, μon, ϵon
+# end
+#
+#
+#
+# function κ_solver(R::Array, μ::Array, crd::Cord, Ωspl::Dierckx.Spline2D)
+#     r = R2r(R)
+#     a = crd.a
+#
+#     Σ = r.^2 + a^2 .* μ.^2
+#     Δ = r.^2 - 2r + a^2
+#     β = Δ .* Σ + 2r .* (r.^2+a^2)
+#
+#     β_Σ = β ./ Σ
+#     r_Σ = r ./ Σ
+#     sst = 1-μ.^2
+#
+#     Ω   = evaluate(Ωspl, μ, R)
+#     κ   = (β_Σ .* Ω.^2 - 4a .* r_Σ .* Ω) .* sst - (1- 2*r_Σ)
+#     return κ
+# end
