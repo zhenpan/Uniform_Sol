@@ -1,101 +1,6 @@
 using Dierckx
 using LsqFit
 
-
-function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors; maxitr = 5, omega = 0.5, ϵ = 1.0e-5)
-    a = grd.aa
-    b = grd.bb
-    c = grd.cc
-    d = grd.dd
-    ee= grd.ee
-    f = grd.ff
-
-    ee_rgl = grd.ee_rgl
-
-    Rlen     = crd.Rlen
-    μlen     = crd.μlen
-    idx_xbd  = crd.idx_xbd
-
-    lsn_idx = lsn.lsn_idx
-    lsn_map = lsn.lsn_map
-    U_H  = 0.
-    Res  = zeros(μlen, Rlen)
-    dU   = zeros(U)
-    Upls = zeros(crd.μlen)
-    Umns = zeros(crd.μlen)
-
-    for n = 1:maxitr
-        Res     = zeros(μlen, Rlen)
-        dU      = zeros(U)
-
-        for j = 2:μlen-1                                 #even run for even j, odd run for odd j
-            for l = 2+mod(j, 2):2:idx_xbd[j]-1
-                if lsn_map[j,l] == 0
-                    Res[j,l] = a[j,l]*U[j+1,l] + b[j,l]*U[j-1,l] + c[j,l]*U[j,l+1] + d[j,l]*U[j,l-1] + ee[j,l]*U[j,l] - f[j,l]
-                    dU[j,l]  = -omega*Res[j,l]/ee_rgl[j,l]
-                end
-            end
-        end
-        #omega = (n==1)? 1./(1.- ρ2_jcb/2.) : 1./(1.-omega*ρ2_jcb/4.)
-
-        for j = 2:μlen-1                                 #odd run for even j, even run for odd j
-            for l = 3-mod(j,2):2:idx_xbd[j]-1
-                if lsn_map[j,l] == 0
-                    Res[j,l] = a[j,l]*U[j+1,l] + b[j,l]*U[j-1,l] + c[j,l]*U[j,l+1] + d[j,l]*U[j,l-1] + ee[j,l]*U[j,l] - f[j,l]
-                    dU[j,l]  = -omega*Res[j,l]/ee_rgl[j,l]
-                end
-            end
-        end
-        #omega = 1./(1.-omega*ρ2_jcb/4.)
-
-        U += dU
-        U, U_H, dU  = Bounds!(U, dU, crd, Ω_I, ils, lsn)
-    end
-    return U, U_H, Res, dU
-end
-
-
-function Bounds!(U::Array{Float64,2}, dU::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
-    #lsn bounds, updated via interior points
-    U = USmooth!(U, lsn, crd)
-
-    #horizon and inf r boundary values
-    U[:,1]   = U[:,2]
-    U[:,end] = U[:,end-1]         #inf r boundary is in fact not used due to xbd
-
-    #equator bounds ( within and beyond r2)
-    idx_r2  = crd.idx_r2
-    idx_bd  = crd.idx_xbd[1]
-
-    Ispl = Ω_I.Ispl     #I_solver(Ω_I)
-    Ωspl = Ω_I.Ωspl
-    Uhe  = U[1,1]       #U in the horizon/equator cornor
-    Ωhe  = Ωspl(Uhe)
-    Ihe  = Ispl(Uhe)
-
-    Ω_H  = crd.Ω_H
-    rmin = crd.rmin
-
-    ∂μ    = zeros(idx_bd)
-    ∂μ[1] = 0.5*rmin* Ihe/(Ωhe-Ω_H)      # obtain from Znajek Condition, ∂μ shoule be negative
-    ∂μ[1:idx_r2]     = ∂μ[1]             # initial guess: ∂μ ∈ [∂μ[1], 0] a constant
-    ∂μ[idx_r2+1:end] = 0.                #∂μ[1].*exp(-16*(crd.rcol[idx_r2+1:idx_bd]- crd.rcol[idx_r2]).^2)
-
-    # Utmp = U[2, 1:idx_bd] - ∂μ[1:idx_bd]*crd.δμ
-    # U[1, 1:idx_bd] = Utmp
-
-    U[1, idx_r2+1:idx_bd]= U[2, idx_r2+1:idx_bd] - ∂μ[idx_r2+1:idx_bd]*crd.δμ
-    U[1, idx_r2]         = U[1, idx_r2+1]
-    U[1,1]               = U[2,1]-∂μ[1]*crd.δμ
-
-    A = (U[1,1]-U[1,idx_r2])/(rmin-2)^2
-    U[1,2:idx_r2-1] = A*(crd.rcol[2:idx_r2-1]-2).^2 + U[1, idx_r2]
-
-    δR = crd.δR
-    U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
-    return U, U_H, dU
-end
-
 function Proj(U::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
 
     Rlt = lsn.ILS_lt[:,1]
@@ -163,21 +68,19 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     # Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
     # Uils = Umodel(crd.μcol, Ufit.param)
 
-    # Ridx = lsn.lsn_idx[:,1]
-    # RILS = ils.Loc[:,1]
-    # Uils = zeros(RILS)
-    # for μidx = 1: length(RILS)
-    #     ridx = Ridx[μidx]
-    #     Rcol = crd.R[μidx, ridx:ridx+1]
-    #     Ucol = U[μidx, ridx:ridx+1]
-    #     Uspl = Spline1D(Rcol, Ucol, k=1)
-    #     Uils[μidx] = Uspl(RILS[μidx])
-    # end
+    Ridx = lsn.lsn_idx[:,1]
+    RILS = ils.Loc[:,1]
+    Uils = zeros(RILS)
+    for μidx = 1: length(RILS)
+        ridx = Ridx[μidx]
+        δR   = crd.δR
+        Uils[μidx] = U[μidx, ridx]*(crd.R[μidx, ridx+1]-RILS[μidx])/δR + U[μidx, ridx+1]*(RILS[μidx]-crd.R[μidx, ridx])/δR
+    end
 
-    δU   = Upls - Umns
-    δU   = δU_rescale!(Uils, δU, ils, Isf)
+    δU   = Upls - Umns; δU[1] = 0.
+    #δU   = δU_rescale!(Uils, δU, ils, Isf)
 
-    IIpnew = ils.IIp -  δU
+    IIpnew = ils.IIp -  δU*Isf
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
                                     + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
                                     + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
@@ -218,9 +121,9 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     for iter in eachindex(Ubm)
         if Ubm[iter] <= Uils[1]
             IIpbm[iter] = IIpspl(Ubm[iter])
-        elseif Ubm[iter] <=  Uils[1] * (1.+ drc)
-             α = (6/(Uils[1]*drc)^3) * Isq_hf
-             IIpbm[iter] = α*(Uils[1]-Ubm[iter])*( Uils[1] * (1.+ drc)-Ubm[iter])
+        # elseif Ubm[iter] <=  Uils[1] * (1.+ drc)
+        #      α = (6/(Uils[1]*drc)^3) * Isq_hf
+        #      IIpbm[iter] = α*(Uils[1]-Ubm[iter])*( Uils[1] * (1.+ drc)-Ubm[iter])
             #U_H = Uils[1]; IIp_H = IIpspl(U_H)
             # c   = (1.+ drc)*U_H
             # b   = U_H + IIp_H*(U_H-c)^2/3/(2*Isq_hf - IIp_H*(U_H-c))
@@ -235,28 +138,26 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     return IIpspl
 end
 
-    Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
-    Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")
-    Ipnew = derivative(Ispl, ils.ULS)
-    IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 
 function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     U_H  = ils.ULS[1]
     Ispl = I_solver(Ω_I, U_H)
 
-    Ωmodel(x, p) =       (U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
-    Imodel(x, p) =  2*x.*(U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
-
-    Ifit = curve_fit(Imodel, ils.ULS, Ispl(ils.ULS), [0., 0., 0., 0.])
-    Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
-    Ωold = ils.Ω  #Ω_I.Ωspl(ils.ULS)
-    Ωnew = Ωold + 0.1*(Ωnew-Ωold)
-
-    Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
-    Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")   #Ispl here is only an approx,
+    # Ωmodel(x, p) =       (U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
+    # Imodel(x, p) =  2*x.*(U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
+    #
+    # Ifit = curve_fit(Imodel, ils.ULS, Ispl(ils.ULS), [0., 0., 0., 0.])
+    # Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
+    # Ωold = ils.Ω  #Ω_I.Ωspl(ils.ULS)
+    # Ωnew = Ωold + 0.1*(Ωnew-Ωold)
+    #
+    # Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
+    # Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")   #Ispl here is only an approx,
                                                                     #since ils.ULS will be updated when new LS is located
     # Ipnew = derivative(Ispl, ils.ULS)
     # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
+
+    Ωnew = 0.5*crd.Ω_H*(1-ils.ULS/U_H)
 
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
 
@@ -284,30 +185,6 @@ function I_solver(Ω_I::Ω_and_I, U_H::Float64)
 
     return Ispl
 end
-
-
-function Init(crd::Cord, mtr::Geom; xbd = 4.0)
-        z = crd.r .* crd.μ
-        x = sqrt(crd.r.^2 - z.^2)
-        U = x.^2 + 1.5*acos(crd.μ).*exp(-(crd.r-0.5).^2).*exp(-z); U_H = U[1, crd.idx_r2]
-
-        #initialize Ω_and_I
-        Ubm = collect(linspace(0., U_H, 2048)); Ωbm = zeros(Ubm)
-        for i = 1:length(Ubm)
-            #Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
-            Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-Ubm[i]/U_H) : 0.
-        end
-
-        Ibm  = 2*Ωbm.*Ubm
-        Ωspl = Spline1D(Ubm, Ωbm, bc = "zero")
-        Ispl = Spline1D(Ubm, Ibm, bc = "zero")
-        Ipbm = derivative(Ispl, Ubm)
-        IIpspl= Spline1D(Ubm, Ibm.*Ipbm, bc = "zero")
-        Ω_I   = Ω_and_I(U, crd, Ωspl, Ispl, IIpspl)
-
-        return U, Ω_I, U_H
-end
-
 
 
 function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 1024, Umax = 9.0, cnum = 30)
@@ -358,7 +235,7 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 1024, Umax = 9.0, cnum 
     #savefig("f1.pdf")
 end
 
-function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
+function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS_neighbors)
     idx = lsn.lsn_idx[1,1]
     ∂1U = (U[1, 2:idx+1] - U[1, 1:idx]) ./ crd.δR
     ∂2U = (U[2, 1:idx] - U[1, 1:idx]) ./ crd.δμ
@@ -372,18 +249,19 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, lsn::LS_neighbors)
     Σ = r.^2 + crd.a^2 * μ.^2
     β = Δ .* Σ + 2r .*(r.^2+crd.a^2)
 
-    Ispl = Ω_I.Ispl                 #I_solver(Ω_I)
-    Icol = evaluate(Ispl, U[1,1:idx])
+    Ωspl = Ω_I.Ωspl
+    Icol = 2*Ωspl(U[1,1:idx]).*U[1,1:idx]
     κcol = grd.κ[1,1:idx]
 
     B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
     B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* Icol.^2
     fsq   = B2mE2./B2pE2
 
-    wspl = Spline1D(r[2:end], sqrt( (Σ.*β./Δ)[2:end]) )
-    fspl = Spline1D(r[2:end], sqrt( (Σ.*β./Δ)[2:end]) .* fsq[2:end])
-    favg = integrate(fspl, r[2], r[end]) / integrate(wspl, r[2], r[end])
-    return r, fsq, favg
+    plot(r, Σ .* Icol.^2, "k")
+    plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "k--")
+    plot(r, κcol .* (Δ .* ∂rU.^2), "b--")
+    plot(r, κcol .* (∂μU.^2), "r--")
+    return r, fsq, B2mE2
 end
 #
 # function cplot(ils, lsn)

@@ -1,5 +1,6 @@
 using PyPlot
 include("GS.jl")
+include("SOR.jl")
 include("func.jl")
 
 crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100.)
@@ -9,14 +10,16 @@ grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen)
+BC_opt   = 0              # 0:init, else:updater
 
 
-for Ωloop = 1:10
-    for Iloop = 1:5
-        U, U_H, Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
-        ils, Ω_I, δU    = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.06)   #update IIp in ils and Ω_I
-        grd             = Grid!(grd, crd, mtr, Ω_I)                        #update IIp in grd
-        println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H")
+for Ωloop = 1:50
+    for Iloop = 1:10
+        U,  Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
+        U, U_H      = Bounds!(U, crd, Ω_I, lsn, BC_opt, Isf = 0.1)       #where ∂μ is ∂μU on equator
+        ils,Ω_I, δU = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.06)    #update IIp in ils and Ω_I
+        grd         = Grid!(grd, crd, mtr, Ω_I)                          #update IIp in grd
+        println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
         # plot(ils.ULS, δU)
         # plot(ils.ULS, ils.IIp/10)
     end
@@ -25,10 +28,14 @@ for Ωloop = 1:10
     ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
     lsn      = LS_neighbors(U, ils, grd, crd)
     println("Ωloop = $Ωloop")
-    Ubm = linspace(0., 1.1U_H, 1024)
+    Ubm = linspace(0., U_H, 1024)
     plot(Ubm, Ω_I.Ωspl(Ubm))
     plot(Ubm, Ω_I.Ispl(Ubm)/U_H)
     plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
+
+    Ispl = Spline1D(Ubm, 2*Ω_I.Ωspl(Ubm).*Ubm)
+    plot(Ubm, Ispl(Ubm)/U_H, "k--")
+    plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
 end
 
 plot(U[1, 145:154])
@@ -62,8 +69,8 @@ savefig("f2.pdf")
 
 
 
-# r, fsq, favg = Fsq(U, crd, grd, lsn)
-# plot(r, fsq, lw = 2)
+r, fsq, B2mE2 = Fsq(U, crd, grd, Ω_I, lsn)
+plot(r, B2mE2, lw = 2)
 # figure(figsize=(6,5))
 # xlabel(L"$r/M$", fontsize = 20)
 # ylabel(L"$\frac{B^2-E^2}{B^2+E^2}|_{\mu = 0}$", fontsize = 20)
@@ -79,4 +86,3 @@ savefig("f2.pdf")
 # ax[:xaxis][:set_minor_locator](xminorLocator)
 # ax[:yaxis][:set_minor_locator](yminorLocator)
 # tight_layout()
-IIp_updater

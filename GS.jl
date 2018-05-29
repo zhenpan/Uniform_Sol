@@ -71,10 +71,7 @@ immutable LS
     Loc::Array{Float64, 2}  #(R,μ,r)
     Σ_Δ::Array{Float64, 1}
     ULS::Array{Float64, 1}
-<<<<<<< HEAD
-=======
     Ω::Array{Float64, 1}
->>>>>>> master
     I::Array{Float64, 1}
     IIp::Array{Float64, 1}
     S::Array{Float64, 1}
@@ -167,13 +164,9 @@ function Ω_and_I(U::Array{Float64,2}, crd::Cord, Ωspl::Dierckx.Spline1D, Ispl:
     return Ω_and_I(Ω, ∂1Ω, ∂2Ω, IIp, Ωspl, Ispl, IIpspl)
 end
 
-<<<<<<< HEAD
-#update IIp
-function Ω_and_I!(U::Array{Float64,2}, Ω_I::Ω_and_I, Ispl::Dierckx.Spline1D, IIpspl::Dierckx.Spline1D)
-=======
+
 ## update IIp
 function Ω_and_I!(U::Array{Float64,2}, Ω_I::Ω_and_I, IIpspl::Dierckx.Spline1D)
->>>>>>> master
     Ω   = Ω_I.Ω
     ∂1Ω = Ω_I.∂1Ω
     ∂2Ω = Ω_I.∂2Ω
@@ -297,6 +290,8 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)   #for ex
         Cμ_esn[μidx] = spl_Cμesn(RILS[μidx])
     end
 
+    RILS[1] = r2R(2.0)
+
     Uspl = Spline2D( crd.μcol, crd.Rcol, U, kx =1, ky=1 )
     UILS = evaluate( Uspl, μILS, RILS )
     rILS = R2r(RILS)
@@ -336,6 +331,8 @@ function LS_updater!(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I, 
         Cμ_esn[μidx] = spl_Cμesn(RILS[μidx])
     end
 
+    RILS[1] = r2R(2.0)
+
     Uspl = Spline2D( crd.μcol, crd.Rcol, U, kx =1, ky=1 )
     UILS = evaluate( Uspl, μILS, RILS )
     rILS = R2r(RILS)
@@ -348,7 +345,10 @@ function LS_updater!(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I, 
 
     ILS_loc = hcat(RILS, μILS, rILS)
 
-    Ωspl = Spline1D(reverse(UILS), reverse(Ω), bc="zero")
+    #Ωspl = Spline1D(reverse(UILS), reverse(Ω), bc="zero")
+    U_H  = ils.ULS[1]; Ucol = linspace(0., U_H, crd.μlen)
+    Ωnew = 0.5*crd.Ω_H*(1-Ucol/U_H)
+    Ωspl = Spline1D(Ucol, Ωnew, bc="zero")
     Ω_I  = Ω_and_I!(Ω_I, Ωspl)
 
     return LS(ILS_loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn), Ω_I
