@@ -13,13 +13,13 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 BC_opt   = 0              # 0:init, else:updater
 
 
-for Ωloop = 1:50
+for Ωloop = 1:500
     for Iloop = 1:10
         U,  Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
         U, U_H      = Bounds!(U, crd, Ω_I, lsn, BC_opt, Isf = 0.1)       #where ∂μ is ∂μU on equator
         ils,Ω_I, δU = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.06)    #update IIp in ils and Ω_I
         grd         = Grid!(grd, crd, mtr, Ω_I)                          #update IIp in grd
-        println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
+        println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H, U_he/U_H = $(U[1,1]/U_H)")
         # plot(ils.ULS, δU)
         # plot(ils.ULS, ils.IIp/10)
     end

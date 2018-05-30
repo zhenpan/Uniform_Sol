@@ -67,7 +67,10 @@ function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbo
     end
 
     Utmp = U[2, 1:idx_bd] - ∂μ[1:idx_bd]*crd.δμ
-    U[1, 1:idx_bd] = Utmp;  U[1,idx_r2+1] = U[1,idx_r2]   # equator boundary
+    U[1, 1:idx_bd] = Utmp;  U[1,idx_r2+1] = 1.002*U[1,idx_r2]   # equator boundary
+    # Utmp = 2.6 + (crd.rcol[1:idx_r2].^1.5-crd.rcol[1]^1.5)
+    # U[1, 1:idx_r2] = U[1, 1:idx_r2] + 0.001*(Utmp -U[1, 1:idx_r2]); U[1,idx_r2+1] = 1.001*U[1,idx_r2]
+    # # U[1, 1:idx_r2] = Utmp; U[1,idx_r2+1] = 1.001*U[1,idx_r2]
 
 
     δR = crd.δR
@@ -76,24 +79,36 @@ function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbo
     return U, U_H
 end
 
+function BC_gen(crd::Cord, BC_opt::Int)
+    idx_r2  = crd.idx_r2
+    idx_bd  = crd.idx_xbd[1]
+    ∂μ      = zeros(idx_bd)
+
+    ∂μ[1:idx_r2] = -1.*(crd.rcol[1:idx_r2]/rmin).^2.8
+    ∂μ[idx_r2+1:idx_bd] = ∂μ[idx_r2]*exp(-(crd.rcol[idx_r2+1:idx_bd]-2.).^2/(2*0.05^2))
+    return ∂μ
+end
+
+
+
 function BC_init(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I)
     #equator bounds ( within and beyond r2)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
 
-    Ispl = Ω_I.Ispl     #I_solver(Ω_I)
-    Ωspl = Ω_I.Ωspl
-    Uhe  = U[1,1]       #U in the horizon/equator cornor
-    Ωhe  = Ωspl(Uhe)
-    Ihe  = Ispl(Uhe)
+    # Ispl = Ω_I.Ispl     #I_solver(Ω_I)
+    # Ωspl = Ω_I.Ωspl
+    # Uhe  = 2.5 #U[1,1]       #U in the horizon/equator cornor
+    # Ωhe  = Ωspl(Uhe)
+    # Ihe  = Ispl(Uhe)
 
     Ω_H  = crd.Ω_H
     rmin = crd.rmin
 
     ∂μ         = zeros(idx_bd)
-    ∂μ[1]      = 0.5*rmin* Ihe/(Ωhe-Ω_H)                      # obtain from Znajek Condition, ∂μ shoule be negative
-    ∂μ[1:idx_r2] = ∂μ[1]*(crd.rcol[1:idx_r2]/crd.rcol[1]).^3  # initial guess
-    ∂μ[idx_r2+1:end] = 0.
+    ∂μ[1]      = -1. #0.5*rmin* Ihe/(Ωhe-Ω_H)                     # obtain from Znajek Condition, ∂μ shoule be negative
+    ∂μ[1:idx_r2] = ∂μ[1]*(crd.rcol[1:idx_r2]/rmin).^2.8 - 1.0*exp(-(crd.rcol[1:idx_r2]-1.85).^2/(2*0.2^2))-0.2*exp(-(crd.rcol[1:idx_r2]-1.5).^2/(2*0.15^2)) +0.2*exp(-(crd.rcol[1:idx_r2]-rmin).^2/(2*0.5^2)) # initial guess
+    ∂μ[idx_r2+1:idx_bd] = ∂μ[idx_r2]*exp(-(crd.rcol[idx_r2+1:idx_bd]-2.).^2/(2*0.05^2))
 
 
     # U[1, idx_r2+1:idx_bd]= U[2, idx_r2+1:idx_bd] - ∂μ[idx_r2+1:idx_bd]*crd.δμ
@@ -106,7 +121,7 @@ function BC_init(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I)
 end
 
 
-function BC_updater(U::Array{Float64, 2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbors; Isf = 0.1)
+function BC_crv(U::Array{Float64, 2}, crd::Cord, Ω_I::Ω_and_I; Isf = 0.1)
     idx_r2 = crd.idx_r2
     idx_bd = crd.idx_xbd[1]
 
@@ -124,12 +139,7 @@ function BC_updater(U::Array{Float64, 2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_nei
     pmodel(x, p) = ( p[1] + p[2] .* x + p[3] .* x.^2 + p[4] .* x.^3 + p[5] .* x.^4 + p[6] .* x.^5 )
     pfit   = curve_fit(pmodel, rcol, ∂μUnew, [0., 0., 0., 0., 0., 0.])
     ∂μUnew = pmodel(rcol, pfit.param)
-
-    ∂μ      = zeros(idx_bd)
-    ∂μ[1:idx_r2]  = ∂μUnew
-    ∂μ[idx_r2+1:end] = 0.
-
-    return ∂μ
+    return ∂μUnew
 end
 
 
@@ -137,7 +147,7 @@ end
 function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         z = crd.r .* crd.μ
         x = sqrt(crd.r.^2 - z.^2)
-        U = x.^2 + 0.7acos(crd.μ).*exp(-(crd.r-0.5).^2).*exp(-z)
+        U = x.^2 + 0.65acos(crd.μ).*exp(-(crd.r-0.8).^2).*exp(-z)
         U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
