@@ -51,7 +51,7 @@ function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils:
 end
 
 
-function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbors, opt::Int; Isf = 0.1)
+function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbors, bc_eqt::BC_eqt)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
 
@@ -59,34 +59,42 @@ function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbo
     U[:,1]   = U[:,2]             # computation friendly BC on horizon
     U[:,end] = U[:,end-1]         # inf r boundary is in fact not used due to xbd
 
+    Utmp = U[2, 1:idx_bd] - bc_eqt.∂μU*crd.δμ                   # equator boundary
+    U[1, 1:idx_bd] = Utmp;  U[1,idx_r2+1] = 1.002*U[1,idx_r2]
 
-    if opt == 0
-        ∂μ = BC_init(U, crd, Ω_I)
-    else
-        ∂μ = BC_updater(U, crd, Ω_I, lsn, Isf = Isf)
-    end
-
-    Utmp = U[2, 1:idx_bd] - ∂μ[1:idx_bd]*crd.δμ
-    U[1, 1:idx_bd] = Utmp;  U[1,idx_r2+1] = 1.002*U[1,idx_r2]   # equator boundary
-    # Utmp = 2.6 + (crd.rcol[1:idx_r2].^1.5-crd.rcol[1]^1.5)
-    # U[1, 1:idx_r2] = U[1, 1:idx_r2] + 0.001*(Utmp -U[1, 1:idx_r2]); U[1,idx_r2+1] = 1.001*U[1,idx_r2]
-    # # U[1, 1:idx_r2] = Utmp; U[1,idx_r2+1] = 1.001*U[1,idx_r2]
-
-
-    δR = crd.δR
-    idx_r2  = crd.idx_r2
+    δR  = crd.δR
     U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
     return U, U_H
 end
 
-function BC_gen(crd::Cord, BC_opt::Int)
+function BC_gen(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, BC_opt::Int; Isf = 5.)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
-    ∂μ      = zeros(idx_bd)
+    rmin    = crd.rmin
+    ∂μU     = zeros(idx_bd)
 
-    ∂μ[1:idx_r2] = -1.*(crd.rcol[1:idx_r2]/rmin).^2.8
-    ∂μ[idx_r2+1:idx_bd] = ∂μ[idx_r2]*exp(-(crd.rcol[idx_r2+1:idx_bd]-2.).^2/(2*0.05^2))
-    return ∂μ
+    if BC_opt==0
+        ∂μU[1:idx_r2] = -1.*(crd.rcol[1:idx_r2]/rmin).^2.8
+    else
+        ∂μU[1:idx_r2] = (U[2,1:idx_r2]-U[1,1:idx_r2])/crd.δμ
+
+        Ucol= U[1,1:idx_r2]
+        rcol= crd.rcol[1:idx_r2]
+        Ubm = linspace(0., Ucol[end], 128)
+        Ibm = 2*Ω_I.Ωspl(Ubm).*Ubm
+
+        Ispl = Spline1D(Ubm,Ibm)
+        iip  = Ispl(Ucol).*derivative(Ispl, Ucol)
+        IIp  = Ω_I.IIpspl(Ucol)
+
+        ∂μUnew  = ∂μU[1:idx_r2] + Isf*(IIp-iip)
+        pmodel(x, p) = ( p[1] + p[2] .* x + p[3] .* x.^2 + p[4] .* x.^3 + p[5] .* x.^4 + p[6] .* x.^5 )
+        pfit   = curve_fit(pmodel, rcol, ∂μUnew, [0., 0., 0., 0., 0., 0.])
+        ∂μU[1:idx_r2] = pmodel(rcol, pfit.param)
+    end
+
+    ∂μU[idx_r2+1:idx_bd] = ∂μU[idx_r2]*exp(-(crd.rcol[idx_r2+1:idx_bd]-2.).^2/(2*0.05^2))
+    return BC_eqt(∂μU)
 end
 
 
@@ -118,28 +126,6 @@ function BC_init(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I)
     # A = (U[1,1]-U[1,idx_r2])/(rmin-2)^2
     # U[1,2:idx_r2-1] = A*(crd.rcol[2:idx_r2-1]-2).^2 + U[1, idx_r2]
     return ∂μ
-end
-
-
-function BC_crv(U::Array{Float64, 2}, crd::Cord, Ω_I::Ω_and_I; Isf = 0.1)
-    idx_r2 = crd.idx_r2
-    idx_bd = crd.idx_xbd[1]
-
-    ∂μU = (U[2, 1:idx_r2] - U[1, 1:idx_r2]) ./ crd.δμ
-    Ucol= U[1,1:idx_r2]
-    rcol= crd.rcol[1:idx_r2]
-
-    Ubm = linspace(0., Ucol[end], 128)
-    Ibm = 2*Ω_I.Ωspl(Ubm).*Ubm
-    Ispl = Spline1D(Ubm,Ibm)
-    iip  = Ispl(Ucol).*derivative(Ispl, Ucol)
-    IIp  = Ω_I.IIpspl(Ucol)
-
-    ∂μUnew  = ∂μU + Isf*(IIp-iip)
-    pmodel(x, p) = ( p[1] + p[2] .* x + p[3] .* x.^2 + p[4] .* x.^3 + p[5] .* x.^4 + p[6] .* x.^5 )
-    pfit   = curve_fit(pmodel, rcol, ∂μUnew, [0., 0., 0., 0., 0., 0.])
-    ∂μUnew = pmodel(rcol, pfit.param)
-    return ∂μUnew
 end
 
 

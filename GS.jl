@@ -80,6 +80,10 @@ immutable LS
     Cμ_esn::Array{Float64, 1}
 end
 
+immutable BC_eqt
+    ∂μU::Array{Float64,1}
+end
+
 function Cord(; Rlen = 512, μlen = 64, a = 1., rmax = 100.,  xbd = 4.0)
     rmin = (1. + sqrt(1.-a^2)) * (1-1.e-8)  #slightly inside horizon, avoiding 1/Δ singularity
     Ω_H  = a/(2*rmin)
