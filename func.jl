@@ -258,7 +258,7 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     fsq   = B2mE2./B2pE2
 
     plot(r, Σ .* Icol.^2, "k")
-    plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "k--")
+    plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r-")
     plot(r, κcol .* (Δ .* ∂rU.^2), "b--")
     plot(r, κcol .* (∂μU.^2), "r--")
     return r, fsq, B2mE2

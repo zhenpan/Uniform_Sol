@@ -10,8 +10,7 @@ grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen)
-BC_opt   = 0                            # 0:init, else:updater
-bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt)
+bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
 for BCloop = 1:10
     for Ωloop = 1:200
@@ -38,8 +37,7 @@ for BCloop = 1:10
         plot(Ubm, Ispl(Ubm)/U_H, "k--")
         plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
     end
-        BC_opt   = 1
-        bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt, Isf = 10.0)
+        bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 1, Isf = 10.0)
 end
 
 plot(U[1, 145:154])
