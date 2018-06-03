@@ -58,8 +58,8 @@ function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbo
     U[:,1]   = U[:,2]             # computation friendly BC on horizon
     U[:,end] = U[:,end-1]         # inf r boundary is in fact not used due to xbd
 
-    Utmp = U[2, 1:idx_bd] - bc_eqt.∂μU*crd.δμ                   # equator boundary
-    U[1, 1:idx_bd] = Utmp;  U[1,idx_r2+1] = 1.002*U[1,idx_r2]
+    U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]               # equator boundary
+    #U[1,idx_r2+1] = 1.001*U[1,idx_r2]
 
     δR  = crd.δR
     U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
@@ -99,7 +99,38 @@ end
 function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         z = crd.r .* crd.μ
         x = sqrt(crd.r.^2 - z.^2)
-        U = x.^2 + 0.65acos(crd.μ).*exp(-(crd.r-0.8).^2).*exp(-z)
+        U = x.^2
+
+        #initialize equator values
+        rmin = crd.rmin
+        xeq  = vcat( linspace(0., 4., 512), logspace(log10(4.01), log10(crd.rcol[end]), 512) )
+        Ueq  = zeros(xeq); U_he = 2.; U_H = 4.8
+
+        A = (U_he-U_H)/(rmin-2)
+
+        for i = 1:length(Ueq)
+            if xeq[i] < rmin
+                Ueq[i] =  U_he* (1. - (xeq[i]/rmin-1)^2)
+            elseif xeq[i] < 2.
+                Ueq[i] = A*(xeq[i]-2)+U_H
+            elseif xeq[i] < xbd^2
+                Ueq[i] = xeq[i]^2 + (U_H-4.)*exp(2^2-xeq[i]^2)
+            else
+                Ueq[i] = xeq[i].^2
+            end
+        end
+        Uspl = Spline1D(xeq, Ueq, k=1)
+
+        #initialize all grid points via interpolation
+        for j = 1:crd.μlen
+            for l = 1:crd.Rlen
+                U[j,l] = U[j,l] + (Uspl(x[j,l])-U[j,l])*exp(-3*z[j,l]) #.*exp(-crd.μ[j,l]^3)
+            end
+        end
+
+
+
+
         U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
@@ -118,33 +149,3 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
 
         return U, Ω_I, U_H
 end
-
-#
-# function BC_init(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I)
-#     #equator bounds ( within and beyond r2)
-#     idx_r2  = crd.idx_r2
-#     idx_bd  = crd.idx_xbd[1]
-#
-#     # Ispl = Ω_I.Ispl     #I_solver(Ω_I)
-#     # Ωspl = Ω_I.Ωspl
-#     # Uhe  = 2.5 #U[1,1]       #U in the horizon/equator cornor
-#     # Ωhe  = Ωspl(Uhe)
-#     # Ihe  = Ispl(Uhe)
-#
-#     Ω_H  = crd.Ω_H
-#     rmin = crd.rmin
-#
-#     ∂μ         = zeros(idx_bd)
-#     ∂μ[1]      = -1. #0.5*rmin* Ihe/(Ωhe-Ω_H)                     # obtain from Znajek Condition, ∂μ shoule be negative
-#     ∂μ[1:idx_r2] = ∂μ[1]*(crd.rcol[1:idx_r2]/rmin).^2.8 - 1.0*exp(-(crd.rcol[1:idx_r2]-1.85).^2/(2*0.2^2))-0.2*exp(-(crd.rcol[1:idx_r2]-1.5).^2/(2*0.15^2)) +0.2*exp(-(crd.rcol[1:idx_r2]-rmin).^2/(2*0.5^2)) # initial guess
-#     ∂μ[idx_r2+1:idx_bd] = ∂μ[idx_r2]*exp(-(crd.rcol[idx_r2+1:idx_bd]-2.).^2/(2*0.05^2))
-#
-#
-#     # U[1, idx_r2+1:idx_bd]= U[2, idx_r2+1:idx_bd] - ∂μ[idx_r2+1:idx_bd]*crd.δμ
-#     # U[1, idx_r2]         = U[1, idx_r2+1]
-#     # U[1,1]               = U[2,1]-∂μ[1]*crd.δμ
-#     #
-#     # A = (U[1,1]-U[1,idx_r2])/(rmin-2)^2
-#     # U[1,2:idx_r2-1] = A*(crd.rcol[2:idx_r2-1]-2).^2 + U[1, idx_r2]
-#     return ∂μ
-# end

@@ -236,39 +236,44 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 1024, Umax = 9.0, cnum 
 end
 
 function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS_neighbors)
-    idx = lsn.lsn_idx[1,1]
-    ∂1U = (U[1, 2:idx+1] - U[1, 1:idx]) ./ crd.δR
-    ∂2U = (U[2, 1:idx] - U[1, 1:idx]) ./ crd.δμ
+    ∂1U = zeros(U)
+    ∂1U[:, 2:end-1] = (U[:, 3:end] - U[:, 1:end-2])./ (2 * crd.δR)
+    ∂1U[:, end]     = (U[:, end]   - U[:, end-1])  ./ crd.δR
+    ∂1U[:, 1]       = (U[:, 2]     - U[:, 1])      ./ crd.δR
 
-    Rcol = crd.R[1, 1:idx]
-    ∂rU  = ∂1U .* (1-Rcol).^2; ∂μU = ∂2U
+    ∂2U = zeros(U)
+    ∂2U[2:end-1, :] = (U[3:end, :] - U[1:end-2, :])./ (2 * crd.δμ)
+    ∂2U[end, :]     = (U[end, :]   - U[end-1, :])  ./ crd.δμ
+    ∂2U[1, :]       = (U[2, :]     - U[1, :])      ./ crd.δμ
 
-    μ = 0.
-    r = crd.rcol[1:idx]
+    ∂rU  = ∂1U .* (1-crd.R).^2; ∂μU = ∂2U
+
+    r = crd.r; μ = crd.μ
     Δ = r.^2 - 2r + crd.a^2
     Σ = r.^2 + crd.a^2 * μ.^2
     β = Δ .* Σ + 2r .*(r.^2+crd.a^2)
 
     Ωspl = Ω_I.Ωspl
-    Icol = 2*Ωspl(U[1,1:idx]).*U[1,1:idx]
-    κcol = grd.κ[1,1:idx]
+    Ω    = evaluate(Ωspl, reshape(U,  length(U)) )
+    Ω    = reshape(Ω, size(U))
+    #I    = 2*Ω.*U
+    I    = evaluate(Ω_I.Ispl, reshape(U,  length(U)) )
+    I    = reshape(I, size(U))
 
-    B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
-    B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* Icol.^2
+    κ    = grd.κ
+
+    B2mE2 = -κ .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* I.^2
+    B2pE2 = (κ + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* I.^2 + 1.e-6
     fsq   = B2mE2./B2pE2
 
-    plot(r, Σ .* Icol.^2, "k")
-    plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r-")
-    plot(r, κcol .* (Δ .* ∂rU.^2), "b--")
-    plot(r, κcol .* (∂μU.^2), "r--")
+
+    plot(r[1,1:150], Σ[1,1:150] .* I[1,1:150].^2, "k")
+    plot(r[1,1:150], κ[1,1:150] .* (Δ[1,1:150] .* ∂rU[1,1:150].^2 + ∂μU[1,1:150].^2), "r-")
+    plot(r[1,1:150], κ[1,1:150] .* (Δ[1,1:150] .* ∂rU[1,1:150].^2), "b--")
+    plot(r[1,1:150], κ[1,1:150] .* (∂μU[1,1:150].^2), "r--")
     return r, fsq, B2mE2
 end
-#
-# function cplot(ils, lsn)
-#     plot(ils.Loc[:,1], ils.Loc[:,2])
-#     plot(lsn.ILS_lon[:,1], lsn.ILS_lon[:,2], ".")
-#     plot(lsn.ILS_ron[:,1], lsn.ILS_ron[:,2], ".")
-# end
+
 
 # function Znajek(crd::Cord, Ω_I::Ω_and_I, U_H::Float64)
 #     a   = crd.a
