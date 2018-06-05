@@ -23,50 +23,10 @@ function Proj(U::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
     return Umns, Upls
 end
 
-
-function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
-    for μidx = 2:crd.μlen-1
-        Ridx = lsn.lsn_idx[μidx]
-        x    = [crd.R[μidx, Ridx-2], crd.R[μidx, Ridx+3]]
-        y    = [U[μidx, Ridx-2], U[μidx, Ridx+3]]        #the next near points
-        spl  = Spline1D(x, y, k=1)
-        U[μidx, Ridx-1] = spl(crd.R[μidx, Ridx-1])
-        U[μidx, Ridx]   = spl(crd.R[μidx, Ridx])
-        U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
-        U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
-    end
-
-    for μidx = 2:crd.μlen-1
-        Ridx = lsn.lsn_idx[μidx]
-
-        U[μidx, Ridx-1] = (U[μidx, Ridx-1] < U[μidx-1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
-        U[μidx, Ridx]   = (U[μidx, Ridx  ] < U[μidx-1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
-        U[μidx, Ridx+1] = (U[μidx, Ridx+1] < U[μidx-1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
-        U[μidx, Ridx+2] = (U[μidx, Ridx+2] < U[μidx-1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
-    end
-
-    for μidx = 2:crd.μlen-1
-        Ridx = lsn.lsn_idx[μidx]
-
-        U[μidx, Ridx-1] = (U[μidx, Ridx-1] > U[μidx+1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
-        U[μidx, Ridx]   = (U[μidx, Ridx  ] > U[μidx+1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
-        U[μidx, Ridx+1] = (U[μidx, Ridx+1] > U[μidx+1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
-        U[μidx, Ridx+2] = (U[μidx, Ridx+2] > U[μidx+1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
-    end
-
-    return U
-end
-
 #update IIp
 function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
-
-    Uils = 0.5 * (Upls + Umns)
-    # Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
-    #                         + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
-    # Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
-    # Uils = Umodel(crd.μcol, Ufit.param)
 
     Ridx = lsn.lsn_idx[:,1]
     RILS = ils.Loc[:,1]
@@ -77,10 +37,9 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
         Uils[μidx] = U[μidx, ridx]*(crd.R[μidx, ridx+1]-RILS[μidx])/δR + U[μidx, ridx+1]*(RILS[μidx]-crd.R[μidx, ridx])/δR
     end
 
-    δU   = Upls - Umns; δU[1] = 0.
-    #δU   = δU_rescale!(Uils, δU, ils, Isf)
+    δU   = Upls - Umns
 
-    IIpnew = ils.IIp -  δU*Isf
+    IIpnew = ils.IIp -  δU*Isf; IIpnew[1] = 0.
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
                                     + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
                                     + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
@@ -95,20 +54,6 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     Ω_I     = Ω_and_I!(U, Ω_I, IIpspl)
     return ils, Ω_I, δU
 end
-
-
-#rescale δU to ensure a approximate $\int δU dU = 0$
-function δU_rescale!(Uils, δU, ils, Isf)
-    δU = Isf *δU #.* ils.Σ_Δ[1] ./ils.Σ_Δ
-    δUspl = Spline1D(reverse(Uils), reverse(δU))
-    δUInt = integrate(δUspl, Uils[end], Uils[1])
-    δU2spl = Spline1D(reverse(Uils), reverse(δU.^2))
-    δU2Int = integrate(δU2spl, Uils[end], Uils[1])
-    x = -δUInt/δU2Int
-
-    return  δU + x*δU.^2
-end
-
 
 function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd = 4.)
 
@@ -157,7 +102,7 @@ function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     # Ipnew = derivative(Ispl, ils.ULS)
     # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 
-    Ωnew = 0.5*crd.Ω_H*(1-ils.ULS/U_H)
+    Ωnew = 0.5*crd.Ω_H*(1-(ils.ULS/U_H).^1.0)
 
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
 

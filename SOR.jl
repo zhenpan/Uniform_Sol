@@ -50,16 +50,55 @@ function Solver!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils:
 end
 
 
+function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+        x    = [crd.R[μidx, Ridx-2], crd.R[μidx, Ridx+3]]
+        y    = [U[μidx, Ridx-2], U[μidx, Ridx+3]]        #the next near points
+        spl  = Spline1D(x, y, k=1)
+        U[μidx, Ridx-1] = spl(crd.R[μidx, Ridx-1])
+        U[μidx, Ridx]   = spl(crd.R[μidx, Ridx])
+        U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
+        U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
+    end
+
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+
+        U[μidx, Ridx-1] = (U[μidx, Ridx-1] < U[μidx-1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
+        U[μidx, Ridx]   = (U[μidx, Ridx  ] < U[μidx-1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
+        U[μidx, Ridx+1] = (U[μidx, Ridx+1] < U[μidx-1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
+        U[μidx, Ridx+2] = (U[μidx, Ridx+2] < U[μidx-1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
+    end
+
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+
+        U[μidx, Ridx-1] = (U[μidx, Ridx-1] > U[μidx+1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
+        U[μidx, Ridx]   = (U[μidx, Ridx  ] > U[μidx+1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
+        U[μidx, Ridx+1] = (U[μidx, Ridx+1] > U[μidx+1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
+        U[μidx, Ridx+2] = (U[μidx, Ridx+2] > U[μidx+1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
+    end
+
+    return U
+end
+
+
 function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbors, bc_eqt::BC_eqt)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
 
     #horizon and inf r boundary values
-    U[:,1]   = U[:,2]             # computation friendly BC on horizon
-    U[:,end] = U[:,end-1]         # inf r boundary is in fact not used due to xbd
+    U[2:end,1] = U[2:end,2]         # computation friendly BC on horizon
+    U[:,end]   = U[:,end-1]         # inf r boundary is in fact not used due to xbd
 
-    U[1, idx_r2+1:idx_bd] = U[2, idx_r2+1:idx_bd]               # equator boundary
-    #U[1,idx_r2+1] = 1.001*U[1,idx_r2]
+
+    U[1, 1:idx_r2] = bc_eqt.Ueqt
+    U[1, idx_r2+1] = U[1,idx_r2]
+    U[1, idx_r2+2] = U[1,idx_r2]
+    U[1, idx_r2+3:idx_bd]   = U[2, idx_r2+3:idx_bd]               # equator boundary
+
+    U = USmooth!(U, lsn, crd)
 
     δR  = crd.δR
     U_H = U[1, idx_r2]*(crd.Rcol[idx_r2+1]-r2R(2.0))/δR + U[1, idx_r2+1]*(r2R(2.0)-crd.Rcol[idx_r2])/δR
@@ -68,15 +107,13 @@ end
 
 function BC_gen(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; BC_opt = 0, Isf = 5.)
     idx_r2  = crd.idx_r2
-    idx_bd  = crd.idx_xbd[1]
     rmin    = crd.rmin
-    ∂μU     = zeros(idx_bd)
+    Ueqt    = zeros(idx_r2)
 
-    if BC_opt==0
-        ∂μU[1:idx_r2] = -1.*(crd.rcol[1:idx_r2]/rmin).^2.8
+    if BC_opt == 0
+        Ueqt = U[1,1:idx_r2]
     else
-        ∂μU[1:idx_r2] = (U[2,1:idx_r2]-U[1,1:idx_r2])/crd.δμ
-
+        ∂μU = (U[2,1:idx_r2]-U[1,1:idx_r2])/crd.δμ
         Ucol= U[1,1:idx_r2]
         rcol= crd.rcol[1:idx_r2]
         Ubm = linspace(0., Ucol[end], 128)
@@ -86,14 +123,20 @@ function BC_gen(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; BC_opt = 0, Isf 
         iip  = Ispl(Ucol).*derivative(Ispl, Ucol)
         IIp  = Ω_I.IIpspl(Ucol)
 
-        ∂μUnew  = ∂μU[1:idx_r2] + Isf*(IIp-iip)
+        ∂μUnew  = ∂μU + Isf*(IIp-iip)
+        Ueqt = U[2,1:idx_r2] - ∂μUnew*crd.δμ
         pmodel(x, p) = ( p[1] + p[2] .* x + p[3] .* x.^2 + p[4] .* x.^3 + p[5] .* x.^4 + p[6] .* x.^5 )
-        pfit   = curve_fit(pmodel, rcol, ∂μUnew, [0., 0., 0., 0., 0., 0.])
-        ∂μU[1:idx_r2] = pmodel(rcol, pfit.param)
+        pfit = curve_fit(pmodel, rcol, Ueqt, [0., 0., 0., 0., 0., 0.])
+        Ueqt = pmodel(rcol, pfit.param); Ueqt[1] = Ueqt[2]
+
+        (Umax, idx_max) = findmax(Ueqt)
+        if idx_max < idx_r2
+            Ueqt[idx_max:idx_r2] = Umax
+        end
+
     end
 
-    ∂μU[idx_r2+1:idx_bd] = ∂μU[idx_r2]*exp(-(crd.rcol[idx_r2+1:idx_bd]-2.).^2/(2*0.05^2))
-    return BC_eqt(∂μU)
+    return BC_eqt(Ueqt)
 end
 
 function Init(crd::Cord, mtr::Geom; xbd = 4.0)
@@ -104,15 +147,15 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         #initialize equator values
         rmin = crd.rmin
         xeq  = vcat( linspace(0., 4., 512), logspace(log10(4.01), log10(crd.rcol[end]), 512) )
-        Ueq  = zeros(xeq); U_he = 2.; U_H = 4.8
+        Ueq  = zeros(xeq); U_he = 1.6; U_H = 4.4
 
-        A = (U_he-U_H)/(rmin-2)
+        A = (U_H-U_he + 0.8*(2-rmin)^2)/(2-rmin)
 
         for i = 1:length(Ueq)
             if xeq[i] < rmin
                 Ueq[i] =  U_he* (1. - (xeq[i]/rmin-1)^2)
             elseif xeq[i] < 2.
-                Ueq[i] = A*(xeq[i]-2)+U_H
+                Ueq[i] = A*(xeq[i]-rmin)- 0.8*(xeq[i]-rmin)^2 +U_he
             elseif xeq[i] < xbd^2
                 Ueq[i] = xeq[i]^2 + (U_H-4.)*exp(2^2-xeq[i]^2)
             else
@@ -128,16 +171,13 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
             end
         end
 
-
-
-
         U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
         Ubm = collect(linspace(0., U_H, 2048)); Ωbm = zeros(Ubm)
         for i = 1:length(Ubm)
             #Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
-            Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-Ubm[i]/U_H) : 0.
+            Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-(Ubm[i]/U_H)^1.5) : 0.
         end
 
         Ibm  = 2*Ωbm.*Ubm

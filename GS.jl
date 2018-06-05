@@ -81,7 +81,7 @@ immutable LS
 end
 
 immutable BC_eqt
-    ∂μU::Array{Float64,1}
+    Ueqt::Array{Float64,1}    # U values on equator and rmin < r < 2
 end
 
 function Cord(; Rlen = 512, μlen = 64, a = 1., rmax = 100.,  xbd = 4.0)
