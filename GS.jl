@@ -351,7 +351,7 @@ function LS_updater!(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I, 
 
     #Ωspl = Spline1D(reverse(UILS), reverse(Ω), bc="zero")
     U_H  = ils.ULS[1]; Ucol = linspace(0., U_H, crd.μlen)
-    Ωnew = 0.5*crd.Ω_H*(1-Ucol/U_H)
+    Ωnew = 0.5*crd.Ω_H*(1-(Ucol/U_H).^1.5)
     Ωspl = Spline1D(Ucol, Ωnew, bc="zero")
     Ω_I  = Ω_and_I!(Ω_I, Ωspl)
 

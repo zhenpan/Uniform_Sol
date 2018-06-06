@@ -157,7 +157,7 @@ function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     # Ipnew = derivative(Ispl, ils.ULS)
     # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 
-    Ωnew = 0.5*crd.Ω_H*(1-ils.ULS/U_H)
+    Ωnew = 0.5*crd.Ω_H*(1-(ils.ULS/U_H).^1.5)
 
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
 
@@ -258,7 +258,7 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     fsq   = B2mE2./B2pE2
 
     plot(r, Σ .* Icol.^2, "k")
-    plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r-")
+    plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
     plot(r, κcol .* (Δ .* ∂rU.^2), "b--")
     plot(r, κcol .* (∂μU.^2), "r--")
     return r, fsq, B2mE2
