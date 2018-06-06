@@ -37,7 +37,7 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
         Uils[μidx] = U[μidx, ridx]*(crd.R[μidx, ridx+1]-RILS[μidx])/δR + U[μidx, ridx+1]*(RILS[μidx]-crd.R[μidx, ridx])/δR
     end
 
-    δU   = Upls - Umns
+    δU   = Upls - Umns; δU[1] = 0.
 
     IIpnew = ils.IIp -  δU*Isf; IIpnew[1] = 0.
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
@@ -83,6 +83,10 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     return IIpspl
 end
 
+function Ω_fnc(Ω_H::Float64, xcol::Array{Float64})
+    return 0.5*Ω_H.*(1-xcol) + 0.02*xcol.*(1-xcol)         #xcol = Ucol/U_H
+end
+
 
 function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     U_H  = ils.ULS[1]
@@ -102,8 +106,7 @@ function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     # Ipnew = derivative(Ispl, ils.ULS)
     # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 
-    Ωnew = 0.5*crd.Ω_H*(1-(ils.ULS/U_H).^1.0)
-
+    Ωnew = Ω_fnc(crd.Ω_H, ils.ULS/U_H)
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
 
     return Ω_and_I(U, crd, Ωspl, Ispl, Ω_I.IIpspl)

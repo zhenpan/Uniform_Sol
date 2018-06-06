@@ -12,7 +12,7 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen)
 bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)
 
-for BCloop = 1:10
+for BCloop = 1:5
     for Ωloop = 1:200
         for Iloop = 1:10
             U,  Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
@@ -35,6 +35,7 @@ for BCloop = 1:10
         plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
 
         Ispl = Spline1D(Ubm, 2*Ω_I.Ωspl(Ubm).*Ubm)
+        plot(Ubm, 0.5*crd.Ω_H.*(1-Ubm/U_H), "k--")
         plot(Ubm, Ispl(Ubm)/U_H, "k--")
         plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
     end
