@@ -3,7 +3,7 @@ include("GS.jl")
 include("SOR.jl")
 include("func.jl")
 
-crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100.)
+crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.0)
 mtr      = Geom(crd)
 U, Ω_I, U_H   = Init(crd, mtr)
 grd      = Grid(crd, mtr, Ω_I)
@@ -12,7 +12,7 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen)
 bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
-for BCloop = 1:10
+for BCloop = 1:5
     for Ωloop = 1:200
         for Iloop = 1:10
             U,  Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
@@ -28,12 +28,13 @@ for BCloop = 1:10
         ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
         lsn      = LS_neighbors(U, ils, grd, crd)
         println("BCloop= $BCloop, Ωloop = $Ωloop")
-        Ubm = linspace(0., U_H, 1024)
+        Ubm = linspace(0., U_H, 256)
         plot(Ubm, Ω_I.Ωspl(Ubm))
         plot(Ubm, Ω_I.Ispl(Ubm)/U_H)
         plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
 
         Ispl = Spline1D(Ubm, 2*Ω_I.Ωspl(Ubm).*Ubm)
+        plot(Ubm, 0.5*crd.Ω_H*(1-Ubm/U_H), "k--")
         plot(Ubm, Ispl(Ubm)/U_H, "k--")
         plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
     end
@@ -45,6 +46,10 @@ plot(U[2, 145:154], "--")
 plot(U[3, 145:154], "k")
 plot(U[4, 145:154], "k--")
 
+
+r, fsq, B2mE2 = Fsq(U, crd, grd, Ω_I, lsn)
+plot(r, fsq, lw = 2)
+plot(r, zeros(r), "--")
 
 Ubm = linspace(0., U_H, 2048)
 fig = figure(figsize=(8,10))
@@ -69,10 +74,6 @@ tick_params(axis="both", which="major", labelsize=14)
 tight_layout()
 savefig("f2.pdf")
 
-
-
-r, fsq, B2mE2 = Fsq(U, crd, grd, Ω_I, lsn)
-plot(r, B2mE2, lw = 2)
 # figure(figsize=(6,5))
 # xlabel(L"$r/M$", fontsize = 20)
 # ylabel(L"$\frac{B^2-E^2}{B^2+E^2}|_{\mu = 0}$", fontsize = 20)

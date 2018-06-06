@@ -57,6 +57,7 @@ function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
     return U
 end
 
+
 #update IIp
 function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
@@ -80,7 +81,7 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     δU   = Upls - Umns; δU[1] = 0.
     #δU   = δU_rescale!(Uils, δU, ils, Isf)
 
-    IIpnew = ils.IIp -  δU*Isf
+    IIpnew = ils.IIp -  δU*Isf; IIpnew[1] = 0.
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
                                     + p[3] .* x.^3 + p[4] .* x.^4 + p[5] .* x.^5
                                     + p[6] .* x.^6 + p[7] .* x.^7 + p[8] .* x.^8)
@@ -138,6 +139,10 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     return IIpspl
 end
 
+function Ω_fnc(Ω_H::Float64, xcol::Array{Float64})
+    return 0.5*Ω_H.*(1-xcol) + 0.12*Ω_H*xcol.*(1-xcol) + 0.04*Ω_H*xcol.*xcol.*(1-xcol)       #xcol = Ucol/U_H
+end
+
 
 function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     U_H  = ils.ULS[1]
@@ -157,7 +162,7 @@ function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     # Ipnew = derivative(Ispl, ils.ULS)
     # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
 
-    Ωnew = 0.5*crd.Ω_H*(1-(ils.ULS/U_H).^1.5)
+    Ωnew = Ω_fnc(crd.Ω_H, ils.ULS/U_H)
 
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
 

@@ -103,11 +103,8 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
-        Ubm = collect(linspace(0., U_H, 2048)); Ωbm = zeros(Ubm)
-        for i = 1:length(Ubm)
-            #Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(cos(pi/2*Ubm[i]/U_H).^2) : 0.
-            Ωbm[i] = (Ubm[i] < U_H) ? 0.5*crd.Ω_H*(1-(Ubm[i]/U_H).^1.5) : 0.
-        end
+        Ubm = collect(linspace(0., U_H, 2048))
+        Ωbm = Ω_fnc(crd.Ω_H, Ubm/U_H)
 
         Ibm  = 2*Ωbm.*Ubm
         Ωspl = Spline1D(Ubm, Ωbm, bc = "zero")
