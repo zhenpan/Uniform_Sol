@@ -12,23 +12,22 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen)
 bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
-for BCloop = 1:5
+for BCloop = 1:15
     for Ωloop = 1:200
         for Iloop = 1:10
             U,  Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
             U, U_H      = Bounds!(U, crd, Ω_I, lsn, bc_eqt)                  #where bc_eqt contains ∂μU on equator
             ils,Ω_I, δU = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.06)    #update IIp in ils and Ω_I
             grd         = Grid!(grd, crd, mtr, Ω_I)                          #update IIp in grd
-            println("Iloop = $Iloop, res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
-            # plot(ils.ULS, δU)
-            # plot(ils.ULS, ils.IIp/10)
+            println("(BCloop, Ωloop, Iloop) = ($BCloop, $Ωloop $Iloop), res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
         end
         Ω_I      = ΩI_updater!(U, crd, Ω_I, ils)
         grd      = Grid(crd, mtr, Ω_I)
         ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
         lsn      = LS_neighbors(U, ils, grd, crd)
-        println("BCloop= $BCloop, Ωloop = $Ωloop")
-        Ubm = linspace(0., U_H, 256)
+    end
+        bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 1, Isf = 10.0)
+        Ubm = linspace(0., U_H, 64)
         plot(Ubm, Ω_I.Ωspl(Ubm))
         plot(Ubm, Ω_I.Ispl(Ubm)/U_H)
         plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
@@ -37,8 +36,6 @@ for BCloop = 1:5
         plot(Ubm, 0.5*crd.Ω_H*(1-Ubm/U_H), "k--")
         plot(Ubm, Ispl(Ubm)/U_H, "k--")
         plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
-    end
-        bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 1, Isf = 10.0)
 end
 
 plot(U[1, 145:154])

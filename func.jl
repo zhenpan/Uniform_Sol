@@ -140,7 +140,7 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
 end
 
 function Ω_fnc(Ω_H::Float64, xcol::Array{Float64})
-    return 0.5*Ω_H.*(1-xcol) + 0.12*Ω_H*xcol.*(1-xcol) + 0.04*Ω_H*xcol.*xcol.*(1-xcol)       #xcol = Ucol/U_H
+    return 0.5*Ω_H.*(1-xcol) + 0.12*Ω_H*xcol.*(1-xcol) + 0.01*Ω_H*xcol.*(1-xcol).^2 + 0.02*Ω_H*xcol.*xcol.*(1-xcol)       #xcol = Ucol/U_H
 end
 
 
@@ -255,7 +255,12 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     β = Δ .* Σ + 2r .*(r.^2+crd.a^2)
 
     Ωspl = Ω_I.Ωspl
-    Icol = 2*Ωspl(U[1,1:idx]).*U[1,1:idx]
+    Ucol = U[1,1:idx]
+    Iexp = 2*Ωspl(Ucol).*Ucol
+    Inum = Ω_I.Ispl(Ucol)
+
+    #Icol = Iexp.*(Ucol-Ucol[1])/(Ucol[idx]-Ucol[1]) +  Inum.*(Ucol[idx] -Ucol)/(Ucol[idx]-Ucol[1])
+    Icol = Iexp
     κcol = grd.κ[1,1:idx]
 
     B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
@@ -266,14 +271,14 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
     plot(r, κcol .* (Δ .* ∂rU.^2), "b--")
     plot(r, κcol .* (∂μU.^2), "r--")
+
+    # plot(Ucol, Σ .* Icol.^2, "k")
+    # plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
+    # plot(Ucol, κcol .* (Δ .* ∂rU.^2), "b--")
+    # plot(Ucol, κcol .* (∂μU.^2), "r--")
     return r, fsq, B2mE2
 end
-#
-# function cplot(ils, lsn)
-#     plot(ils.Loc[:,1], ils.Loc[:,2])
-#     plot(lsn.ILS_lon[:,1], lsn.ILS_lon[:,2], ".")
-#     plot(lsn.ILS_ron[:,1], lsn.ILS_ron[:,2], ".")
-# end
+
 
 # function Znajek(crd::Cord, Ω_I::Ω_and_I, U_H::Float64)
 #     a   = crd.a
