@@ -64,10 +64,6 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     Umns, Upls = Proj(U, crd, ils, lsn)
 
     Uils = 0.5 * (Upls + Umns)
-    # Umodel(x, p) = (1-x) .* ( p[1]         + p[2] .* x    + p[3] .* x.^2 + p[4] .* x.^3
-    #                         + p[5] .* x.^4 + p[6] .* x.^5 + p[7] .* x.^6 + p[8] .* x.^7)
-    # Ufit = curve_fit(Umodel, crd.μcol, Uils, [4., 0., 0., 0., 0., 0., 0., 0.])
-    # Uils = Umodel(crd.μcol, Ufit.param)
 
     Ridx = lsn.lsn_idx[:,1]
     RILS = ils.Loc[:,1]
@@ -99,16 +95,16 @@ end
 
 
 #rescale δU to ensure a approximate $\int δU dU = 0$
-function δU_rescale!(Uils, δU, ils, Isf)
-    δU = Isf *δU #.* ils.Σ_Δ[1] ./ils.Σ_Δ
-    δUspl = Spline1D(reverse(Uils), reverse(δU))
-    δUInt = integrate(δUspl, Uils[end], Uils[1])
-    δU2spl = Spline1D(reverse(Uils), reverse(δU.^2))
-    δU2Int = integrate(δU2spl, Uils[end], Uils[1])
-    x = -δUInt/δU2Int
-
-    return  δU + x*δU.^2
-end
+# function δU_rescale!(Uils, δU, ils, Isf)
+#     δU = Isf *δU #.* ils.Σ_Δ[1] ./ils.Σ_Δ
+#     δUspl = Spline1D(reverse(Uils), reverse(δU))
+#     δUInt = integrate(δUspl, Uils[end], Uils[1])
+#     δU2spl = Spline1D(reverse(Uils), reverse(δU.^2))
+#     δU2Int = integrate(δU2spl, Uils[end], Uils[1])
+#     x = -δUInt/δU2Int
+#
+#     return  δU + x*δU.^2
+# end
 
 
 function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd = 4.)
@@ -140,7 +136,7 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
 end
 
 function Ω_fnc(Ω_H::Float64, xcol::Array{Float64})
-    return 0.5*Ω_H.*(1-xcol) + 0.12*Ω_H*xcol.*(1-xcol) + 0.01*Ω_H*xcol.*(1-xcol).^2 + 0.02*Ω_H*xcol.*xcol.*(1-xcol)       #xcol = Ucol/U_H
+    return 0.5*Ω_H.*(1-xcol) + 0.12*Ω_H*xcol.*(1-xcol) #+ 0.02*Ω_H*xcol.*xcol.*(1-xcol) + 0.04*Ω_H*(xcol.^6).*(1-xcol)         #xcol = Ucol/U_H
 end
 
 
@@ -259,13 +255,16 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     Iexp = 2*Ωspl(Ucol).*Ucol
     Inum = Ω_I.Ispl(Ucol)
 
-    #Icol = Iexp.*(Ucol-Ucol[1])/(Ucol[idx]-Ucol[1]) +  Inum.*(Ucol[idx] -Ucol)/(Ucol[idx]-Ucol[1])
-    Icol = Iexp
+    Icol = Iexp.*(Ucol-Ucol[1])/(Ucol[idx]-Ucol[1]) +  Inum.*(Ucol[idx] -Ucol)/(Ucol[idx]-Ucol[1])
+    #Icol = Iexp
     κcol = grd.κ[1,1:idx]
 
     B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
-    B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* Icol.^2
+    B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* Iexp.^2
     fsq   = B2mE2./B2pE2
+
+    fsq2_spl = Spline1D(Ucol, fsq.^2)
+    fsq2_avg = integrate(fsq2_spl, Ucol[1], Ucol[end])/(Ucol[end]-Ucol[1])
 
     plot(r, Σ .* Icol.^2, "k")
     plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
@@ -276,7 +275,7 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     # plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
     # plot(Ucol, κcol .* (Δ .* ∂rU.^2), "b--")
     # plot(Ucol, κcol .* (∂μU.^2), "r--")
-    return r, fsq, B2mE2
+    return Ucol, fsq, fsq2_avg
 end
 
 
