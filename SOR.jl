@@ -104,7 +104,7 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
 
         #initialize Ω_and_I
         Ubm = collect(linspace(0., U_H, 2048))
-        Ωbm = Ω_fnc(crd.Ω_H, Ubm/U_H)
+        Ωbm = Ω_fnc(crd.Ω_H, Ω_par, Ubm/U_H)
 
         Ibm  = 2*Ωbm.*Ubm
         Ωspl = Spline1D(Ubm, Ωbm, bc = "zero")

@@ -5,38 +5,44 @@ include("func.jl")
 
 crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.0)
 mtr      = Geom(crd)
+Ω_par    = [0.12, 0.02, 0.04, 0.0]
 U, Ω_I, U_H   = Init(crd, mtr)
 grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
-δU       = zeros(crd.μlen)
+δU       = zeros(crd.μlen); Res = 0.
 bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
-for BCloop = 1:15
-    for Ωloop = 1:200
-        for Iloop = 1:10
-            U,  Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 0.8)
-            U, U_H      = Bounds!(U, crd, Ω_I, lsn, bc_eqt)                  #where bc_eqt contains ∂μU on equator
-            ils,Ω_I, δU = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.06)    #update IIp in ils and Ω_I
-            grd         = Grid!(grd, crd, mtr, Ω_I)                          #update IIp in grd
-            println("(BCloop, Ωloop, Iloop) = ($BCloop $Ωloop $Iloop), res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
+for Ωpar_loop = 1:2
+    for BCloop = 1:20
+        for Ωloop = 1:200
+            for Iloop = 1:5
+                U,  Res, dU = Solver!(U, crd, grd, Ω_I, ils, lsn, maxitr = 2, omega = 1.0)
+                U, U_H      = Bounds!(U, crd, Ω_I, lsn, bc_eqt)                  #where bc_eqt contains ∂μU on equator
+                ils,Ω_I, δU = IIp_updater!(U, crd, Ω_I, ils, lsn, Isf = 0.08)    #update IIp in ils and Ω_I
+                grd         = Grid!(grd, crd, mtr, Ω_I)                          #update IIp in grd
+                #println("(BCloop, Ωloop, Iloop) = ($BCloop $Ωloop $Iloop), res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
+            end
+            println("(BCloop, Ωloop) = ($BCloop $Ωloop), Res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
+            Ω_I      = ΩI_updater!(U, crd, Ω_I, ils)
+            grd      = Grid(crd, mtr, Ω_I)
+            ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
+            lsn      = LS_neighbors(U, ils, grd, crd)
         end
-        Ω_I      = ΩI_updater!(U, crd, Ω_I, ils)
-        grd      = Grid(crd, mtr, Ω_I)
-        ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
-        lsn      = LS_neighbors(U, ils, grd, crd)
-    end
-        bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 1, Isf = 6.0)
-        Ubm = linspace(0., U_H, 64)
-        plot(Ubm, Ω_I.Ωspl(Ubm))
-        plot(Ubm, Ω_I.Ispl(Ubm)/U_H)
-        plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
+            bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 1, Isf = 6.0)
+            Ubm = linspace(0., U_H, 64)
+            plot(Ubm, Ω_I.Ωspl(Ubm))
+            plot(Ubm, Ω_I.Ispl(Ubm)/U_H)
+            plot(Ubm, Ω_I.IIpspl(Ubm)/U_H)
 
-        Ispl = Spline1D(Ubm, 2*Ω_I.Ωspl(Ubm).*Ubm)
-        plot(Ubm, 0.5*crd.Ω_H*(1-Ubm/U_H), "k--")
-        plot(Ubm, Ispl(Ubm)/U_H, "k--")
-        plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
+            Ispl = Spline1D(Ubm, 2*Ω_I.Ωspl(Ubm).*Ubm)
+            plot(Ubm, 0.5*crd.Ω_H*(1-Ubm/U_H), "k--")
+            plot(Ubm, Ispl(Ubm)/U_H, "k--")
+            plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
+    end
+    Ω_par =  Ωpar_updater!(crd, Ω_I, ils)
 end
+
 
 plot(U[1, 145:154])
 plot(U[2, 145:154], "--")

@@ -118,14 +118,6 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     for iter in eachindex(Ubm)
         if Ubm[iter] <= Uils[1]
             IIpbm[iter] = IIpspl(Ubm[iter])
-        # elseif Ubm[iter] <=  Uils[1] * (1.+ drc)
-        #      α = (6/(Uils[1]*drc)^3) * Isq_hf
-        #      IIpbm[iter] = α*(Uils[1]-Ubm[iter])*( Uils[1] * (1.+ drc)-Ubm[iter])
-            #U_H = Uils[1]; IIp_H = IIpspl(U_H)
-            # c   = (1.+ drc)*U_H
-            # b   = U_H + IIp_H*(U_H-c)^2/3/(2*Isq_hf - IIp_H*(U_H-c))
-            # α   = Isq_hf/(U_H-c)^2/((U_H-b)/2 - (U_H-c)/6)
-            # IIpbm[iter] = α*(Ubm[iter]-b)*(Ubm[iter]-c)
         else
             IIpbm[iter] = 0.
         end
@@ -135,33 +127,31 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     return IIpspl
 end
 
-function Ω_fnc(Ω_H::Float64, xcol::Array{Float64})
-    return 0.5*Ω_H.*(1-xcol) + 0.12*Ω_H*xcol.*(1-xcol) #+ 0.02*Ω_H*xcol.*xcol.*(1-xcol) + 0.04*Ω_H*(xcol.^6).*(1-xcol)         #xcol = Ucol/U_H
+function Ω_fnc(Ω_H::Float64, Ω_par::Array{Float64}, xcol::Array{Float64})
+        return Ω_H.*(1-xcol).*(0.5 + Ω_par[1]*xcol + Ω_par[2]*xcol.^2 + Ω_par[3]*xcol.^3 + Ω_par[4]*xcol.^4)     #xcol = Ucol/U_H
+end
+
+function Ωpar_updater!(crd::Cord, Ω_I::Ω_and_I, ils::LS)
+    Ucol = ils.ULS; U_H =  Ucol[1]
+    Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol
+    Inum = Ω_I.Ispl(Ucol)
+    Inew = Inum.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1]) +  Iexp.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1])
+
+    xcol = Ucol/U_H;  Ω_H  = crd.Ω_H
+
+    Ωmodel(x, p) = Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4)
+    Imodel(x, p) = 2*(U_H*x).*(  Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4) )
+    Ifit = curve_fit(Imodel, xcol, Inew, [0., 0., 0., 0.])
+    Ωnew = Ωmodel(xcol, Ifit.param)
+    return Ifit.param
 end
 
 
 function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
     U_H  = ils.ULS[1]
     Ispl = I_solver(Ω_I, U_H)
-
-    # Ωmodel(x, p) =       (U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
-    # Imodel(x, p) =  2*x.*(U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
-    #
-    # Ifit = curve_fit(Imodel, ils.ULS, Ispl(ils.ULS), [0., 0., 0., 0.])
-    # Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
-    # Ωold = ils.Ω  #Ω_I.Ωspl(ils.ULS)
-    # Ωnew = Ωold + 0.1*(Ωnew-Ωold)
-    #
-    # Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
-    # Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")   #Ispl here is only an approx,
-                                                                    #since ils.ULS will be updated when new LS is located
-    # Ipnew = derivative(Ispl, ils.ULS)
-    # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
-
-    Ωnew = Ω_fnc(crd.Ω_H, ils.ULS/U_H)
-
+    Ωnew = Ω_fnc(crd.Ω_H, Ω_par, ils.ULS/U_H)
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
-
     return Ω_and_I(U, crd, Ωspl, Ispl, Ω_I.IIpspl)
 end
 
@@ -255,8 +245,8 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     Iexp = 2*Ωspl(Ucol).*Ucol
     Inum = Ω_I.Ispl(Ucol)
 
-    Icol = Iexp.*(Ucol-Ucol[1])/(Ucol[idx]-Ucol[1]) +  Inum.*(Ucol[idx] -Ucol)/(Ucol[idx]-Ucol[1])
-    #Icol = Iexp
+    #Icol = Iexp.*(Ucol-Ucol[1])/(Ucol[idx]-Ucol[1]) +  Inum.*(Ucol[idx] -Ucol)/(Ucol[idx]-Ucol[1])
+    Icol = Iexp
     κcol = grd.κ[1,1:idx]
 
     B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
@@ -271,10 +261,10 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     plot(r, κcol .* (Δ .* ∂rU.^2), "b--")
     plot(r, κcol .* (∂μU.^2), "r--")
 
-    # plot(Ucol, Σ .* Icol.^2, "k")
-    # plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
-    # plot(Ucol, κcol .* (Δ .* ∂rU.^2), "b--")
-    # plot(Ucol, κcol .* (∂μU.^2), "r--")
+    plot(Ucol, Σ .* Icol.^2, "k")
+    plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
+    plot(Ucol, κcol .* (Δ .* ∂rU.^2), "b--")
+    plot(Ucol, κcol .* (∂μU.^2), "r--")
     return Ucol, fsq, fsq2_avg
 end
 
