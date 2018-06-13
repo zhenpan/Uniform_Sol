@@ -75,7 +75,6 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     end
 
     δU   = Upls - Umns; δU[1] = 0.
-    #δU   = δU_rescale!(Uils, δU, ils, Isf)
 
     IIpnew = ils.IIp -  δU*Isf; IIpnew[1] = 0.
     IIpmodel(x, p) = crd.Ω_H^2 * x .* (1.          + p[1] .* x    + p[2] .* x.^2
@@ -92,20 +91,6 @@ function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     Ω_I     = Ω_and_I!(U, Ω_I, IIpspl)
     return ils, Ω_I, δU
 end
-
-
-#rescale δU to ensure a approximate $\int δU dU = 0$
-# function δU_rescale!(Uils, δU, ils, Isf)
-#     δU = Isf *δU #.* ils.Σ_Δ[1] ./ils.Σ_Δ
-#     δUspl = Spline1D(reverse(Uils), reverse(δU))
-#     δUInt = integrate(δUspl, Uils[end], Uils[1])
-#     δU2spl = Spline1D(reverse(Uils), reverse(δU.^2))
-#     δU2Int = integrate(δU2spl, Uils[end], Uils[1])
-#     x = -δUInt/δU2Int
-#
-#     return  δU + x*δU.^2
-# end
-
 
 function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd = 4.)
 
@@ -146,8 +131,29 @@ function Ωpar_updater!(crd::Cord, Ω_I::Ω_and_I, ils::LS)
     return Ifit.param
 end
 
+# function Ωpar_updater!(crd::Cord, Ω_I::Ω_and_I, ils::LS, Ω_par::Array{Float64})
+#     U_H  =  ils.ULS[1]
+#     Ucol =  collect(linspace(0., U_H, crd.μlen))
+#     Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol
+#     Inum = Ω_I.Ispl(Ucol)
+#     Inew = Iexp.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1]) +  Inum.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1])
+#     Ωnew = Inew./(2*Ucol+1.e-10); Ωnew[1] = 0.5*crd.Ω_H; Ωnew[end] = 0.
+#
+#     xcol = Ucol/U_H;  Ω_H  = crd.Ω_H
+#
+#     Ωmodel(x, p) = Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4)
+#     Ωfit = curve_fit(Ωmodel, xcol, Ωnew,  Ω_par)
+#     return Ωfit.param
+# end
 
-function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
+# function Ωpar_updater!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
+#     Ucol, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I, lsn)
+#
+
+
+
+
+function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, Ω_par::Array{Float64})
     U_H  = ils.ULS[1]
     Ispl = I_solver(Ω_I, U_H)
     Ωnew = Ω_fnc(crd.Ω_H, Ω_par, ils.ULS/U_H)
@@ -160,10 +166,6 @@ function I_solver(Ω_I::Ω_and_I, U_H::Float64)
     δU  = U_H/(length(Ubm)-1)
     IIp = Ω_I.IIpspl(Ubm)
     Isq = zeros(Ubm)
-
-    # for iter = 2:length(Isq)
-    #     Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
-    # end
 
     iter = 2
     while iter <= length(Isq) && Isq[iter-1] >= 0.
@@ -255,11 +257,6 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
 
     fsq2_spl = Spline1D(Ucol, fsq.^2)
     fsq2_avg = integrate(fsq2_spl, Ucol[1], Ucol[end])/(Ucol[end]-Ucol[1])
-
-    plot(r, Σ .* Icol.^2, "k")
-    plot(r, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
-    plot(r, κcol .* (Δ .* ∂rU.^2), "b--")
-    plot(r, κcol .* (∂μU.^2), "r--")
 
     plot(Ucol, Σ .* Icol.^2, "k")
     plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")

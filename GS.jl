@@ -310,7 +310,7 @@ function LS(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I)   #for ex
     return LS(ILS_loc, Σ_Δ, UILS, Ω, I, IIp, S, Cr, Cμ, Cμ_esn)
 end
 
-function LS_updater!(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I, ils::LS)   #for approx Ω_I
+function LS_updater!(U::Array{Float64,2}, grd::Grid, crd::Cord, Ω_I::Ω_and_I, ils::LS, Ω_par::Array{Float64})   #for approx Ω_I
     idx_r2 = crd.idx_r2 + 1
     RILS   = zeros(crd.μlen)
     μILS   = crd.μcol

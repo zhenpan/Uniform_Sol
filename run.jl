@@ -5,15 +5,15 @@ include("func.jl")
 
 crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.0)
 mtr      = Geom(crd)
-Ω_par    = [0.12, 0.02, 0.04, 0.0]
-U, Ω_I, U_H   = Init(crd, mtr)
+Ω_par    = [0.12, 0.02, 0.04, 0.0] #[-0.008, 0.663, -0.985, 0.526]
+U, Ω_I, U_H   = Init(crd, mtr, Ω_par)
 grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
 lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen); Res = 0.
 bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
-for Ωpar_loop = 1:2
+for Ωpar_loop = 1:3
     for BCloop = 1:20
         for Ωloop = 1:200
             for Iloop = 1:5
@@ -23,10 +23,10 @@ for Ωpar_loop = 1:2
                 grd         = Grid!(grd, crd, mtr, Ω_I)                          #update IIp in grd
                 #println("(BCloop, Ωloop, Iloop) = ($BCloop $Ωloop $Iloop), res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
             end
-            println("(BCloop, Ωloop) = ($BCloop $Ωloop), Res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
-            Ω_I      = ΩI_updater!(U, crd, Ω_I, ils)
+            println("(Ωpar-BC-Ωloop) = ($Ωpar_loop $BCloop $Ωloop), Res = $(sum(abs(Res))), U_H = $U_H, U_he = $(U[1,1])")
+            Ω_I      = ΩI_updater!(U, crd, Ω_I, ils, Ω_par)
             grd      = Grid(crd, mtr, Ω_I)
-            ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
+            ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils, Ω_par)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
             lsn      = LS_neighbors(U, ils, grd, crd)
         end
             bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 1, Isf = 6.0)
