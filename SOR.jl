@@ -139,7 +139,7 @@ function BC_gen(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; BC_opt = 0, Isf 
     return BC_eqt(Ueqt)
 end
 
-function Init(crd::Cord, mtr::Geom; xbd = 4.0)
+function Init(crd::Cord, mtr::Geom, Ω_par::Array{Float64}; xbd = 4.0)
         z = crd.r .* crd.μ
         x = sqrt(crd.r.^2 - z.^2)
         U = x.^2
@@ -174,10 +174,8 @@ function Init(crd::Cord, mtr::Geom; xbd = 4.0)
         U_H = U[1, crd.idx_r2]
 
         #initialize Ω_and_I
-        Ubm = collect(linspace(0., U_H, 2048)); Ωbm = zeros(Ubm)
-
-        Ωbm = Ω_fnc(crd.Ω_H, Ubm/U_H)
-
+        Ubm = collect(linspace(0., U_H, 2048))
+        Ωbm = Ω_fnc(crd.Ω_H, Ω_par, Ubm/U_H)
 
         Ibm  = 2*Ωbm.*Ubm
         Ωspl = Spline1D(Ubm, Ωbm, bc = "zero")

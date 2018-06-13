@@ -23,10 +23,47 @@ function Proj(U::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
     return Umns, Upls
 end
 
+
+function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+        x    = [crd.R[μidx, Ridx-2], crd.R[μidx, Ridx+3]]
+        y    = [U[μidx, Ridx-2], U[μidx, Ridx+3]]        #the next near points
+        spl  = Spline1D(x, y, k=1)
+        U[μidx, Ridx-1] = spl(crd.R[μidx, Ridx-1])
+        U[μidx, Ridx]   = spl(crd.R[μidx, Ridx])
+        U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
+        U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
+    end
+
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+
+        U[μidx, Ridx-1] = (U[μidx, Ridx-1] < U[μidx-1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
+        U[μidx, Ridx]   = (U[μidx, Ridx  ] < U[μidx-1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
+        U[μidx, Ridx+1] = (U[μidx, Ridx+1] < U[μidx-1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
+        U[μidx, Ridx+2] = (U[μidx, Ridx+2] < U[μidx-1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
+    end
+
+    for μidx = 2:crd.μlen-1
+        Ridx = lsn.lsn_idx[μidx]
+
+        U[μidx, Ridx-1] = (U[μidx, Ridx-1] > U[μidx+1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
+        U[μidx, Ridx]   = (U[μidx, Ridx  ] > U[μidx+1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
+        U[μidx, Ridx+1] = (U[μidx, Ridx+1] > U[μidx+1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
+        U[μidx, Ridx+2] = (U[μidx, Ridx+2] > U[μidx+1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
+    end
+
+    return U
+end
+
+
 #update IIp
 function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
     Umns, Upls = Proj(U, crd, ils, lsn)
+
+    Uils = 0.5 * (Upls + Umns)
 
     Ridx = lsn.lsn_idx[:,1]
     RILS = ils.Loc[:,1]
@@ -66,14 +103,6 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     for iter in eachindex(Ubm)
         if Ubm[iter] <= Uils[1]
             IIpbm[iter] = IIpspl(Ubm[iter])
-        # elseif Ubm[iter] <=  Uils[1] * (1.+ drc)
-        #      α = (6/(Uils[1]*drc)^3) * Isq_hf
-        #      IIpbm[iter] = α*(Uils[1]-Ubm[iter])*( Uils[1] * (1.+ drc)-Ubm[iter])
-            #U_H = Uils[1]; IIp_H = IIpspl(U_H)
-            # c   = (1.+ drc)*U_H
-            # b   = U_H + IIp_H*(U_H-c)^2/3/(2*Isq_hf - IIp_H*(U_H-c))
-            # α   = Isq_hf/(U_H-c)^2/((U_H-b)/2 - (U_H-c)/6)
-            # IIpbm[iter] = α*(Ubm[iter]-b)*(Ubm[iter]-c)
         else
             IIpbm[iter] = 0.
         end
@@ -83,32 +112,52 @@ function IIp_gen(Uils::Array{Float64,1}, IIp::Array{Float64,1}; drc = 0.1, xbd =
     return IIpspl
 end
 
-function Ω_fnc(Ω_H::Float64, xcol::Array{Float64})
-    return 0.5*Ω_H.*(1-xcol) + 0.02*xcol.*(1-xcol)         #xcol = Ucol/U_H
+function Ω_fnc(Ω_H::Float64, Ω_par::Array{Float64}, xcol::Array{Float64})
+        return Ω_H.*(1-xcol).*(0.5 + Ω_par[1]*xcol + Ω_par[2]*xcol.^2 + Ω_par[3]*xcol.^3 + Ω_par[4]*xcol.^4)     #xcol = Ucol/U_H
 end
 
+function Ωpar_updater!(crd::Cord, Ω_I::Ω_and_I, ils::LS)
+    Ucol = ils.ULS; U_H =  Ucol[1]
+    Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol
+    Inum = Ω_I.Ispl(Ucol)
+    Inew = Inum.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1]) +  Iexp.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1])
 
-function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS)
+    xcol = Ucol/U_H;  Ω_H  = crd.Ω_H
+
+    Ωmodel(x, p) = Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4)
+    Imodel(x, p) = 2*(U_H*x).*(  Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4) )
+    Ifit = curve_fit(Imodel, xcol, Inew, [0., 0., 0., 0.])
+    Ωnew = Ωmodel(xcol, Ifit.param)
+    return Ifit.param
+end
+
+# function Ωpar_updater!(crd::Cord, Ω_I::Ω_and_I, ils::LS, Ω_par::Array{Float64})
+#     U_H  =  ils.ULS[1]
+#     Ucol =  collect(linspace(0., U_H, crd.μlen))
+#     Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol
+#     Inum = Ω_I.Ispl(Ucol)
+#     Inew = Iexp.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1]) +  Inum.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1])
+#     Ωnew = Inew./(2*Ucol+1.e-10); Ωnew[1] = 0.5*crd.Ω_H; Ωnew[end] = 0.
+#
+#     xcol = Ucol/U_H;  Ω_H  = crd.Ω_H
+#
+#     Ωmodel(x, p) = Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4)
+#     Ωfit = curve_fit(Ωmodel, xcol, Ωnew,  Ω_par)
+#     return Ωfit.param
+# end
+
+# function Ωpar_updater!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS, lsn::LS_neighbors)
+#     Ucol, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I, lsn)
+#
+
+
+
+
+function ΩI_updater!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, ils::LS, Ω_par::Array{Float64})
     U_H  = ils.ULS[1]
     Ispl = I_solver(Ω_I, U_H)
-
-    # Ωmodel(x, p) =       (U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
-    # Imodel(x, p) =  2*x.*(U_H-x).*(0.5*crd.Ω_H/U_H + p[1].* x + p[2].* x.^2 + p[3].* x.^3 + p[4] .* x.^3)
-    #
-    # Ifit = curve_fit(Imodel, ils.ULS, Ispl(ils.ULS), [0., 0., 0., 0.])
-    # Ωnew = Ωmodel(ils.ULS, Ifit.param); Ωnew = max(Ωnew, 0.)
-    # Ωold = ils.Ω  #Ω_I.Ωspl(ils.ULS)
-    # Ωnew = Ωold + 0.1*(Ωnew-Ωold)
-    #
-    # Inew = 2.*ils.ULS.*Ωnew                                         #impose the strict relation
-    # Ispl = Spline1D(reverse(ils.ULS), reverse(Inew), bc = "zero")   #Ispl here is only an approx,
-                                                                    #since ils.ULS will be updated when new LS is located
-    # Ipnew = derivative(Ispl, ils.ULS)
-    # IIpspl = Spline1D(reverse(ils.ULS), reverse(Inew.*Ipnew), bc = "zero")
-
-    Ωnew = Ω_fnc(crd.Ω_H, ils.ULS/U_H)
+    Ωnew = Ω_fnc(crd.Ω_H, Ω_par, ils.ULS/U_H)
     Ωspl = Spline1D(reverse(ils.ULS), reverse(Ωnew), bc="zero")
-
     return Ω_and_I(U, crd, Ωspl, Ispl, Ω_I.IIpspl)
 end
 
@@ -117,10 +166,6 @@ function I_solver(Ω_I::Ω_and_I, U_H::Float64)
     δU  = U_H/(length(Ubm)-1)
     IIp = Ω_I.IIpspl(Ubm)
     Isq = zeros(Ubm)
-
-    # for iter = 2:length(Isq)
-    #     Isq[iter] = Isq[iter-1] + 2*(IIp[iter]+IIp[iter-1])*0.5*δU
-    # end
 
     iter = 2
     while iter <= length(Isq) && Isq[iter-1] >= 0.
@@ -202,24 +247,26 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, lsn::LS
     β = Δ .* Σ + 2r .*(r.^2+crd.a^2)
 
     Ωspl = Ω_I.Ωspl
-    Ω    = evaluate(Ωspl, reshape(U,  length(U)) )
-    Ω    = reshape(Ω, size(U))
-    #I    = 2*Ω.*U
-    I    = evaluate(Ω_I.Ispl, reshape(U,  length(U)) )
-    I    = reshape(I, size(U))
+    Ucol = U[1,1:idx]
+    Iexp = 2*Ωspl(Ucol).*Ucol
+    Inum = Ω_I.Ispl(Ucol)
 
-    κ    = grd.κ
+    #Icol = Iexp.*(Ucol-Ucol[1])/(Ucol[idx]-Ucol[1]) +  Inum.*(Ucol[idx] -Ucol)/(Ucol[idx]-Ucol[1])
+    Icol = Iexp
+    κcol = grd.κ[1,1:idx]
 
-    B2mE2 = -κ .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* I.^2
-    B2pE2 = (κ + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* I.^2 + 1.e-6
+    B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2) + Σ .* Icol.^2
+    B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2) +  Σ .* Iexp.^2
     fsq   = B2mE2./B2pE2
 
+    fsq2_spl = Spline1D(Ucol, fsq.^2)
+    fsq2_avg = integrate(fsq2_spl, Ucol[1], Ucol[end])/(Ucol[end]-Ucol[1])
 
-    plot(r[1,1:150], Σ[1,1:150] .* I[1,1:150].^2, "k")
-    plot(r[1,1:150], κ[1,1:150] .* (Δ[1,1:150] .* ∂rU[1,1:150].^2 + ∂μU[1,1:150].^2), "r-")
-    plot(r[1,1:150], κ[1,1:150] .* (Δ[1,1:150] .* ∂rU[1,1:150].^2), "b--")
-    plot(r[1,1:150], κ[1,1:150] .* (∂μU[1,1:150].^2), "r--")
-    return r, fsq, B2mE2
+    plot(Ucol, Σ .* Icol.^2, "k")
+    plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2), "r")
+    plot(Ucol, κcol .* (Δ .* ∂rU.^2), "b--")
+    plot(Ucol, κcol .* (∂μU.^2), "r--")
+    return Ucol, fsq, fsq2_avg
 end
 
 
