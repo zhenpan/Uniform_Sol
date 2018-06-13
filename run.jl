@@ -3,7 +3,7 @@ include("GS.jl")
 include("SOR.jl")
 include("func.jl")
 
-crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.0)
+crd      = Cord(Rlen = 512, μlen = 64, a = 0.998, rmax = 100., xbd = 3.0)
 mtr      = Geom(crd)
 Ω_par    = [0.12, 0.02, 0.04, 0.0] #[-0.008, 0.663, -0.985, 0.526]
 U, Ω_I, U_H   = Init(crd, mtr, Ω_par)
@@ -43,11 +43,11 @@ for Ωpar_loop = 1:3
     Ω_par =  Ωpar_updater!(crd, Ω_I, ils)
 end
 
-
-plot(U[1, 145:154])
-plot(U[2, 145:154], "--")
-plot(U[3, 145:154], "k")
-plot(U[4, 145:154], "k--")
+idx = crd.idx_r2
+plot(U[1, idx-5:idx+5])
+plot(U[2, idx-5:idx+5], "--")
+plot(U[3, idx-5:idx+5], "k")
+plot(U[4, idx-5:idx+5], "k--")
 
 
 Ucol, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I, lsn)

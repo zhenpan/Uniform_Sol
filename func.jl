@@ -23,41 +23,6 @@ function Proj(U::Array{Float64,2}, crd::Cord, ils::LS, lsn::LS_neighbors)
     return Umns, Upls
 end
 
-
-function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
-    for μidx = 2:crd.μlen-1
-        Ridx = lsn.lsn_idx[μidx]
-        x    = [crd.R[μidx, Ridx-2], crd.R[μidx, Ridx+3]]
-        y    = [U[μidx, Ridx-2], U[μidx, Ridx+3]]        #the next near points
-        spl  = Spline1D(x, y, k=1)
-        U[μidx, Ridx-1] = spl(crd.R[μidx, Ridx-1])
-        U[μidx, Ridx]   = spl(crd.R[μidx, Ridx])
-        U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
-        U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
-    end
-
-    for μidx = 2:crd.μlen-1
-        Ridx = lsn.lsn_idx[μidx]
-
-        U[μidx, Ridx-1] = (U[μidx, Ridx-1] < U[μidx-1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
-        U[μidx, Ridx]   = (U[μidx, Ridx  ] < U[μidx-1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
-        U[μidx, Ridx+1] = (U[μidx, Ridx+1] < U[μidx-1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
-        U[μidx, Ridx+2] = (U[μidx, Ridx+2] < U[μidx-1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
-    end
-
-    for μidx = 2:crd.μlen-1
-        Ridx = lsn.lsn_idx[μidx]
-
-        U[μidx, Ridx-1] = (U[μidx, Ridx-1] > U[μidx+1, Ridx-1]) ? U[μidx, Ridx-1]: 0.5*(U[μidx+1, Ridx-1]+U[μidx-1, Ridx-1])
-        U[μidx, Ridx]   = (U[μidx, Ridx  ] > U[μidx+1, Ridx  ]) ? U[μidx, Ridx  ]: 0.5*(U[μidx+1, Ridx  ]+U[μidx-1, Ridx  ])
-        U[μidx, Ridx+1] = (U[μidx, Ridx+1] > U[μidx+1, Ridx+1]) ? U[μidx, Ridx+1]: 0.5*(U[μidx+1, Ridx+1]+U[μidx-1, Ridx+1])
-        U[μidx, Ridx+2] = (U[μidx, Ridx+2] > U[μidx+1, Ridx+2]) ? U[μidx, Ridx+2]: 0.5*(U[μidx+1, Ridx+2]+U[μidx-1, Ridx+2])
-    end
-
-    return U
-end
-
-
 #update IIp
 function IIp_updater!(U, crd, Ω_I, ils, lsn; Isf = 0.02, xbd = 4.0)
     U = USmooth!(U, lsn, crd)                       #smooth the neighbors before interpolation
