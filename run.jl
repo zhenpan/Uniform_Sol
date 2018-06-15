@@ -5,7 +5,7 @@ include("func.jl")
 
 crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.0)
 mtr      = Geom(crd)
-Ω_par    = [0.12, 0.02, 0.04, 0.0] #[-0.008, 0.663, -0.985, 0.526]
+Ω_par    = [0.1, 0.02, 0.04, 0.0]
 U, Ω_I, U_H   = Init(crd, mtr, Ω_par)
 grd      = Grid(crd, mtr, Ω_I)
 ils      = LS(U, grd, crd, Ω_I)
@@ -40,7 +40,7 @@ for Ωpar_loop = 1:3
             plot(Ubm, Ispl(Ubm)/U_H, "k--")
             plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
     end
-    Ω_par =  Ωpar_updater!(crd, Ω_I, ils)
+    Ω_par =  Ωpar_updater!(U, crd, grd, Ω_I, ils, Isf = 0.1)
 end
 
 
@@ -50,9 +50,9 @@ plot(U[3, 145:154], "k")
 plot(U[4, 145:154], "k--")
 
 
-Ucol, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I, lsn)
-plot(Ucol, fsq, lw = 2)
-plot(Ucol, zeros(Ucol), "--")
+Ueqt, B2mE2, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
+plot(Ueqt, fsq, lw = 2)
+plot(Ueqt, zeros(Ucol), "--")
 
 Ubm = linspace(0., U_H, 2048)
 fig = figure(figsize=(8,10))
