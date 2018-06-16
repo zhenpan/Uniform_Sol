@@ -13,7 +13,7 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen); Res = 0.
 bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
-for Ωpar_loop = 1:3
+for Ωpar_loop = 1:5
     for BCloop = 1:20
         for Ωloop = 1:200
             for Iloop = 1:5
@@ -44,51 +44,55 @@ for Ωpar_loop = 1:3
 end
 
 
-plot(U[1, 145:154])
-plot(U[2, 145:154], "--")
-plot(U[3, 145:154], "k")
-plot(U[4, 145:154], "k--")
+# plot(U[1, 145:154])
+# plot(U[2, 145:154], "--")
+# plot(U[3, 145:154], "k")
+# plot(U[4, 145:154], "k--")
 
 
 Ueqt, B2mE2, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
 plot(Ueqt, fsq, lw = 2)
-plot(Ueqt, zeros(Ucol), "--")
+plot(Ueqt, zeros(Ueqt), "--")
 
-Ubm = linspace(0., U_H, 2048)
+@save "/tmp/a99.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
+
+using JLD
+using PyPlot
+include("GS.jl")
+include("SOR.jl")
+include("func.jl")
+
+@load "/tmp/a99.jld"
+
+Ubm = linspace(0., U_H, 64)
 fig = figure(figsize=(8,10))
 subplot(311)
 plot(Ubm/U_H, Ω_I.Ωspl(Ubm)/crd.Ω_H, lw = 3, "k")
 ylim(0., 0.51)
 ylabel(L"$\Omega/ \Omega_{\rm H}$", fontsize = 20)
 tick_params(axis="both", which="major", labelsize=14)
+ax = gca()
+My = matplotlib[:ticker][:MultipleLocator](0.1) # Define interval of major ticks
+ax[:yaxis][:set_major_locator](My)
 
 subplot(312)
-plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/U_H, lw = 3, "k")
-ylim(-0.025, 0.025)
-ylabel(L"$II'/ A_\phi^{\rm H}$", fontsize = 20)
+plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/(crd.Ω_H*U_H), lw = 3, "k")
+ylim(-0.06, 0.06)
+ylabel(L"$II'/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
 tick_params(axis="both", which="major", labelsize=14)
+bx = gca()
+My = matplotlib[:ticker][:MultipleLocator](0.03) # Define interval of major ticks
+bx[:yaxis][:set_major_locator](My)
 
 subplot(313)
-plot(Ubm/U_H, 2*Ω_I.Ωspl(Ubm).*Ubm/U_H, lw = 3, "k")
-ylim(0., 0.12)
+plot(Ubm/U_H, 2*Ω_I.Ωspl(Ubm).*Ubm/(crd.Ω_H*U_H), lw = 3, "k")
+ylim(0., 0.29)
 xlabel(L"$A_\phi/ A_\phi^{\rm H}$", fontsize = 20)
 ylabel(L"$I/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
-tick_params(axis="both", which="major", labelsize=14)
+tick_params(axis="both", which="major",labelsize=14)
+cx = gca()
+My = matplotlib[:ticker][:MultipleLocator](0.06) # Define interval of major ticks
+cx[:yaxis][:set_major_locator](My)
+
 tight_layout()
 savefig("f2.pdf")
-
-# figure(figsize=(6,5))
-# xlabel(L"$r/M$", fontsize = 20)
-# ylabel(L"$\frac{B^2-E^2}{B^2+E^2}|_{\mu = 0}$", fontsize = 20)
-# tick_params(axis="both", which="major", labelsize=14)
-# xmajorLocator = matplotlib[:ticker][:MultipleLocator](0.2)
-# ymajorLocator = matplotlib[:ticker][:MultipleLocator](0.25)
-# xminorLocator = matplotlib[:ticker][:MultipleLocator](0.04)
-# yminorLocator = matplotlib[:ticker][:MultipleLocator](0.05)
-#
-# ax = axes()
-# ax[:xaxis][:set_major_locator](xmajorLocator)
-# ax[:yaxis][:set_major_locator](ymajorLocator)
-# ax[:xaxis][:set_minor_locator](xminorLocator)
-# ax[:yaxis][:set_minor_locator](yminorLocator)
-# tight_layout()
