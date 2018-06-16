@@ -55,6 +55,7 @@ plot(Ueqt, fsq, lw = 2)
 plot(Ueqt, zeros(Ueqt), "--")
 
 @save "/tmp/a99.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
+#@save "/tmp/a998.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
 
 using JLD
 using PyPlot
