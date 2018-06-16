@@ -130,7 +130,7 @@ function Ωpar_updater!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_
     Imodel(x, p) = 2*(U_H*x).*(  Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4) )
     Ifit = curve_fit(Imodel, xcol, Inew, [0., 0., 0., 0.])
     Ωnew = Ωmodel(xcol, Ifit.param)
-    return Ifit.param
+    return Ifit.param, fsq2_avg
 end
 
 # function Ωpar_updater!(crd::Cord, Ω_I::Ω_and_I, ils::LS, Ω_par::Array{Float64})
@@ -257,35 +257,3 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     plot(Ucol, κcol .* (∂μU.^2)./Σ, "r--")
     return Ucol, B2mE2, fsq, fsq2_avg
 end
-
-
-# function Znajek(crd::Cord, Ω_I::Ω_and_I, U_H::Float64)
-#     a   = crd.a
-#     Ω_H = crd.Ω_H
-#     μcol= crd.μcol
-#
-#     Ispl = I_solver(Ω_I)
-#     Ωspl = Ω_I.Ωspl
-#
-#     Utmp = linspace(0., U_H, 512)
-#     Ispl_nm = Spline1D(Utmp/U_H, Ispl(Utmp)/U_H)
-#     Ωspl_nm = Spline1D(Utmp/U_H, Ωspl(Utmp))
-#
-#     rmin = 1. + sqrt(1. - a^2)
-#     Gμ   = (1-μcol)./(1+μcol) .* exp(a^2/rmin * μcol)
-#
-#     A  = collect(linspace(1., 0., 1024))
-#     δA = (A[end]-A[1])/(length(A)-1)
-#     IA = Ispl_nm(A); IA[end] = 0.
-#     fA = IA ./ 2 ./ (Ω_H - Ωspl_nm(A))
-#
-#     tmp = zeros(A)
-#     for i = 2:length(fA)
-#         tmp[i] =  0.5*(1/fA[i-1] + 1/fA[i])
-#     end
-#     FA = exp(cumsum(tmp) .* δA)
-#
-#     Aspl = Spline1D(reverse(FA), reverse(A))
-#     U_bc = Aspl(Gμ)
-#     return U_H*U_bc
-# end

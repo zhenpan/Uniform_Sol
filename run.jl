@@ -13,7 +13,9 @@ lsn      = LS_neighbors(U, ils, grd, crd)
 δU       = zeros(crd.μlen); Res = 0.
 bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
-for Ωpar_loop = 1:5
+Ωpar_loop = 1; fsq2_avg  = 0.1
+
+while (Ωpar_loop <= 15) & (fsq2_avg > 1.e-4)
     for BCloop = 1:20
         for Ωloop = 1:200
             for Iloop = 1:5
@@ -40,7 +42,9 @@ for Ωpar_loop = 1:5
             plot(Ubm, Ispl(Ubm)/U_H, "k--")
             plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
     end
-    Ω_par =  Ωpar_updater!(U, crd, grd, Ω_I, ils, Isf = 0.1)
+    Ω_par, fsq2_avg =  Ωpar_updater!(U, crd, grd, Ω_I, ils, Isf = 0.1)
+    Ωpar_loop +=1
+    println("fsq2_avg = $fsq2_avg")
 end
 
 
@@ -54,8 +58,9 @@ Ueqt, B2mE2, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
 plot(Ueqt, fsq, lw = 2)
 plot(Ueqt, zeros(Ueqt), "--")
 
-@save "/tmp/a99.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
-#@save "/tmp/a998.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
+using JLD
+@save "/home/zhenpan/Astroph/Uniform_Sol/a99.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
+#@save "/home/zhenpan/Astroph/Uniform_Sol/a998.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
 
 using JLD
 using PyPlot
@@ -63,13 +68,14 @@ include("GS.jl")
 include("SOR.jl")
 include("func.jl")
 
-@load "/tmp/a99.jld"
+@load "/home/zhenpan/Astroph/Uniform_Sol/a99.jld"
 
 Ubm = linspace(0., U_H, 64)
 fig = figure(figsize=(8,10))
 subplot(311)
-plot(Ubm/U_H, Ω_I.Ωspl(Ubm)/crd.Ω_H, lw = 3, "k")
-ylim(0., 0.51)
+plot(Ubm/U_H, Ω_I.Ωspl(Ubm)/crd.Ω_H, lw = 2, "k")
+plot(Ubm/U_H, 0.5*(1-Ubm/U_H), lw = 2, "r--")
+ylim(0., 0.52)
 ylabel(L"$\Omega/ \Omega_{\rm H}$", fontsize = 20)
 tick_params(axis="both", which="major", labelsize=14)
 ax = gca()
@@ -77,8 +83,8 @@ My = matplotlib[:ticker][:MultipleLocator](0.1) # Define interval of major ticks
 ax[:yaxis][:set_major_locator](My)
 
 subplot(312)
-plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/(crd.Ω_H*U_H), lw = 3, "k")
-ylim(-0.06, 0.06)
+plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/(crd.Ω_H*U_H), lw = 2, "k")
+ylim(-0.07, 0.062)
 ylabel(L"$II'/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
 tick_params(axis="both", which="major", labelsize=14)
 bx = gca()
@@ -86,8 +92,8 @@ My = matplotlib[:ticker][:MultipleLocator](0.03) # Define interval of major tick
 bx[:yaxis][:set_major_locator](My)
 
 subplot(313)
-plot(Ubm/U_H, 2*Ω_I.Ωspl(Ubm).*Ubm/(crd.Ω_H*U_H), lw = 3, "k")
-ylim(0., 0.29)
+plot(Ubm/U_H, 2*Ω_I.Ωspl(Ubm).*Ubm/(crd.Ω_H*U_H), lw = 2, "k")
+ylim(0., 0.32)
 xlabel(L"$A_\phi/ A_\phi^{\rm H}$", fontsize = 20)
 ylabel(L"$I/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
 tick_params(axis="both", which="major",labelsize=14)
