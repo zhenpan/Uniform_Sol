@@ -214,7 +214,7 @@ function Rμ2xy(crd, U, ils; xmax = 3., ymax = 4., len = 1024, Umax = 9.0, cnum 
     xhz = sqrt(rhz^2 - yhz.^2)
 
     levels = linspace(0.005, Umax, cnum)
-    figure(figsize=(5,6))
+    figure(figsize=(5, 6))
     contour(Uxy, levels, extent = (0, xmax, 0, ymax), colors = "k")
     plot(xIRS, yIRS, "r-")
     plot(xILS, yILS,  "k--")

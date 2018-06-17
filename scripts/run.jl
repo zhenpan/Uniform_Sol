@@ -71,35 +71,52 @@ include("func.jl")
 @load "/home/zhenpan/Astroph/Uniform_Sol/a99.jld"
 
 Ubm = linspace(0., U_H, 64)
-fig = figure(figsize=(8,10))
-subplot(311)
-plot(Ubm/U_H, Ω_I.Ωspl(Ubm)/crd.Ω_H, lw = 2, "k")
-plot(Ubm/U_H, 0.5*(1-Ubm/U_H), lw = 2, "r--")
+fig = figure(figsize=(5, 3.6))
+plot(Ubm, Ω_I.Ωspl(Ubm)/crd.Ω_H, lw = 2, "k")
+plot(Ubm, 0.5*(1-Ubm/U_H), lw = 2, "r--")
 ylim(0., 0.52)
+xlabel(L"$A_\phi$", fontsize = 20)
 ylabel(L"$\Omega/ \Omega_{\rm H}$", fontsize = 20)
-tick_params(axis="both", which="major", labelsize=14)
+tick_params(axis="both", which="major", length =4, labelsize=14)
 ax = gca()
+mx = matplotlib[:ticker][:MultipleLocator](0.5)
 My = matplotlib[:ticker][:MultipleLocator](0.1) # Define interval of major ticks
+my = matplotlib[:ticker][:MultipleLocator](0.05)
+ax[:xaxis][:set_minor_locator](mx)
 ax[:yaxis][:set_major_locator](My)
-
-subplot(312)
-plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/(crd.Ω_H*U_H), lw = 2, "k")
-ylim(-0.07, 0.062)
-ylabel(L"$II'/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
-tick_params(axis="both", which="major", labelsize=14)
-bx = gca()
-My = matplotlib[:ticker][:MultipleLocator](0.03) # Define interval of major ticks
-bx[:yaxis][:set_major_locator](My)
-
-subplot(313)
-plot(Ubm/U_H, 2*Ω_I.Ωspl(Ubm).*Ubm/(crd.Ω_H*U_H), lw = 2, "k")
-ylim(0., 0.32)
-xlabel(L"$A_\phi/ A_\phi^{\rm H}$", fontsize = 20)
-ylabel(L"$I/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
-tick_params(axis="both", which="major",labelsize=14)
-cx = gca()
-My = matplotlib[:ticker][:MultipleLocator](0.06) # Define interval of major ticks
-cx[:yaxis][:set_major_locator](My)
-
+ax[:yaxis][:set_minor_locator](my)
 tight_layout()
 savefig("f2.pdf")
+
+# fig = figure(figsize=(8,10))
+# subplot(311)
+# plot(Ubm/U_H, Ω_I.Ωspl(Ubm)/crd.Ω_H, lw = 2, "k")
+# plot(Ubm/U_H, 0.5*(1-Ubm/U_H), lw = 2, "r--")
+# ylim(0., 0.52)
+# ylabel(L"$\Omega/ \Omega_{\rm H}$", fontsize = 20)
+# tick_params(axis="both", which="major", labelsize=14)
+# ax = gca()
+# My = matplotlib[:ticker][:MultipleLocator](0.1) # Define interval of major ticks
+# ax[:yaxis][:set_major_locator](My)
+#
+# subplot(312)
+# plot(Ubm/U_H, Ω_I.IIpspl(Ubm)/(crd.Ω_H*U_H), lw = 2, "k")
+# ylim(-0.07, 0.062)
+# ylabel(L"$II'/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
+# tick_params(axis="both", which="major", labelsize=14)
+# bx = gca()
+# My = matplotlib[:ticker][:MultipleLocator](0.03) # Define interval of major ticks
+# bx[:yaxis][:set_major_locator](My)
+#
+# subplot(313)
+# plot(Ubm/U_H, 2*Ω_I.Ωspl(Ubm).*Ubm/(crd.Ω_H*U_H), lw = 2, "k")
+# ylim(0., 0.32)
+# xlabel(L"$A_\phi/ A_\phi^{\rm H}$", fontsize = 20)
+# ylabel(L"$I/ (\Omega_{\rm H}A_\phi^{\rm H})$", fontsize = 20)
+# tick_params(axis="both", which="major",labelsize=14)
+# cx = gca()
+# My = matplotlib[:ticker][:MultipleLocator](0.06) # Define interval of major ticks
+# cx[:yaxis][:set_major_locator](My)
+#
+# tight_layout()
+# savefig("f2.pdf")
