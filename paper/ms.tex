@@ -43,7 +43,19 @@
 \date{\today}
 
 \begin{abstract}
-    xx
+    The role of boundary conditions in the structure of
+    a force-free black hole magnetosphere was rarely discussed, since previous studies have been focused on the
+    the field lines entering the horizon which is causally disconnected and on which the boundary
+    condition imposed usually makes no difference to the magnetosphere structure. However,
+    recent high-resolution general relativistic (GR) force-free simulation shows that there are both
+    field lines entering the horizon and field lines ending up on the equatorial current sheet
+    within the ergosphere for asymptotic uniform field. For the latter, the equatorial boundary
+    condition is well approximated being marginally force-free, i.e., $B^2-E^2=0$, where $B$ and
+    $E$ are the magnetic and electric field strength, respectively. In this paper, we revisit this
+    problem by solving the GR Grad-Shafranov equation which governs the structure of
+    the force-free magnetosphere in steady state and self-consistently imposing the marginally force-free equatorial
+    condition. We also discuss the applicability of this boundary condition and the numerical algorithm proposed
+    in this paper for general magnetic field configurations.
 \end{abstract}
 
 
@@ -120,48 +132,57 @@ where ``HE" and ``EE" are short for Horizon-Equator and Ergosphere-Equator, resp
 \subsection{Numerical method}
 We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ satisfying the radiation condition
 \be I = 2\Omega A_\phi, \label{eq:rad}\ee
-and suitable $\Am(\mu =0, r_+\leq r \leq 2)$
-enabling the boundary condition (\ref{eq:bc3}).
+enabling field lines smoothly crossing the LS,
+and suitable normal derivative $\Am(\mu =0, r_+\leq r \leq 2)$ on the equator
+guaranteeing the boundary condition (\ref{eq:bc3}).
 
-1. We choose an initial guess for the field configuration, $\Omega(\Ap)$ and equator boundary condition as follows
+In our computation, we define a new radial coordinate $R=r/(1+r)$, confine our
+computation domain $R\times \mu$ in the region $[R(r_+), 1]\times [0,1]$,
+and implement a uniform $512\times 64$ grid. The detailed algorithm is listed as follows.
+
+1. We choose an initial guess for the field configuration, $\Omega(\Ap)$, $I(\Ap)$
+and equator boundary condition as follows
 \begin{subequations}
 \begin{align}
     \Ap &= r^2 \sst,  \label{eq:gss1} \\
-    \Omega & = 0.5\WH\left(1-\Ap/\AHE\right), \label{eq:gss2}\\
-    \Am(\mu =0, r_+\leq r \leq 2) & = -1\times (r/r_+)^3. \label{eq:gss3}
+    \Omega & = 0.5\WH\left(1-\Ap/\AHE\right),  \label{eq:gss2}\\
+    I & = \WH \Ap\left(1-\Ap/\AHE\right) , \\
+    \Am(\mu =0, r_+\leq r \leq 2) & = - (r/r_+)^3. \label{eq:gss3}
 \end{align}
 \end{subequations}
 
-2. We evolve the GS equation and find $II'$ enabling smooth field lines across the LS
-\cite[see][for details]{Contopoulos2013, Nathanail2014, Pan2016a}.
+2. We evolve the GS equation (\ref{eq:GSg}) and adjust $II'(\Ap)$ enabling smooth field lines across the LS
+\cite[see e.g.][for details]{Contopoulos2013, Nathanail2014, Pan2016a, Mahlmann2018}.
 
 3. Usually the current $I$ found in Step 2 neither satisfies the radiation condition (\ref{eq:rad})
-nor enables the boundary condition (\ref{eq:bc3}). We find it is possible to adjust
+nor guarantees the boundary condition (\ref{eq:bc3}). We find it is possible to adjust
 $\Am(\mu = 0, r_+ \leq r\leq 2)$ as follows
 \be
- A_{\phi,\mu\rm new}  = A_{\phi,\mu \rm old} + \zeta_1\times[2\Omega\Ap(2\Omega\Ap)' -II'],
+ A_{\phi,\mu}|_{\rm new}  = A_{\phi,\mu}|_{\rm old} + \zeta_1\times[2\Omega\Ap(2\Omega\Ap)' -II'],
 \ee
 enabling the radiation condition (\ref{eq:rad}) for
 $A_\phi\in [A_\phi^{\rm HE}, A_\phi^{\rm EE}]$, where $\zeta_1$ is an
 empirical step size.
 
-4. The final step is to adjust  $\Omega(\Ap < \AHE)$ enabling  the radiation condition (\ref{eq:rad})
- for $A_\phi < A_\phi^{\rm HE}$ and  to adjust $\Omega(\AHE \leq \Ap \leq \AEE)$
+4. The remaining task is to adjust  $\Omega(0< \Ap < \AHE)$ enabling  the radiation condition (\ref{eq:rad})
+ for $A_\phi \in (0, A_\phi^{\rm HE})$ and  to adjust $\Omega(\AHE \leq \Ap \leq \AEE)$
  enabling the boundary condition (\ref{eq:bc3}) for $\Ap \in [\AHE, \AEE]$.
  The first part is straightforward, i.e.,
  \be
-\Omega_{\rm new}(\Ap < \AHE) = \frac{I}{2\Ap},
+\Omega_{\rm new} = \frac{I}{2\Ap}\Bigg|_{0 < \Ap < \AHE},
  \ee
  and the second part can be realized by
  \be
-\Omega_{\rm new}  = \Omega_{\rm old} - \zeta_2\times\frac{\Delta (B^2-E^2)}{2\Ap}\Big|_{\mu=0, r_+\leq r \leq 2}
+\Omega_{\rm new}  = \Omega_{\rm old} - \zeta_2\times\frac{\Delta (B^2-E^2)}{2\Ap}\Bigg|_{\mu=0, r_+\leq r \leq 2},
  \ee
  where $\zeta_2$ is again an empirical step size, and we have multiplied factor $\Delta$
- to avoid numerical difficulty in the vicinity of the event horizon. To avoid unphysical discontinuity in the angular
- velocity at $\AHE$, we fit $\Omega_{\rm new}(\Ap)$ via a fifth-order polynomial.
+ in the correction term to avoid numerical difficulty in the vicinity of the event horizon.
+ To eliminate unphysical discontinuity in the angular
+ velocity at $\AHE$, we fit $\Omega_{\rm new}(\Ap)$ on the whole range
+ $[0, \AEE]$ via a fifth-order polynomial.
 
  5. For the new angular velocity $\Omega_{\rm new}(\Ap)$ obtained in Step 4, we repeat step 2 to step 4,
- until the numerical prescription (\ref{eq:nbc}) is satisfied.
+ until the numerical prescription (\ref{eq:nbc}) for the boundary condition (\ref{eq:bc3}) is satisfied.
 
 \begin{figure}
 \includegraphics[scale=0.55]{f1}

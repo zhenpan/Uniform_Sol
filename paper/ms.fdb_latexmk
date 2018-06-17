@@ -1,14 +1,14 @@
 # Fdb version 3
-["bibtex ms"] 1529193224 "ms.aux" "ms.bbl" "ms" 1529194267
+["bibtex ms"] 1529269765 "ms.aux" "ms.bbl" "ms" 1529270852
   "/usr/share/texlive/texmf-dist/bibtex/bst/revtex/apsrev4-1.bst" 1284166002 71518 fec93f06df0c073f83d2330456bd19c2 ""
-  "ms.aux" 1529194267 3219 199487de49abe459888e822c9e2c12ee ""
+  "ms.aux" 1529270851 3344 278fb0befcf7958582d57edf8afbe206 ""
   "ms.bcf" 0 -1 0 ""
-  "ms.bib" 1529180281 138966 a313e2ea8964b192ff4fb5511198cc2c ""
-  "msNotes.bib" 1529194267 103 48ad29797468f16e2853d8797278d7af ""
+  "ms.bib" 1529260237 139726 8e86bff11f28fa281781d4311dc63616 ""
+  "msNotes.bib" 1529270851 103 48ad29797468f16e2853d8797278d7af ""
   (generated)
   "ms.bbl"
   "ms.blg"
-["pdflatex"] 1529194267 "ms.tex" "ms.pdf" "ms" 1529194267
+["pdflatex"] 1529270851 "ms.tex" "ms.pdf" "ms" 1529270852
   "/etc/texmf/web2c/texmf.cnf" 1453832662 1101 af7716885e081ab43982cab7b4672c1a ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1246382020 1120 1e8878807317373affa7f7bba4cf2f6a ""
@@ -66,6 +66,7 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb" 1248133631 32587 1788b0c1c5b39540c96f5e42ccd6dae8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1248133631 32716 08e384dc442464e7285e891af9f45947 ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb" 1248133631 32442 c975af247b6702f7ca0c299af3616b80 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb" 1248133631 36310 f5ddc6715cc60deb16d9db5ded6a9391 ""
   "/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii" 1337017135 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty" 1284331290 1458 43ab4710dc82f3edeabecd0d099626b2 ""
@@ -120,13 +121,13 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1504221418 3822874 fee87ed3af6053440d2778bf306ecd8e ""
   "f1.pdf" 1529170577 33276 8dbe47929a23a50e1d114524ad7c6180 ""
   "f2.pdf" 1529171949 13176 669b4efff3b0534f48139e05d05d3297 ""
-  "ms.aux" 1529194267 3219 199487de49abe459888e822c9e2c12ee ""
-  "ms.bbl" 1529193224 4311 7866940ed1b523aa12e2d8c83bf0a983 "bibtex ms"
-  "ms.out" 1529194267 542 7863c485756fed4fcf0e92f8e5f39324 ""
-  "ms.tex" 1529194266 6476 b412f6a3d986fd319c69dafb65fe7e30 ""
+  "ms.aux" 1529270851 3344 278fb0befcf7958582d57edf8afbe206 ""
+  "ms.bbl" 1529269765 5037 17a08c96f71f0356b54082dda07593e3 "bibtex ms"
+  "ms.out" 1529270851 542 7863c485756fed4fcf0e92f8e5f39324 ""
+  "ms.tex" 1529270851 8248 6bbd14b4822160db2d49eff575f98a54 ""
   (generated)
-  "ms.pdf"
-  "ms.log"
   "ms.out"
+  "ms.pdf"
   "msNotes.bib"
+  "ms.log"
   "ms.aux"
