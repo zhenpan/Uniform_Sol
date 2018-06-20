@@ -108,8 +108,7 @@ respect to $\Omega$.
 
 \subsection{Boundary conditions}
 
-The boundary conditions on the polar axis, on the horizon and at infinity are natural.
-
+The boundary conditions
 \begin{subequations}
 \begin{align}
     A_\phi(\mu = 1) &= 0,  \label{eq:bc1}\\
@@ -136,7 +135,7 @@ B^2+E^2 &= \frac{1}{\Sigma \sst} \left[ \left(\mathcal{K}+\frac{\Delta\Sigma}{\b
 where $B^2+E^2$ is the energy density measured by the zero-angular-momentum-observers.
 
 \subsection{Numerical method}
-We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ satisfying the radiation condition
+We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ connected by the radiation condition
 \be I = 2\Omega A_\phi, \label{eq:rad}\ee
 and enabling field lines smoothly crossing the LS,
 and suitable normal derivative $\Am(\mu =0, r_+\leq r \leq 2)$ on the equator
@@ -144,10 +143,12 @@ guaranteeing the boundary condition (\ref{eq:bc3}).
 
 In our computation, we define a new radial coordinate $R=r/(1+r)$, confine our
 computation domain $R\times \mu$ in the region $[R(r_+), 1]\times [0,1]$,
-and implement a uniform $512\times 64$ grid. The detailed algorithm is listed as follows.
+and implement a uniform $512\times 64$ grid. The detailed algorithm is clarified
+in the following steps.
 
-1. We choose an initial guess for the field configuration, $\Omega(\Ap)$, $I(\Ap)$
-and equator boundary condition as follows
+1. We choose an initial guess for the field configuration, functions
+$\{ \Omega(\Ap), I(\Ap)\}$
+and equatorial boundary condition as follows
 \begin{subequations}
 \begin{align}
     \Ap &= r^2 \sst,  \label{eq:gss1} \\
@@ -156,7 +157,7 @@ and equator boundary condition as follows
     \Am(\mu =0, r_+\leq r \leq 2) & = - (r/r_+)^3, \label{eq:gss3}
 \end{align}
 \end{subequations}
-where $\WH = a/2r_+$ is the BH angular velocity.
+where $\WH = a/2r_+$ is the angular velocity of the BH.
 
 2. We evolve the GS equation (\ref{eq:GSg}) and adjust $II'(\Ap)$ enabling smooth field lines across the LS
 \cite[see e.g.][for details]{Contopoulos2013, Nathanail2014, Pan2016a, Mahlmann2018}.
@@ -194,8 +195,10 @@ empirical step size.
 \subsection{Numerical results}
 
 In Figure \ref{fig:field_lines}, we plot the magnetic field lines enclosing a BH with spin $a =0.99$ as an example,
-which displays two generic features: 1) the LS runs from $r=r_+$ to $r=2M$ as $\theta$ varies from $0$ to $\pi/2$,
-2) magnetic field lines entering the ergosphere end up either on the horizon or on the equatorial current sheet,
+which displays three generic features: (1) the LS runs from $r=r_+$ to $r=2M$ as $\theta$ varies from $0$ to $\pi/2$,
+(2) there is no current sheet within the magnetosphere except the equatorial current sheet extending from $r_+$ to $2M$,
+which gives rise to a cusp to the magnetic field lines,
+(3) magnetic field lines entering the ergosphere end up either on the horizon or on the equatorial current sheet,
 both of which carry electric current and therefore Poynting flux.
 
 \begin{figure}
@@ -212,6 +215,10 @@ Dashed: a linear function for comparison.}
 \end{figure}
 
 \section{Comparison with previous studies}
+
+\subsection{Solution uniqueness}
+
+\subsection{Topology of near-horizon field lines}
 
 \section{Summary and Discussions}
 

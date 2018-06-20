@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  17 JUN 2018 16:51
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  18 JUN 2018 18:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -392,45 +392,45 @@ Overfull \hbox (3.98956pt too wide) detected at line 79
  []
 
 
-Overfull \hbox (32.01044pt too wide) detected at line 135
+Overfull \hbox (32.01044pt too wide) detected at line 134
 [][] []
  []
 
-[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] <f1.pdf, id=95, 361.35pt x 433.62pt>
+[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] <f1.pdf, id=104, 361.35pt x 433.62pt>
 File: f1.pdf Graphic file (type pdf)
  <use f1.pdf>
-Package pdftex.def Info: f1.pdf used on input line 202.
+Package pdftex.def Info: f1.pdf used on input line 205.
 (pdftex.def)             Requested size: 198.74312pt x 238.49173pt.
- <f2.pdf, id=96, 361.35pt x 260.17201pt>
+ <f2.pdf, id=105, 361.35pt x 260.17201pt>
 File: f2.pdf Graphic file (type pdf)
  <use f2.pdf>
-Package pdftex.def Info: f2.pdf used on input line 209.
+Package pdftex.def Info: f2.pdf used on input line 212.
 (pdftex.def)             Requested size: 216.81168pt x 156.1044pt.
  (./ms.bbl [2 <./f1.pdf> <./f2.pdf
 
 pdfTeX warning: pdflatex (file ./f2.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]) [3]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 221.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 228.
  (./ms.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 221.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 221.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 228.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 228.
 Package rerunfilecheck Info: File `ms.out' has not changed.
-(rerunfilecheck)             Checksum: CDD69784540E92DF6581C8CCE6460CC8;756.
+(rerunfilecheck)             Checksum: 542919D0C6C32646A9BED9379693A09D;907.
  ) 
 Here is how much of TeX's memory you used:
- 8164 strings out of 493304
- 113977 string characters out of 6139871
+ 8169 strings out of 493304
+ 114033 string characters out of 6139871
  226351 words of memory out of 5000000
- 11471 multiletter control sequences out of 15000+600000
+ 11474 multiletter control sequences out of 15000+600000
  16461 words of font info for 61 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  29i,11n,28p,339b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on ms.pdf (3 pages, 255738 bytes).
+Output written on ms.pdf (3 pages, 258046 bytes).
 PDF statistics:
- 253 PDF objects out of 1000 (max. 8388607)
- 200 compressed objects within 2 object streams
- 38 named destinations out of 1000 (max. 500000)
- 99 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 262 PDF objects out of 1000 (max. 8388607)
+ 208 compressed objects within 3 object streams
+ 40 named destinations out of 1000 (max. 500000)
+ 115 words of extra memory for PDF output out of 10000 (max. 10000000)
 
