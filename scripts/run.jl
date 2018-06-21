@@ -1,9 +1,9 @@
 using PyPlot
-include("GS.jl")
-include("SOR.jl")
-include("func.jl")
+include("scripts/GS.jl")
+include("scripts/SOR.jl")
+include("scripts/func.jl")
 
-crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.0)
+crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.2)
 mtr      = Geom(crd)
 Ω_par    = [0.1, 0.02, 0.04, 0.0]
 U, Ω_I, U_H   = Init(crd, mtr, Ω_par)
@@ -15,7 +15,7 @@ bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
 Ωpar_loop = 1; fsq2_avg  = 0.1
 
-while (Ωpar_loop <= 15) & (fsq2_avg > 1.e-4)
+while (Ωpar_loop <= 20) & (fsq2_avg > 1.e-4)
     for BCloop = 1:20
         for Ωloop = 1:200
             for Iloop = 1:5
@@ -59,7 +59,7 @@ plot(Ueqt, fsq, lw = 2)
 plot(Ueqt, zeros(Ueqt), "--")
 
 using JLD
-@save "/home/zhenpan/Astroph/Uniform_Sol/a99.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
+@save "/home/zhenpan/Astroph/Uniform_Sol/scripts/a99.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
 #@save "/home/zhenpan/Astroph/Uniform_Sol/a998.jld" crd mtr Ω_par U Ω_I U_H grd ils Ueqt fsq fsq2_avg
 
 using JLD
