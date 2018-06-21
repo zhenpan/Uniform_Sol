@@ -116,11 +116,16 @@ function Ω_fnc(Ω_H::Float64, Ω_par::Array{Float64}, xcol::Array{Float64})
 end
 
 function Ωpar_updater!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS; Isf = 0.02)
-    Ueqt, B2mE2, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
-    B2mE2_spl = Spline1D(Ueqt, B2mE2, bc="zero")
+    # Ueqt, B2mE2, B2mE2_exp, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
+    # B2mE2_spl = Spline1D(Ueqt, B2mE2, bc="zero")
+    # Ucol = ils.ULS; U_H =  Ucol[1]
+    # Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*B2mE2_spl(Ucol)   # 2Ωψ + (B2-E2) correction
 
+    Ueqt, B2mE2, B2mE2_exp, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
+    Icrt_spl  = Spline1D(Ueqt, B2mE2-B2mE2_exp)
     Ucol = ils.ULS; U_H =  Ucol[1]
-    Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*B2mE2_spl(Ucol)   # 2Ωψ + (B2-E2) correction
+    Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*Icrt_spl(Ucol)
+
     Inum = Ω_I.Ispl(Ucol)
     Inew = Inum.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1]) +  Iexp.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1])
 
@@ -227,7 +232,7 @@ end
 
 function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     idx = crd.idx_r2
-    ∂1U = (U[1, 2:idx+1] - U[1, 1:idx]) ./ crd.δR
+    ∂1U = zeros(idx);  ∂1U[2:idx] = (U[1, 2:idx] - U[1, 1:idx-1]) ./ crd.δR
     ∂2U = (U[2, 1:idx] - U[1, 1:idx]) ./ crd.δμ
 
     Rcol = crd.R[1, 1:idx]
@@ -248,12 +253,17 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ + Icol.^2
     fsq   = B2mE2./B2pE2
 
-    fsq2_spl = Spline1D(Ucol, fsq.^2)
+    fsq_exp   = 0.1*exp(-(r-crd.rmin)/0.1)
+    B2mE2_exp = B2pE2.*fsq_exp
+
+    fsq2_spl = Spline1D(Ucol, (fsq-fsq_exp).^2)
     fsq2_avg = integrate(fsq2_spl, Ucol[1], Ucol[end])/(Ucol[end]-Ucol[1])
 
-    plot(Ucol, Icol.^2, "k")
-    plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ, "r")
-    plot(Ucol, κcol .* (Δ .* ∂rU.^2)./Σ, "b--")
-    plot(Ucol, κcol .* (∂μU.^2)./Σ, "r--")
-    return Ucol, B2mE2, fsq, fsq2_avg
+    # plot(Ucol, Icol.^2, "k")
+    # plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ, "r")
+    # plot(Ucol, κcol .* (Δ .* ∂rU.^2)./Σ, "b--")
+    # plot(Ucol, κcol .* (∂μU.^2)./Σ, "r--")
+    plot(Ucol, B2mE2)
+    plot(Ucol, B2mE2_exp, "--")
+    return Ucol, B2mE2, B2mE2_exp, fsq, fsq2_avg
 end
