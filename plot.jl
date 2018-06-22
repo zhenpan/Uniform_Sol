@@ -5,7 +5,7 @@ include("scripts/SOR.jl")
 include("scripts/func.jl")
 
 Ω_sim = readdlm("/home/zhenpan/Astroph/Uniform_Sol/psi_omegaf_a_0.990.out")
-@load "/home/zhenpan/Astroph/Uniform_Sol/scripts/a99.jld"
+@load "/home/zhenpan/Astroph/Uniform_Sol/scripts/a99_Icrt.jld"
 
 Ubm = linspace(0., U_H, 64)
 fig = figure(figsize=(5, 3.6))
@@ -24,4 +24,4 @@ ax[:xaxis][:set_minor_locator](mx)
 ax[:yaxis][:set_major_locator](My)
 ax[:yaxis][:set_minor_locator](my)
 tight_layout()
-savefig("f2.pdf")
+savefig("f2b.pdf")

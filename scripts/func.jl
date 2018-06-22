@@ -116,42 +116,23 @@ function Ω_fnc(Ω_H::Float64, Ω_par::Array{Float64}, xcol::Array{Float64})
 end
 
 function Ωpar_updater!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS; Isf = 0.02)
-    # Ueqt, B2mE2, B2mE2_exp, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
-    # B2mE2_spl = Spline1D(Ueqt, B2mE2, bc="zero")
-    # Ucol = ils.ULS; U_H =  Ucol[1]
-    # Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*B2mE2_spl(Ucol)   # 2Ωψ + (B2-E2) correction
+    Ucol = reverse(ils.ULS); U_H =  Ucol[end]
 
     Ueqt, B2mE2, B2mE2_exp, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
-    Icrt_spl  = Spline1D(Ueqt, B2mE2-B2mE2_exp)
-    Ucol = ils.ULS; U_H =  Ucol[1]
-    Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*Icrt_spl(Ucol)
-
-    Inum = Ω_I.Ispl(Ucol)
-    Inew = Inum.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1]) +  Iexp.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1])
+    Icrt2_spl  = Spline1D(Ueqt, B2mE2-B2mE2_exp, bc="zero")
+    I_eqt = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*Icrt2_spl(Ucol)
+    #Icrt1 = Ω_I.Ispl(Ucol) - 2*Ω_I.Ωspl(Ucol).*Ucol
+    #I_hrz = 2*Ω_I.Ωspl(Ucol).*Ucol + Isf*Icrt
+    I_hrz = Ω_I.Ispl(Ucol)
+    I_new = I_hrz.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1]) + I_eqt.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1])
 
     xcol = Ucol/U_H;  Ω_H  = crd.Ω_H
-
     Ωmodel(x, p) = Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4)
     Imodel(x, p) = 2*(U_H*x).*(  Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4) )
-    Ifit = curve_fit(Imodel, xcol, Inew, [0., 0., 0., 0.])
+    Ifit = curve_fit(Imodel, xcol, I_new, [0., 0., 0., 0.])
     Ωnew = Ωmodel(xcol, Ifit.param)
     return Ifit.param, fsq2_avg
 end
-
-# function Ωpar_updater!(crd::Cord, Ω_I::Ω_and_I, ils::LS, Ω_par::Array{Float64})
-#     U_H  =  ils.ULS[1]
-#     Ucol =  collect(linspace(0., U_H, crd.μlen))
-#     Iexp = 2*Ω_I.Ωspl(Ucol).*Ucol
-#     Inum = Ω_I.Ispl(Ucol)
-#     Inew = Iexp.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1]) +  Inum.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1])
-#     Ωnew = Inew./(2*Ucol+1.e-10); Ωnew[1] = 0.5*crd.Ω_H; Ωnew[end] = 0.
-#
-#     xcol = Ucol/U_H;  Ω_H  = crd.Ω_H
-#
-#     Ωmodel(x, p) = Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4)
-#     Ωfit = curve_fit(Ωmodel, xcol, Ωnew,  Ω_par)
-#     return Ωfit.param
-# end
 
 
 
@@ -253,7 +234,7 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ + Icol.^2
     fsq   = B2mE2./B2pE2
 
-    fsq_exp   = 0.1*exp(-(r-crd.rmin)/0.1)
+    fsq_exp   = 0. #0.1*exp(-(r-crd.rmin)/0.1)
     B2mE2_exp = B2pE2.*fsq_exp
 
     fsq2_spl = Spline1D(Ucol, (fsq-fsq_exp).^2)

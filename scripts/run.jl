@@ -4,7 +4,7 @@ include("scripts/GS.jl")
 include("scripts/SOR.jl")
 include("scripts/func.jl")
 
-crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 3.5)
+crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 4.0)
 mtr      = Geom(crd)
 Ω_par    = [0.1, 0.02, 0.04, 0.0]
 U, Ω_I, U_H   = Init(crd, mtr, Ω_par)
@@ -16,7 +16,7 @@ bc_eqt   = BC_gen(U, crd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 δU        = zeros(crd.μlen); Res = 0.
 Ωpar_loop = 1; fsq2_avg  = 0.1
 
-while (Ωpar_loop <= 10) & (fsq2_avg > 1.e-4)
+while (Ωpar_loop <= 5) & (fsq2_avg > 1.e-4)
     for BCloop = 1:15
         for Ωloop = 1:150
             for Iloop = 1:5
