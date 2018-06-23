@@ -237,8 +237,8 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     fsq_exp   = 0. #0.1*exp(-(r-crd.rmin)/0.1)
     B2mE2_exp = B2pE2.*fsq_exp
 
-    fsq2_spl = Spline1D(Ucol, (fsq-fsq_exp).^2)
-    fsq2_avg = integrate(fsq2_spl, Ucol[1], Ucol[end])/(Ucol[end]-Ucol[1])
+    fsq2_spl = Spline1D(Ucol[2:end], (fsq[2:end]-fsq_exp).^2)
+    fsq2_avg = integrate(fsq2_spl, Ucol[2], Ucol[end])/(Ucol[end]-Ucol[2])
 
     # plot(Ucol, Icol.^2, "k")
     # plot(Ucol, κcol .* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ, "r")
@@ -247,4 +247,27 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     plot(Ucol, B2mE2)
     plot(Ucol, B2mE2_exp, "--")
     return Ucol, B2mE2, B2mE2_exp, fsq, fsq2_avg
+end
+
+function Fsq_only(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
+    idx = crd.idx_r2
+    ∂1U = zeros(idx);  ∂1U[2:idx] = (U[1, 2:idx] - U[1, 1:idx-1]) ./ crd.δR
+    ∂2U = (U[2, 1:idx] - U[1, 1:idx]) ./ crd.δμ
+
+    Rcol = crd.R[1, 1:idx]
+    ∂rU  = ∂1U .* (1-Rcol).^2; ∂μU = ∂2U
+
+    μ = 0.
+    r = crd.rcol[1:idx]
+    Δ = r.^2 - 2r + crd.a^2
+    Σ = r.^2 + crd.a^2 * μ.^2
+    β = Δ .* Σ + 2r .*(r.^2+crd.a^2)
+
+    Ωspl = Ω_I.Ωspl
+    Ucol = U[1,1:idx]
+    Icol = 2*Ωspl(Ucol).*Ucol
+    κcol = grd.κ[1,1:idx]
+
+    B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ + Icol.^2
+    return Ucol, B2mE2
 end

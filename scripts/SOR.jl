@@ -66,7 +66,7 @@ function Bounds!(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I, lsn::LS_neighbo
     return U, U_H
 end
 
-function BC_gen(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; BC_opt = 0, Isf = 5.)
+function BC_gen(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I; BC_opt = 0, Isf = 5.)
     idx_r2  = crd.idx_r2
     idx_bd  = crd.idx_xbd[1]
     rmin    = crd.rmin
@@ -86,7 +86,11 @@ function BC_gen(U::Array{Float64,2}, crd::Cord, Ω_I::Ω_and_I; BC_opt = 0, Isf 
         iip  = Ispl(Ucol).*derivative(Ispl, Ucol)
         IIp  = Ω_I.IIpspl(Ucol)
 
-        ∂μUnew  = ∂μU[1:idx_r2] + Isf*(IIp-iip)
+        #∂μU_zj = Ispl(Ucol[1])*crd.rmin/2./(Ω_I.Ωspl(Ucol[1])-crd.Ω_H)
+
+        Ueqt, B2mE2 = Fsq_only(U, crd, grd, Ω_I)
+
+        ∂μUnew  = ∂μU[1:idx_r2] + Isf*(IIp-iip) - 0.04*(1.-rcol/rcol[end]).*B2mE2
         pmodel(x, p) = ( p[1] + p[2] .* x + p[3] .* x.^2 + p[4] .* x.^3 + p[5] .* x.^4 + p[6] .* x.^5 )
         pfit   = curve_fit(pmodel, rcol, ∂μUnew, [0., 0., 0., 0., 0., 0.])
         ∂μU[1:idx_r2] = pmodel(rcol, pfit.param)
