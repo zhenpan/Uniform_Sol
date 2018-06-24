@@ -86,14 +86,15 @@ function BC_gen(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I; BC_op
         iip  = Ispl(Ucol).*derivative(Ispl, Ucol)
         IIp  = Ω_I.IIpspl(Ucol)
 
-        #∂μU_zj = Ispl(Ucol[1])*crd.rmin/2./(Ω_I.Ωspl(Ucol[1])-crd.Ω_H)
+        #Ueqt, B2mE2 = Fsq_only(U, crd, grd, Ω_I)
 
-        Ueqt, B2mE2 = Fsq_only(U, crd, grd, Ω_I)
-
-        ∂μUnew  = ∂μU[1:idx_r2] + Isf*(IIp-iip) - 0.04*(1.-rcol/rcol[end]).*B2mE2
+        ∂μUnew  = ∂μU[1:idx_r2] + Isf*(IIp-iip)   #- 0.04*(1.-rcol/rcol[end]).*B2mE2
         pmodel(x, p) = ( p[1] + p[2] .* x + p[3] .* x.^2 + p[4] .* x.^3 + p[5] .* x.^4 + p[6] .* x.^5 )
         pfit   = curve_fit(pmodel, rcol, ∂μUnew, [0., 0., 0., 0., 0., 0.])
         ∂μU[1:idx_r2] = pmodel(rcol, pfit.param)
+
+        (xmax, idx_max) = findmax(∂μU[1:idx_r2])
+        ∂μU[1:idx_max]  = xmax 
     end
 
     ∂μU[idx_r2+1:idx_bd] = ∂μU[idx_r2]*exp(-(crd.rcol[idx_r2+1:idx_bd]-2.).^2/(2*0.05^2))

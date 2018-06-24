@@ -119,10 +119,8 @@ function Ωpar_updater!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_
     Ucol = reverse(ils.ULS); U_H =  Ucol[end]
 
     Ueqt, B2mE2, B2mE2_exp, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
-    Icrt2_spl  = Spline1D(Ueqt, B2mE2-B2mE2_exp, bc="zero")
-    I_eqt = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*Icrt2_spl(Ucol)
-    #Icrt1 = Ω_I.Ispl(Ucol) - 2*Ω_I.Ωspl(Ucol).*Ucol
-    #I_hrz = 2*Ω_I.Ωspl(Ucol).*Ucol + Isf*Icrt
+    Icrt_spl  = Spline1D(Ueqt[2:end], B2mE2[2:end], bc="zero")
+    I_eqt = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*Icrt_spl(Ucol)
     I_hrz = Ω_I.Ispl(Ucol)
     I_new = I_hrz.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1]) + I_eqt.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1])
 
