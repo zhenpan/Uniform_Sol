@@ -4,7 +4,7 @@ include("scripts/GS.jl")
 include("scripts/SOR.jl")
 include("scripts/func.jl")
 
-crd      = Cord(Rlen = 512, μlen = 64, a = 0.95, rmax = 100., xbd = 4.5)
+crd      = Cord(Rlen = 512, μlen = 64, a = 0.99, rmax = 100., xbd = 4.5)
 mtr      = Geom(crd)
 Ω_par    = [0.1, 0.02, 0.04, 0.0]
 U, Ω_I, U_H   = Init(crd, mtr, Ω_par)
@@ -16,7 +16,7 @@ bc_eqt   = BC_gen(U, crd, grd, Ω_I, BC_opt = 0)  # 0:init, else:updater
 
 δU = zeros(crd.μlen); Res = 0.; fsq2_avg  = 0.1
 
-while (Ωpar_loop <= 20) & (fsq2_avg > 2.e-4)
+while (Ωpar_loop <= 15) & (fsq2_avg > 2.e-4)
     for BCloop = 1:15
         for Ωloop = 1:150
             for Iloop = 1:5
@@ -42,7 +42,7 @@ while (Ωpar_loop <= 20) & (fsq2_avg > 2.e-4)
             plot(Ubm, Ispl(Ubm)/U_H, "k--")
             plot(Ubm, Ispl(Ubm).*derivative(Ispl, collect(Ubm))/U_H, "k--")
     end
-    Ω_par, fsq2_avg =  Ωpar_updater!(U, crd, grd, Ω_I, ils, Isf = 0.02)
+    Ω_par, fsq2_avg =  Ωpar_updater!(U, crd, grd, Ω_I, ils, Isf = 0.06)
     Ωpar_loop +=1
     println("fsq2_avg = $fsq2_avg")
     @save "/home/zhenpan/Astroph/Uniform_Sol/scripts/a$(crd.a).jld" Ωpar_loop crd mtr Ω_par U Ω_I U_H grd ils lsn δU bc_eqt fsq2_avg
@@ -69,11 +69,11 @@ include("scripts/GS.jl")
 include("scripts/SOR.jl")
 include("scripts/func.jl")
 
-@load "/home/zhenpan/Astroph/Uniform_Sol/scripts/a998.jld"
+@load "/home/zhenpan/Astroph/Uniform_Sol/scripts/a0.99.jld"
 
-δU = zeros(crd.μlen); Res = 0.; fsq2_avg  = 0.1
+δU = zeros(crd.μlen); Res = 0.
 
-while (Ωpar_loop <= 30) & (fsq2_avg > 2.e-4)
+while (Ωpar_loop <= 20) & (fsq2_avg > 2.e-4)
     for BCloop = 1:15
         for Ωloop = 1:150
             for Iloop = 1:5
@@ -88,7 +88,8 @@ while (Ωpar_loop <= 30) & (fsq2_avg > 2.e-4)
             ils, Ω_I = LS_updater!(U, grd, crd, Ω_I, ils, Ω_par)     #update ils and Ω_I.Ωspl from (ils.ULS, ils.Ω)
             lsn      = LS_neighbors(U, ils, grd, crd)
         end
-            bc_eqt   = BC_gen(U, crd, grd, Ω_I, BC_opt = 1, Isf = 6.0)
+            ISF_BE   = Ωpar_loop > 10 ? 0.1:0.
+            bc_eqt   = BC_gen(U, crd, grd, Ω_I, BC_opt = 1, Isf = 6.0, Isf_BE = ISF_BE)
             Ubm = linspace(0., U_H, 64)
             plot(Ubm, Ω_I.Ωspl(Ubm))
             plot(Ubm, Ω_I.Ispl(Ubm)/U_H)

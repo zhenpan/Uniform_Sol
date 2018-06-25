@@ -27,13 +27,15 @@ end
 function USmooth!(U::Array{Float64,2}, lsn::LS_neighbors, crd::Cord)
     for μidx = 2:crd.μlen-1
         Ridx = lsn.lsn_idx[μidx]
-        x    = [crd.R[μidx, Ridx-2], crd.R[μidx, Ridx+3]]
-        y    = [U[μidx, Ridx-2], U[μidx, Ridx+3]]        #the next near points
-        spl  = Spline1D(x, y, k=1)
-        U[μidx, Ridx-1] = spl(crd.R[μidx, Ridx-1])
-        U[μidx, Ridx]   = spl(crd.R[μidx, Ridx])
-        U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
-        U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
+        if Ridx > 2
+            x    = [crd.R[μidx, Ridx-2], crd.R[μidx, Ridx+3]]
+            y    = [U[μidx, Ridx-2], U[μidx, Ridx+3]]        #the next near points
+            spl  = Spline1D(x, y, k=1)
+            U[μidx, Ridx-1] = spl(crd.R[μidx, Ridx-1])
+            U[μidx, Ridx]   = spl(crd.R[μidx, Ridx])
+            U[μidx, Ridx+1] = spl(crd.R[μidx, Ridx+1])
+            U[μidx, Ridx+2] = spl(crd.R[μidx, Ridx+2])
+        end
     end
 
     for μidx = 2:crd.μlen-1
