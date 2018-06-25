@@ -6,7 +6,7 @@
 %Control: page (0) single
 %Control: year (1) truncated
 %Control: production of eprint (0) enabled
-\begin{thebibliography}{5}%
+\begin{thebibliography}{7}%
 \makeatletter
 \providecommand \@ifxundefined [1]{%
  \@ifx{#1\undefined}
@@ -59,6 +59,23 @@
   {\doibase 10.3847/1538-4357/aa5c36} {\bibfield  {journal} {\bibinfo
   {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {836}},\ \bibinfo
   {pages} {193} (\bibinfo {year} {2017})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Press}\ \emph {et~al.}(1987)\citenamefont {Press},
+  \citenamefont {Teukolsky}, \citenamefont {Vetterling}, \citenamefont
+  {Flannery}, \citenamefont {Ziegel}, \citenamefont {Press}, \citenamefont
+  {Flannery}, \citenamefont {Teukolsky},\ and\ \citenamefont
+  {Vetterling}}]{Press1987}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.}~\bibnamefont
+  {Press}}, \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Teukolsky}},
+  \bibinfo {author} {\bibfnamefont {W.}~\bibnamefont {Vetterling}}, \bibinfo
+  {author} {\bibfnamefont {B.}~\bibnamefont {Flannery}}, \bibinfo {author}
+  {\bibfnamefont {E.}~\bibnamefont {Ziegel}}, \bibinfo {author} {\bibfnamefont
+  {W.}~\bibnamefont {Press}}, \bibinfo {author} {\bibfnamefont
+  {B.}~\bibnamefont {Flannery}}, \bibinfo {author} {\bibfnamefont
+  {S.}~\bibnamefont {Teukolsky}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {W.}~\bibnamefont {Vetterling}},\ }\href {\doibase 10.2307/1269484} {\emph
+  {\bibinfo {title} {Technometrics}}}\ (\bibinfo  {publisher} {Cambridge
+  University Press},\ \bibinfo {year} {1987})\BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Contopoulos}\ \emph {et~al.}(2013)\citenamefont
   {Contopoulos}, \citenamefont {Kazanas},\ and\ \citenamefont
   {Papadopoulos}}]{Contopoulos2013}%
@@ -100,4 +117,11 @@
   {\bibinfo {volume} {477}},\ \bibinfo {pages} {3927} (\bibinfo {year}
   {2018})},\ \Eprint {http://arxiv.org/abs/1802.00815} {arXiv:1802.00815}
   \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {East}\ and\ \citenamefont {Yang}(2018)}]{East2018}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.~E.}\ \bibnamefont
+  {East}}\ and\ \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {Yang}},\
+  }\href {http://arxiv.org/abs/1805.05952} {\  (\bibinfo {year} {2018})},\
+  \Eprint {http://arxiv.org/abs/1805.05952} {arXiv:1805.05952} \BibitemShut
+  {NoStop}%
 \end{thebibliography}%

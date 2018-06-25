@@ -121,10 +121,11 @@ where $r_+$ is the radius of the event horizon.
 In our computation, we use following numerical prescription
 \be
 \label{eq:nbc}
-\int_{A_\phi^{\rm HE}}^{A_\phi^{\rm EE}} \frac{B^2-E^2}{B^2+E^2} dA_\phi \Big/ \left(A_\phi^{\rm EE}- A_\phi^{\rm HE}\right)  < 10^{-3}.
+\int_{A_\phi^{\rm HE}}^{A_\phi^{\rm EE}} \frac{B^2-E^2}{B^2+E^2} dA_\phi \Bigg/ \left(A_\phi^{\rm EE}- A_\phi^{\rm HE}\right)  < 10^{-3}.
 \ee
 as a proxy of the marginally force-free equatorial boundary condition (\ref{eq:bc3}),
-where ``HE" and ``EE" are short for Horizon-Equator and Ergosphere-Equator, respectively.
+where ``HE" and ``EE" are short for Horizon-Equator and Ergosphere-Equator, respectively;
+and we choose $B^2+E^2$ to be the energy density measured by the zero-angular-momentum-observers.
 Specifically,
 \be
 \begin{aligned}
@@ -132,7 +133,7 @@ B^2-E^2 &= \frac{1}{\Sigma \sst} \left[ -\mathcal{K} \left(\Ar^2 +\frac{\sst}{\D
 B^2+E^2 &= \frac{1}{\Sigma \sst} \left[ \left(\mathcal{K}+\frac{\Delta\Sigma}{\beta} \right) \left(\Ar^2 +\frac{\sst}{\Delta}\Am^2 \right)+\frac{\Sigma}{\Delta}I^2\right]\\
 \end{aligned}
 \ee
-where $B^2+E^2$ is the energy density measured by the zero-angular-momentum-observers.
+
 
 \subsection{Numerical method}
 We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ connected by the radiation condition
@@ -159,35 +160,37 @@ and equatorial boundary condition as follows
 \end{subequations}
 where $\WH = a/2r_+$ is the angular velocity of the BH.
 
-2. We evolve the GS equation (\ref{eq:GSg}) and adjust $II'(\Ap)$ enabling smooth field lines across the LS
-\cite[see e.g.][for details]{Contopoulos2013, Nathanail2014, Pan2016a, Mahlmann2018}.
+2. We evolve the GS equation (\ref{eq:GSg}) using the well-known relaxation method \cite{Press1987}
+ and adjust $II'(\Ap)$ until  field lines smoothly cross the LS
+\cite[see e.g.][for more details]{Contopoulos2013, Nathanail2014, Pan2016a, Mahlmann2018}.
 
 3. Usually the current $I$ found in Step 2 neither satisfies the radiation condition (\ref{eq:rad})
-nor guarantees the boundary condition (\ref{eq:bc3}). We find it is possible to adjust
+nor guarantees the boundary condition (\ref{eq:bc3}). We  adjust
 $\Am(\mu = 0, r_+ \leq r\leq 2)$ as follows
 \be
  A_{\phi,\mu}|_{\rm new}  = A_{\phi,\mu}|_{\rm old} + \zeta_1\times[2\Omega\Ap(2\Omega\Ap)' -II'],
 \ee
-enabling the radiation condition (\ref{eq:rad}) for
-$A_\phi\in [A_\phi^{\rm HE}, A_\phi^{\rm EE}]$, where $\zeta_1$ is an
-empirical step size.
+where $\zeta_1$ is an
+empirical step size. For each new $A_{\phi,\mu}$, we repeat Step 2
+until $\Am(\mu = 0, r_+ \leq r\leq 2)$ converges, i.e. the condition $2\Omega\Ap(2\Omega\Ap)' = II'$ is
+achieved for $A_\phi\in (A_\phi^{\rm HE}, A_\phi^{\rm EE})$.
 
 4. The remaining task is to adjust  $\Omega(0< \Ap < \AHE)$ enabling  the radiation condition (\ref{eq:rad})
  for $A_\phi \in (0, A_\phi^{\rm HE})$ and  to adjust $\Omega(\AHE \leq \Ap \leq \AEE)$
  enabling the boundary condition (\ref{eq:bc3}) for $\Ap \in [\AHE, \AEE]$.
  The first part is straightforward, i.e.,
  \be
-\Omega_{\rm new} = \frac{I}{2\Ap}\Bigg|_{0 < \Ap < \AHE},
+2\Ap\Omega_{\rm new}  = I|_{0 < \Ap < \AHE},
  \ee
- and the second part can be realized by
+ and the second part can be realized by iterative correction
  \be
-\Omega_{\rm new}  = \Omega_{\rm old} - \zeta_2\times\frac{\Delta (B^2-E^2)}{2\Ap}\Bigg|_{\mu=0, r_+\leq r \leq 2},
+2\Ap(\Omega_{\rm new} - \Omega_{\rm old}) =  - \zeta_2\times\Delta (B^2-E^2)|_{\mu=0, r_+\leq r \leq 2},
  \ee
  where $\zeta_2$ is again an empirical step size, and we have multiplied factor $\Delta$
  in the correction term to avoid numerical difficulty in the vicinity of the event horizon.
  To eliminate unphysical discontinuity in the angular
  velocity at $\AHE$, we fit $\Omega_{\rm new}(\Ap)$ on the whole range
- $[0, \AEE]$ via a fifth-order polynomial.
+ $(0, \AEE)$ via a fifth-order polynomial.
 
  5. For the new angular velocity $\Omega_{\rm new}(\Ap)$ obtained in Step 4, we repeat Step 2 to Step 4,
  until the numerical prescription (\ref{eq:nbc}) for the boundary condition (\ref{eq:bc3}) is satisfied.
@@ -195,11 +198,20 @@ empirical step size.
 \subsection{Numerical results}
 
 In Figure \ref{fig:field_lines}, we plot the magnetic field lines enclosing a BH with spin $a =0.99$ as an example,
-which displays three generic features: (1) the LS runs from $r=r_+$ to $r=2M$ as $\theta$ varies from $0$ to $\pi/2$,
+and in the upper panel of Figure \ref{fig:omega}, we show the angular velocity functions $\Omega(A_\phi)$ for different BH spins.
+Combining the two figures, we see three generic features: (1) the LS runs from $r=r_+$ to $r=2M$ as $\theta$ varies from $0$ to $\pi/2$,
 (2) there is no current sheet within the magnetosphere except the equatorial current sheet extending from $r_+$ to $2M$,
-which gives rise to a cusp to the magnetic field lines,
+which gives rise to a cusp ($\Am \neq 0$) to the equatorial magnetic field lines,
 (3) magnetic field lines entering the ergosphere end up either on the horizon or on the equatorial current sheet,
 both of which carry electric current and therefore Poynting flux.
+
+In the lower panel of Figure  \ref{fig:omega} and in Figure \ref{fig:Edot}, we compare our numerical results with
+recent high-resolution simulations performed by East and Yang \cite{East2018} (EY Sims). In Figure \ref{fig:Edot}, the solid
+lines are curves fitted by polynomials
+
+We find the angular velocity functions
+in two studies show a good agreement, while the value of our magnetic flux $\AEE$ is lower by $\sim 5\%$, which gives
+to $\sim 10\%$ lower energy extraction rates.
 
 \begin{figure}
 \includegraphics[scale=0.55]{f1}
@@ -211,23 +223,25 @@ the equator at $r=2 M$. }
 \begin{figure}
 \includegraphics[scale=0.6]{f2a}
 \includegraphics[scale=0.6]{f2b}
-\caption{\label{fig:omega} Solid: the angular velocity function $\Omega(\Ap)$ for $a=0.99$.
-Dashed: a linear function for comparison.}
+\caption{\label{fig:omega} Upper panel: the angular velocity functions $\Omega(\Ap)$ for different BH spins.
+Lower Panel: comparison of our numerical results (solid lines) with the simulation results in \cite{East2018} (dashed lines).}
 \end{figure}
 
 
 \begin{figure}
 \includegraphics[scale=0.6]{f3}
-\caption{\label{fig:Edot}}
+\caption{\label{fig:Edot} Comparison of the energy extraction rate $\dot E(\WH)$ derived from our
+numerical solutions and from the simulations \cite{East2018},
+where the former is lower than the latter one by $~10\%$.}
 \end{figure}
 
-\section{Comparison with previous studies}
+\section{Discussions}
 
 \subsection{Solution uniqueness}
 
 \subsection{Topology of near-horizon field lines}
 
-\section{Summary and Discussions}
+\section{Summary}
 
 \bibliography{ms}
 
