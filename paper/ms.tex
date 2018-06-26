@@ -37,7 +37,7 @@
 \begin{document}
 \title{The force-free magnetosphere of a Kerr black hole: the role of boundary conditions}
 \author{Zhen Pan}
-\email{zhpan@ucdavis.edu}
+\email{zpan@perimeterinstitute.ca}
 \affiliation{Perimeter Institute for Theoretical Physics, Waterloo, Ontario N2L 2Y5, Canada}
 
 \date{\today}
@@ -62,6 +62,12 @@
 \maketitle
 
 \section{Introduction}
+
+The paper is organized as follows.  In Section \ref{sec:basic}, we outline the basic governing equations.
+In Section \ref{sec:uni_sol}, we clarify the radiation condition, boundary conditions and numerical algorithm
+for the uniform field solution. In Section \ref{sec:discussion}, we discuss the solution uniqueness, near-horizon
+field line configuration and the application to general field line configurations. Summary is given in Section \ref{sec:summary}.
+
 
 \section{basic equations}
 \label{sec:basic}
@@ -105,46 +111,110 @@ with respect to coordinate $i$ with $\Omega$ fixed, and $\partial_\Omega$ is the
 respect to $\Omega$.
 
 \section{Uniform field solution}
+\label{sec:uni_sol}
+
+\subsection{Solution uniqueness and radiation condition}
+For common field configurations, including split monopole and parabola, there exist two LSs where
+the LS function vanishes and the GS equation degrades from second order to first order. As proposed
+by Contopoulos et.al. \cite{Contopoulos2013}, one can adjust the two free functions $\Omega(\Ap)$
+and $I(\Ap)$ enabling field lines smoothly cross the two LSs, then the solution
+$\{\Omega(\Ap), I(\Ap), \Ap(r,\theta)\}$  is uniquely found. But for the vertical field lines, their
+exist only one LS, which is insufficient to determine two free functions. Therefore people have been
+wondering the possibility of many solutions though the many-solutions scenario is not supported by force-free
+dynamics simulations. To tackle this problem, we proposed that the two functions are not independent;
+instead, they are related by the radiation condition \cite{Pan2016a, Pan2017}
+\be I = 2\Omega A_\phi, \label{eq:rad}\ee
+which has been confirmed by the recent high-accuracy simulations \cite{East2018}.
 
 \subsection{Boundary conditions}
 
-The boundary conditions
+The boundary conditions at infinity (inner infinity $r=r_+$ and outer infinity $r\rightarrow\infty$)
+and on the polar axis can be simply set as
+\be
+\begin{aligned}
+\Ar|_{r=r_+, \infty} &= 0, \\
+A_\phi|_{\mu = 1} &= 0,\\
+\end{aligned}
+\ee
+where $r_+$ is the radius of the event horizon,
+while the equatorial boundary conditions are more unclear until recent simulations \cite{East2018}
+come out which show that there exists an equator current sheet within the ergosphere where the
+magnetic dominance marginally loses, i.e., $B^2-E^2\approx 0$. Motivated by these simulations,
+we choose the following equatorial boundary condition in our numerical solutions,
 \begin{subequations}
 \begin{align}
-    A_\phi(\mu = 1) &= 0,  \label{eq:bc1}\\
     \Am(\mu = 0, r > 2) &= 0, \label{eq:bc2}\\
     B^2-E^2 (\mu = 0, r_+ \leq r \leq 2) &=0.\label{eq:bc3}
 \end{align}
 \end{subequations}
-where $r_+$ is the radius of the event horizon.
-
-In our computation, we use following numerical prescription
-\be
-\label{eq:nbc}
-\int_{A_\phi^{\rm HE}}^{A_\phi^{\rm EE}} \frac{B^2-E^2}{B^2+E^2} dA_\phi \Bigg/ \left(A_\phi^{\rm EE}- A_\phi^{\rm HE}\right)  < 10^{-3}.
-\ee
-as a proxy of the marginally force-free equatorial boundary condition (\ref{eq:bc3}),
-where ``HE" and ``EE" are short for Horizon-Equator and Ergosphere-Equator, respectively;
-and we choose $B^2+E^2$ to be the energy density measured by the zero-angular-momentum-observers.
-Specifically,
+In fact, Equation (\ref{eq:bc3})
+is neither a Dirichlet nor a Neumann boundary condition, since
 \be
 \begin{aligned}
-B^2-E^2 &= \frac{1}{\Sigma \sst} \left[ -\mathcal{K} \left(\Ar^2 +\frac{\sst}{\Delta}\Am^2 \right)+\frac{\Sigma}{\Delta}I^2\right]\\
-B^2+E^2 &= \frac{1}{\Sigma \sst} \left[ \left(\mathcal{K}+\frac{\Delta\Sigma}{\beta} \right) \left(\Ar^2 +\frac{\sst}{\Delta}\Am^2 \right)+\frac{\Sigma}{\Delta}I^2\right]\\
+&B^2-E^2 \\
+= & \frac{1}{\Sigma \sst} \left[ -\mathcal{K} \left(\Ar^2 +\frac{\sst}{\Delta}\Am^2 \right)+\frac{\Sigma}{\Delta}I^2\right],
+\end{aligned}
+\ee
+which involves both derivatives $\Am$ and $\Ar$ on the boundary.
+Therefore, it is numerically non-trivial to impose this boundary condition in computation.
+
+In addition, there is a coordinate singularity $1/\Delta$ in the expression of $B^2-E^2$.
+To avoid possible numerical difficulty, we use following prescription
+\be
+\label{eq:nbc}
+\int_{A_\phi^{\rm HE}}^{A_\phi^{\rm EE}} \left(\frac{B^2-E^2}{B^2+E^2}\right)^2 dA_\phi \Bigg/ \left(A_\phi^{\rm EE}- A_\phi^{\rm HE}\right)  < 10^{-3}.
+\ee
+in our computation, as a proxy of the marginally force-free equatorial boundary condition (\ref{eq:bc3}),
+where $\AHE$ and $\AEE$ are the magnetic flux entering the horizon and the ergosphere, respectively;
+``HE" and ``EE" are short for Horizon-Equator and Ergosphere-Equator, respectively.
+For definiteness, we choose $B^2+E^2$ to be the energy density measured by the zero-angular-momentum-observers.
+Explicitly, we have
+\be
+\begin{aligned}
+ & B^2+E^2   \\
+=& \frac{1}{\Sigma \sst} \left[ \left(\mathcal{K}+\frac{\Delta\Sigma}{\beta} \right)
+ \left(\Ar^2 +\frac{\sst}{\Delta}\Am^2 \right)
+ +\frac{\Sigma}{\Delta}I^2\right]
 \end{aligned}
 \ee
 
+\subsection{Generic features of the BH magnetosphere structure}
+Before delving into the details of numerically solving the GS equations,
+we point out that from the radiation condition (\ref{eq:rad}) and the marginally
+force-free boundary condition (\ref{eq:bc3})
+themselves contains rich information about the BH magnetosphere structure.
+
+Let's first find out where the LS intersect with the equator, $r_{\rm LS}|_{\mu=0}$.
+From the expression of the LS function, it is straightforward to see $ r_{\rm LS}|_{\mu=0} \leq 2$ for $\Omega \geq 0$.
+At this point,  the LS function $\mathcal K$ vanishes,
+and $I$ must also vanish for satisfying the boundary condition (\ref{eq:bc3}),
+which in turns indicates a vanishing angular velocity $\Omega$ from
+the radiation condition (\ref{eq:rad}).  Due to the static limit, $\Omega$
+must be non-zero inside the ergosphere.  Therefore the only possibility is  $r_{\rm LS}|_{\mu=0} = 2$, i.e.
+to satisfy the boundary condition (\ref{eq:bc3}), the LS must interact the equator at $r=2$, which also
+justifies our choice of equatorial boundary conditions (\ref{eq:bc2},\ref{eq:bc3}) .
+
+From above analysis, we expect several generic features in the magnetospheres that are independent
+of the GS equation:
+(1) the LS runs from $r=r_+$ to $r=2$ as $\theta$ varies from $0$ to $\pi/2$,
+(2) there is no current sheet within the magnetosphere except the equatorial current
+sheet extending from $r_+$ to $2$, which gives rise to a cusp ($\Am \neq 0$) to the equatorial magnetic field lines,
+(3) magnetic field lines entering the ergosphere end up either on the horizon or on the equatorial current sheet,
+both of which carry electric current and therefore Poynting flux. With the guidance of the qualitative
+features above, we are to numerically solve the GS equation and quantify these features.
+
 
 \subsection{Numerical method}
-We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ connected by the radiation condition
-\be I = 2\Omega A_\phi, \label{eq:rad}\ee
+We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ satisfying the radiation condition (\ref{eq:rad})
 and enabling field lines smoothly crossing the LS,
 and suitable normal derivative $\Am(\mu =0, r_+\leq r \leq 2)$ on the equator
-guaranteeing the boundary condition (\ref{eq:bc3}).
+guaranteeing the boundary condition (\ref{eq:bc3}), which itself cannot be directly
+used in computation.
 
 In our computation, we define a new radial coordinate $R=r/(1+r)$, confine our
 computation domain $R\times \mu$ in the region $[R(r_+), 1]\times [0,1]$,
-and implement a uniform $512\times 64$ grid. The detailed algorithm is clarified
+and implement a uniform $512\times 64$ grid. The numerical algorithm for
+searching desired $\{\Omega(A_\phi), I(A_\phi), \Am(\mu =0, r_+\leq r \leq 2)\}$ is detailed
 in the following steps.
 
 1. We choose an initial guess for the field configuration, functions
@@ -182,7 +252,7 @@ achieved for $A_\phi\in (A_\phi^{\rm HE}, A_\phi^{\rm EE})$.
  \be
 2\Ap\Omega_{\rm new}  = I|_{0 < \Ap < \AHE},
  \ee
- and the second part can be realized by iterative correction
+ and the second part can be realized by iterative corrections
  \be
 2\Ap(\Omega_{\rm new} - \Omega_{\rm old}) =  - \zeta_2\times\Delta (B^2-E^2)|_{\mu=0, r_+\leq r \leq 2},
  \ee
@@ -199,19 +269,8 @@ achieved for $A_\phi\in (A_\phi^{\rm HE}, A_\phi^{\rm EE})$.
 
 In Figure \ref{fig:field_lines}, we plot the magnetic field lines enclosing a BH with spin $a =0.99$ as an example,
 and in the upper panel of Figure \ref{fig:omega}, we show the angular velocity functions $\Omega(A_\phi)$ for different BH spins.
-Combining the two figures, we see three generic features: (1) the LS runs from $r=r_+$ to $r=2M$ as $\theta$ varies from $0$ to $\pi/2$,
-(2) there is no current sheet within the magnetosphere except the equatorial current sheet extending from $r_+$ to $2M$,
-which gives rise to a cusp ($\Am \neq 0$) to the equatorial magnetic field lines,
-(3) magnetic field lines entering the ergosphere end up either on the horizon or on the equatorial current sheet,
-both of which carry electric current and therefore Poynting flux.
 
-In the lower panel of Figure  \ref{fig:omega} and in Figure \ref{fig:Edot}, we compare our numerical results with
-recent high-resolution simulations performed by East and Yang \cite{East2018} (EY Sims). In Figure \ref{fig:Edot}, the solid
-lines are curves fitted by polynomials
 
-We find the angular velocity functions
-in two studies show a good agreement, while the value of our magnetic flux $\AEE$ is lower by $\sim 5\%$, which gives
-to $\sim 10\%$ lower energy extraction rates.
 
 \begin{figure}
 \includegraphics[scale=0.55]{f1}
@@ -230,18 +289,57 @@ Lower Panel: comparison of our numerical results (solid lines) with the simulati
 
 \begin{figure}
 \includegraphics[scale=0.6]{f3}
-\caption{\label{fig:Edot} Comparison of the energy extraction rate $\dot E(\WH)$ derived from our
-numerical solutions and from the simulations \cite{East2018},
-where the former is lower than the latter one by $~10\%$.}
+\caption{\label{fig:Edot} Comparison of the energy extraction rate $\dot E(\WH)$ obtained from our
+numerical solutions and from the high-resolution force-free simulations \cite{East2018},
+where the former is lower than the latter by $\sim 10\%$ for large spins.}
 \end{figure}
 
+With the angular velocity $\Omega(\Ap)$ available, the energy extraction rate from the BH is known as
+\be
+\label{eq:Edot}
+\dot E = 4\pi \int_0^{\AEE} \Omega \times I \ d \Ap.
+\ee
+In the limit of slow rotation, analytic solution is known as \cite{Pan2014, East2018},
+\be
+    \Omega = \WH\frac{\sqrt{1-\psi}} {1+\sqrt{1-\psi}},
+\ee
+where $\psi = \Ap/(2B_0M^2)$, and the energy extraction rate is
+\be
+\label{eq:lowEdot}
+\dot E = 128\pi \left(\frac{17}{24}-\ln 2\right) B_0^2 M^4 \WH^2.
+\ee
+
+In the lower panel of Figure  \ref{fig:omega} and in Figure \ref{fig:Edot}, we compare our numerical results with
+recent high-resolution simulations done by East and Yang \cite{East2018}. In Figure \ref{fig:Edot},
+the points are taken from either the simulations or our numerical solutions, while the solid lines are
+corresponding polynomial fitting curves which require to approach Eq.(\ref{eq:lowEdot}) for small spins and to be flat for extremal spins.
+We find the angular velocity functions obtained from two different approaches yield a good agreement (Figure \ref{fig:omega}),
+while the energy extraction rate $\dot E$ is $\sim 10\%$ lower than the corresponding simulation results, which is traced to
+$\sim 5\%$ smaller magnetic flux $\AEE$ in our numerical solutions.
+
 \section{Discussions}
+\label{sec:discussion}
 
-\subsection{Solution uniqueness}
 
-\subsection{Topology of near-horizon field lines}
+\subsection{General application}
+In real astrophysics environment, we expect the field configurations are more close to parabolas instead of
+being strictly vertical. Due to the same topology, it is reasonable to expect the marginally force-free boundary
+condition (\ref{eq:bc3}) is also a good work approximation. The features we observed the uniform field solution
+should also apply here. The numerical method for solving the GS equation and self-consistently imposing the boundary
+condition (\ref{eq:bc3}).
+
+\subsection{Near-horizon field lines}
+In one of our previous papers \cite{Pan2016a}, we made a claim that ``in the steady axisymmetric force-free magnetosphere
+around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface must intersect the event
+horizon" based on two
+However, simulations shows that there exists an equatorial current sheet within the ergosphere, where
+the force-free condition breaks down.
+
 
 \section{Summary}
+\label{sec:summary}
+
+In this paper, we revisit the problem of the uniform field solution to the BZ mechanism.
 
 \bibliography{ms}
 

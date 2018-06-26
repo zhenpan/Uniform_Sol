@@ -6,7 +6,7 @@
 %Control: page (0) single
 %Control: year (1) truncated
 %Control: production of eprint (0) enabled
-\begin{thebibliography}{7}%
+\begin{thebibliography}{8}%
 \makeatletter
 \providecommand \@ifxundefined [1]{%
  \@ifx{#1\undefined}
@@ -59,6 +59,32 @@
   {\doibase 10.3847/1538-4357/aa5c36} {\bibfield  {journal} {\bibinfo
   {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {836}},\ \bibinfo
   {pages} {193} (\bibinfo {year} {2017})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Contopoulos}\ \emph {et~al.}(2013)\citenamefont
+  {Contopoulos}, \citenamefont {Kazanas},\ and\ \citenamefont
+  {Papadopoulos}}]{Contopoulos2013}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {I.}~\bibnamefont
+  {Contopoulos}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
+  {Kazanas}}, \ and\ \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
+  {Papadopoulos}},\ }\href {\doibase 10.1088/0004-637X/765/2/113} {\bibfield
+  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume}
+  {765}},\ \bibinfo {pages} {113} (\bibinfo {year} {2013})},\ \Eprint
+  {http://arxiv.org/abs/1212.0320} {arXiv:1212.0320 [astro-ph.HE]} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Pan}\ and\ \citenamefont {Yu}(2016)}]{Pan2016a}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
+  {Pan}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}},\
+  }\href {\doibase 10.3847/0004-637X/816/2/77} {\bibfield  {journal} {\bibinfo
+  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {816}},\ \bibinfo
+  {pages} {77} (\bibinfo {year} {2016})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {East}\ and\ \citenamefont {Yang}(2018)}]{East2018}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.~E.}\ \bibnamefont
+  {East}}\ and\ \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {Yang}},\
+  }\href {http://arxiv.org/abs/1805.05952} {\  (\bibinfo {year} {2018})},\
+  \Eprint {http://arxiv.org/abs/1805.05952} {arXiv:1805.05952} \BibitemShut
+  {NoStop}%
 \bibitem [{\citenamefont {Press}\ \emph {et~al.}(1987)\citenamefont {Press},
   \citenamefont {Teukolsky}, \citenamefont {Vetterling}, \citenamefont
   {Flannery}, \citenamefont {Ziegel}, \citenamefont {Press}, \citenamefont
@@ -76,18 +102,6 @@
   {W.}~\bibnamefont {Vetterling}},\ }\href {\doibase 10.2307/1269484} {\emph
   {\bibinfo {title} {Technometrics}}}\ (\bibinfo  {publisher} {Cambridge
   University Press},\ \bibinfo {year} {1987})\BibitemShut {NoStop}%
-\bibitem [{\citenamefont {Contopoulos}\ \emph {et~al.}(2013)\citenamefont
-  {Contopoulos}, \citenamefont {Kazanas},\ and\ \citenamefont
-  {Papadopoulos}}]{Contopoulos2013}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {I.}~\bibnamefont
-  {Contopoulos}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
-  {Kazanas}}, \ and\ \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
-  {Papadopoulos}},\ }\href {\doibase 10.1088/0004-637X/765/2/113} {\bibfield
-  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume}
-  {765}},\ \bibinfo {pages} {113} (\bibinfo {year} {2013})},\ \Eprint
-  {http://arxiv.org/abs/1212.0320} {arXiv:1212.0320 [astro-ph.HE]} \BibitemShut
-  {NoStop}%
 \bibitem [{\citenamefont {Nathanail}\ and\ \citenamefont
   {Contopoulos}(2014)}]{Nathanail2014}%
   \BibitemOpen
@@ -98,13 +112,6 @@
   {788}},\ \bibinfo {pages} {186} (\bibinfo {year} {2014})},\ \Eprint
   {http://arxiv.org/abs/1404.0549} {arXiv:1404.0549 [astro-ph.HE]} \BibitemShut
   {NoStop}%
-\bibitem [{\citenamefont {Pan}\ and\ \citenamefont {Yu}(2016)}]{Pan2016a}%
-  \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
-  {Pan}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}},\
-  }\href {\doibase 10.3847/0004-637X/816/2/77} {\bibfield  {journal} {\bibinfo
-  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {816}},\ \bibinfo
-  {pages} {77} (\bibinfo {year} {2016})}\BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Mahlmann}\ \emph {et~al.}(2018)\citenamefont
   {Mahlmann}, \citenamefont {Cerd{\'{a}}-Dur{\'{a}}n},\ and\ \citenamefont
   {Aloy}}]{Mahlmann2018}%
@@ -117,11 +124,11 @@
   {\bibinfo {volume} {477}},\ \bibinfo {pages} {3927} (\bibinfo {year}
   {2018})},\ \Eprint {http://arxiv.org/abs/1802.00815} {arXiv:1802.00815}
   \BibitemShut {NoStop}%
-\bibitem [{\citenamefont {East}\ and\ \citenamefont {Yang}(2018)}]{East2018}%
+\bibitem [{\citenamefont {Pan}\ and\ \citenamefont {Yu}(2014)}]{Pan2014}%
   \BibitemOpen
-  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.~E.}\ \bibnamefont
-  {East}}\ and\ \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {Yang}},\
-  }\href {http://arxiv.org/abs/1805.05952} {\  (\bibinfo {year} {2018})},\
-  \Eprint {http://arxiv.org/abs/1805.05952} {arXiv:1805.05952} \BibitemShut
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
+  {Pan}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}},\
+  }\href {http://arxiv.org/abs/1406.4936} {\  (\bibinfo {year} {2014})},\
+  \Eprint {http://arxiv.org/abs/1406.4936} {arXiv:1406.4936} \BibitemShut
   {NoStop}%
 \end{thebibliography}%

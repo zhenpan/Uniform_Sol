@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  25 JUN 2018 00:12
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  25 JUN 2018 23:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -387,72 +387,72 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 53.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Overfull \hbox (3.98956pt too wide) detected at line 79
+Overfull \hbox (3.98956pt too wide) detected at line 85
 [] []
  []
 
 
-Overfull \hbox (32.01044pt too wide) detected at line 135
-[][] []
+Underfull \hbox (badness 2865) in paragraph at lines 117--126
+[]\OT1/cmr/m/n/10 For com-mon field con-fig-u-ra-tions, in-clud-ing split
  []
 
-[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] <f1.pdf, id=109, 361.35pt x 433.62pt>
+[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] <f1.pdf, id=141, 361.35pt x 433.62pt>
 File: f1.pdf Graphic file (type pdf)
  <use f1.pdf>
-Package pdftex.def Info: f1.pdf used on input line 217.
+Package pdftex.def Info: f1.pdf used on input line 276.
 (pdftex.def)             Requested size: 198.74312pt x 238.49173pt.
- <f2a.pdf, id=110, 361.35pt x 260.17201pt>
+ <f2a.pdf, id=142, 361.35pt x 260.17201pt>
 File: f2a.pdf Graphic file (type pdf)
  <use f2a.pdf>
-Package pdftex.def Info: f2a.pdf used on input line 224.
+Package pdftex.def Info: f2a.pdf used on input line 283.
 (pdftex.def)             Requested size: 216.81168pt x 156.1044pt.
- <f2b.pdf, id=111, 361.35pt x 260.17201pt>
+ <f2b.pdf, id=143, 361.35pt x 260.17201pt>
 File: f2b.pdf Graphic file (type pdf)
  <use f2b.pdf>
-Package pdftex.def Info: f2b.pdf used on input line 225.
+Package pdftex.def Info: f2b.pdf used on input line 284.
 (pdftex.def)             Requested size: 216.81168pt x 156.1044pt.
- <f3.pdf, id=114, 361.35pt x 260.17201pt>
+ <f3.pdf, id=146, 361.35pt x 260.17201pt>
 File: f3.pdf Graphic file (type pdf)
  <use f3.pdf>
-Package pdftex.def Info: f3.pdf used on input line 232.
+Package pdftex.def Info: f3.pdf used on input line 291.
 (pdftex.def)             Requested size: 216.81168pt x 156.1044pt.
- (./ms.bbl [2 <./f1.pdf>]
+ [3 <./f1.pdf> <./f2a.pdf
 
-LaTeX Warning: A float is stuck (cannot be placed); try class option [floatfix] on input line 9.
+pdfTeX warning: pdflatex (file ./f2a.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+> <./f2b.pdf
 
+pdfTeX warning: pdflatex (file ./f2b.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+>]
 
-Underfull \hbox (badness 2173) in paragraph at lines 76--81
+LaTeX Warning: A float is stuck (cannot be placed); try class option [floatfix] on input line 305.
+
+(./ms.bbl
+Underfull \hbox (badness 2173) in paragraph at lines 102--106
  \OT1/cmr/m/n/9 W. Vet-ter-ling, [][]\OT1/cmr/m/it/9 Tech-no-met-rics[][] \OT1/cmr/m/n/9 (Cam-bridge Uni-ver-sity
  []
 
-) [3 <./f2a.pdf> <./f2b.pdf
-
-pdfTeX warning: pdflatex (file ./f2b.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> <./f3.pdf
-
-pdfTeX warning: pdflatex (file ./f3.pdf): PDF inclusion: multiple pdfs with page group included in a single page
->]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 249.
+) [4 <./f3.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 347.
  (./ms.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 249.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 249.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 347.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 347.
 Package rerunfilecheck Info: File `ms.out' has not changed.
-(rerunfilecheck)             Checksum: F4F250E2FD95643E8BC7BCF6D1F18067;870.
+(rerunfilecheck)             Checksum: C2C1B20B7F710D521A63B89C818028AC;1049.
  ) 
 Here is how much of TeX's memory you used:
- 8193 strings out of 493304
- 114350 string characters out of 6139871
- 226805 words of memory out of 5000000
- 11493 multiletter control sequences out of 15000+600000
+ 8211 strings out of 493304
+ 114575 string characters out of 6139871
+ 225975 words of memory out of 5000000
+ 11503 multiletter control sequences out of 15000+600000
  16461 words of font info for 61 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 29i,11n,30p,356b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 29i,11n,30p,384b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on ms.pdf (3 pages, 297812 bytes).
+Output written on ms.pdf (4 pages, 308908 bytes).
 PDF statistics:
- 374 PDF objects out of 1000 (max. 8388607)
- 249 compressed objects within 3 object streams
- 43 named destinations out of 1000 (max. 500000)
- 125 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 421 PDF objects out of 1000 (max. 8388607)
+ 295 compressed objects within 3 object streams
+ 51 named destinations out of 1000 (max. 500000)
+ 141 words of extra memory for PDF output out of 10000 (max. 10000000)
 
