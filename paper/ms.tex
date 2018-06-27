@@ -178,7 +178,7 @@ Explicitly, we have
 \end{aligned}
 \ee
 
-\subsection{Generic features of the BH magnetosphere structure}
+\subsection{Generic properties of the BH magnetosphere structure}
 \label{subsec:features}
 Before delving into the details of numerically solving the GS equations,
 here we point out that from the radiation condition (\ref{eq:rad}) and the marginally
@@ -207,6 +207,8 @@ With the guidance of the qualitative features above, we are to numerically
 solve the GS equation and quantify these features.
 
 \subsection{Numerical method}
+\label{subsec:algorithm}
+
 We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ satisfying the radiation condition (\ref{eq:rad})
 and enabling field lines smoothly crossing the LS,
 and suitable normal derivative $\Am(\mu =0, r_+\leq r \leq 2)$ on the equator
@@ -287,28 +289,21 @@ of normalized magnetic flux $\Ap/\AEE$ shows a good agreement with the simulatio
 
 
 \begin{figure}
-\includegraphics[scale=0.55]{f1}
+\includegraphics[scale=0.6]{f1}
 \caption{\label{fig:field_lines} The configuration of field lines for the magnetosphere of a Kerr BH with spin $a=0.99$,
 where the solid/red line is the ergosphere and the dashed/black line is the LS, both of which intersect with
 the equator at $r=2 M$. }
 \end{figure}
 
 \begin{figure}
-\includegraphics[scale=0.6]{f2a}
-\includegraphics[scale=0.6]{f2b}
+\includegraphics[scale=0.7]{f2a}
+\includegraphics[scale=0.7]{f2b}
 \caption{\label{fig:omega} Upper panel: the angular velocity  $\Omega(\Ap)$ for different BH spins.
 Lower Panel: comparison of our numerical results (solid lines) with the simulation results of
 Ref. \cite{East2018} (dashed lines). For reference, we also plot the leading order analytic solution in
 dash-dotted lines.}
 \end{figure}
 
-
-\begin{figure}
-\includegraphics[scale=0.6]{f3}
-\caption{\label{fig:Edot} Comparison of the energy extraction rates $\dot E(\WH)$ obtained from
-three different approaches: the leading-order analytic solution (\ref{eq:lowEdot}),
-our numerical solutions and  the high-resolution force-free simulations \cite{East2018}.}
-\end{figure}
 
 With the angular velocity $\Omega(\Ap)$ obtained, the energy extraction rate from the BH is given by
 \be
@@ -321,6 +316,14 @@ It is straightforward to obtain the energy extraction rate in the slow-rotation 
 \dot E = 128\pi \left(\frac{17}{24}-\ln 2\right) B_0^2 M^4 \WH^2.
 \ee
 
+
+\begin{figure}
+\includegraphics[scale=0.7]{f3}
+\caption{\label{fig:Edot} Comparison of the energy extraction rates $\dot E(\WH)$ obtained from
+three different approaches: the leading-order analytic solution (\ref{eq:lowEdot}),
+our numerical solutions and  the high-resolution force-free simulations \cite{East2018}.}
+\end{figure}
+
 In Figure \ref{fig:Edot}, we compare the energy extraction rate $\dot E(\WH)$
 derived from our numerical solutions with East and Yang's simulation results
 \cite{East2018}, where the data points are taken from either the simulations
@@ -330,23 +333,37 @@ spins and to be flat for extremal spins. As expected, our energy extraction
 rate $\dot E(\WH)$ is $\approx 10\%$ lower than the corresponding simulation results,
 due to the $\approx 5\%$ smaller magnetic flux $\AEE$.
 
-\section{Discussions}
+\section{Discussion}
 \label{sec:discussion}
 
 
 \subsection{Application to general field configurations}
-In real astrophysics environment, we expect the field configurations are more close to parabolas instead of
-being strictly vertical. Due to the same topology, it is reasonable to expect
-the marginally force-free boundary
-condition (\ref{eq:bc3}) is also a good work approximation. The features we observed the uniform field solution
-should also apply here. The numerical method for solving the GS equation and self-consistently imposing the boundary
-condition (\ref{eq:bc3}).
+In real astrophysical environment, we expect the field lines are more close to parabolas instead of
+being strictly vertical. In many previous studies of such field
+configurations \cite[e.g.][]{Tchekhovskoy2010,Nathanail2014,Mahlmann2018},
+due to lacking knowledge of the equatorial boundary condition, the
+equator within the ergosphere was intentionally excluded out of the computation domain by manually
+introducing a ``wall" extending from the horizon-equator intersection to infinity. Such
+simplification obviously misses magnetic field lines rooting on the
+equatorial current sheet, which contribute about half of the total BZ flux for extremal spins in
+the case of vertical field lines.
+
+Due to the resemblance of the vertical field configuration and general parabolic field configurations,
+it is natural to expect an equatorial current develops within the ergosphere,
+where the magnetic dominance loses, therefore the marginally force-free boundary
+condition (\ref{eq:bc3}) should also be a good work approximation here.
+It is straightforward to solve the GS equation and self-consistently
+impose the marginally force-free boundary condition following the
+algorithm detailed in Section \ref{subsec:algorithm}.
+
+The analysis of Section \ref{subsec:features}
+
+
 
 \subsection{Near-horizon field configuration}
 In one of our previous papers \cite{Pan2016a}, we made a claim that ``in the steady axisymmetric force-free magnetosphere
-around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface must intersect the event
-horizon".
-However, simulations shows that an equatorial current sheet inevitably forms within the ergosphere , where
+around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface must intersect the event horizon".
+However, simulations shows that an equatorial current sheet inevitably develops within the ergosphere , where
 the force-free condition breaks down.
 
 
