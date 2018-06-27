@@ -6,7 +6,7 @@
 %Control: page (0) single
 %Control: year (1) truncated
 %Control: production of eprint (0) enabled
-\begin{thebibliography}{8}%
+\begin{thebibliography}{10}%
 \makeatletter
 \providecommand \@ifxundefined [1]{%
  \@ifx{#1\undefined}
@@ -124,6 +124,15 @@
   {\bibinfo {volume} {477}},\ \bibinfo {pages} {3927} (\bibinfo {year}
   {2018})},\ \Eprint {http://arxiv.org/abs/1802.00815} {arXiv:1802.00815}
   \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Beskin}\ and\ \citenamefont
+  {Zheltoukhov}(2013)}]{Beskin2013}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {V.~S.}\ \bibnamefont
+  {Beskin}}\ and\ \bibinfo {author} {\bibfnamefont {A.~A.}\ \bibnamefont
+  {Zheltoukhov}},\ }\href {\doibase 10.1134/S1063773713040014} {\bibfield
+  {journal} {\bibinfo  {journal} {Astron. Lett.}\ }\textbf {\bibinfo {volume}
+  {39}},\ \bibinfo {pages} {215} (\bibinfo {year} {2013})},\ \Eprint
+  {http://arxiv.org/abs/1303.1644} {arXiv:1303.1644} \BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Pan}\ and\ \citenamefont {Yu}(2014)}]{Pan2014}%
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
@@ -131,4 +140,13 @@
   }\href {http://arxiv.org/abs/1406.4936} {\  (\bibinfo {year} {2014})},\
   \Eprint {http://arxiv.org/abs/1406.4936} {arXiv:1406.4936} \BibitemShut
   {NoStop}%
+\bibitem [{\citenamefont {Gralla}\ \emph {et~al.}(2015)\citenamefont {Gralla},
+  \citenamefont {Lupsasca},\ and\ \citenamefont {Rodriguez}}]{Gralla2015}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~E.}\ \bibnamefont
+  {Gralla}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Lupsasca}}, \
+  and\ \bibinfo {author} {\bibfnamefont {M.~J.}\ \bibnamefont {Rodriguez}},\
+  }\href {\doibase 10.1103/PhysRevD.92.044053} {\bibfield  {journal} {\bibinfo
+  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {92}},\ \bibinfo
+  {pages} {044053} (\bibinfo {year} {2015})}\BibitemShut {NoStop}%
 \end{thebibliography}%

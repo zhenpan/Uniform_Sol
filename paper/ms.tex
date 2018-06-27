@@ -273,14 +273,16 @@ which explicitly displays the features we anticipated in Section \ref{subsec:fea
 
 In Figure \ref{fig:omega}, we show the angular velocity function $\Omega(A_\phi)$ for different BH spins and
 compare it with the counterpart obtained from recent high-resolution simulations done by East and Yang \cite{East2018}.
-For reference, we also plot the leading-order analytic solution in the slow-rotation limit \cite{Pan2014, East2018},
+For reference, we also plot the leading-order analytic solution in the slow-rotation
+limit \cite{Beskin2013, Pan2014, Gralla2015, East2018},
 \be
     \Omega = \WH\frac{\sqrt{1-\psi}} {1+\sqrt{1-\psi}},
 \ee
 where $\psi = \Ap/(2B_0M^2)$.
-From our solutions, we find the magnetic flux entering the ergosphere $\AEE$ increases with BH spin and approach
+From our numerical solutions, we find the magnetic flux entering the ergosphere $\AEE$ increases with BH spin and approach
 $2.75 B_0 M^2$ for extremal spins (upper panel of Figure \ref{fig:omega}),
-which is about $\sim 5\%$ lower than the simulation result, while the angular velocity $\Omega$ as a function
+which is about $\approx 5\%$ lower than the simulation result (Figure 3 of \cite{East2018}),
+while the angular velocity $\Omega$ as a function
 of normalized magnetic flux $\Ap/\AEE$ shows a good agreement with the simulation results.
 
 
@@ -294,16 +296,18 @@ the equator at $r=2 M$. }
 \begin{figure}
 \includegraphics[scale=0.6]{f2a}
 \includegraphics[scale=0.6]{f2b}
-\caption{\label{fig:omega} Upper panel: the angular velocity functions $\Omega(\Ap)$ for different BH spins.
-Lower Panel: comparison of our numerical results (solid lines) with the simulation results in \cite{East2018} (dashed lines).}
+\caption{\label{fig:omega} Upper panel: the angular velocity  $\Omega(\Ap)$ for different BH spins.
+Lower Panel: comparison of our numerical results (solid lines) with the simulation results of
+Ref. \cite{East2018} (dashed lines). For reference, we also plot the leading order analytic solution in
+dash-dotted lines.}
 \end{figure}
 
 
 \begin{figure}
 \includegraphics[scale=0.6]{f3}
-\caption{\label{fig:Edot} Comparison of the energy extraction rate $\dot E(\WH)$ obtained from our
-numerical solutions and from the high-resolution force-free simulations \cite{East2018},
-where the former is lower than the latter by $\sim 10\%$ for large spins.}
+\caption{\label{fig:Edot} Comparison of the energy extraction rates $\dot E(\WH)$ obtained from
+three different approaches: the leading-order analytic solution (\ref{eq:lowEdot}),
+our numerical solutions and  the high-resolution force-free simulations \cite{East2018}.}
 \end{figure}
 
 With the angular velocity $\Omega(\Ap)$ obtained, the energy extraction rate from the BH is given by
@@ -317,18 +321,20 @@ It is straightforward to obtain the energy extraction rate in the slow-rotation 
 \dot E = 128\pi \left(\frac{17}{24}-\ln 2\right) B_0^2 M^4 \WH^2.
 \ee
 
-In Figure \ref{fig:Edot}, we compare the energy extraction rate $\dot E(\WH)$ derived from our numerical solutions with
-East and Yang's simulation results \cite{East2018}, where
-the points are taken from either the simulations or our numerical solutions, while the solid lines are
-corresponding polynomial fitting curves which require to approach Eq.(\ref{eq:lowEdot}) for small spins and to be flat for extremal spins.
-As expected, our energy extraction rate $\dot E$ is $\sim 10\%$ lower than the corresponding simulation results,
-due to the $\sim 5\%$ smaller magnetic flux $\AEE$.
+In Figure \ref{fig:Edot}, we compare the energy extraction rate $\dot E(\WH)$
+derived from our numerical solutions with East and Yang's simulation results
+\cite{East2018}, where the data points are taken from either the simulations
+or our numerical solutions, while the solid lines are corresponding polynomial
+fitting curves which we require to approach Eq.(\ref{eq:lowEdot}) for small
+spins and to be flat for extremal spins. As expected, our energy extraction
+rate $\dot E(\WH)$ is $\approx 10\%$ lower than the corresponding simulation results,
+due to the $\approx 5\%$ smaller magnetic flux $\AEE$.
 
 \section{Discussions}
 \label{sec:discussion}
 
 
-\subsection{General application}
+\subsection{Application to general field configurations}
 In real astrophysics environment, we expect the field configurations are more close to parabolas instead of
 being strictly vertical. Due to the same topology, it is reasonable to expect
 the marginally force-free boundary
@@ -336,11 +342,11 @@ condition (\ref{eq:bc3}) is also a good work approximation. The features we obse
 should also apply here. The numerical method for solving the GS equation and self-consistently imposing the boundary
 condition (\ref{eq:bc3}).
 
-\subsection{Near-horizon field lines}
+\subsection{Near-horizon field configuration}
 In one of our previous papers \cite{Pan2016a}, we made a claim that ``in the steady axisymmetric force-free magnetosphere
 around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface must intersect the event
-horizon" based on two
-However, simulations shows that there exists an equatorial current sheet within the ergosphere, where
+horizon".
+However, simulations shows that an equatorial current sheet inevitably forms within the ergosphere , where
 the force-free condition breaks down.
 
 
