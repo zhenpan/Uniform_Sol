@@ -68,17 +68,29 @@ one of most efficient ways to extract rotation energy from spinning black holes 
 which operates in BH systems on all mass scales, from the stellar-mass BHs of gamma-ray
 bursts to the supermassive BHs of active galactic nuclei. In the past decade,
 we have studied the BZ mechanism from different approaches and the cross-check among
-these different approaches has facilitate substantial progress in understanding the BZ mechanism.
-: general relativistic
-magnetohydrodynamic (GRMHD) simulations \cite{Komissarov2001,Komissarov2004,Komissarov2004e, McKinney2004},
-analytic solutions \cite{Tanabe2008,Pan2015,Pan2015b, Gralla2014, Gralla2015, Penna2015}
-and numerical solutions  \cite{Contopoulos2013,Nathanail2014,Mahlmann2018},
-and all these different approaches give quantitative agreement for simple magnetic field configurations,
-e.g.,
+these different approaches has facilitate substantial progress in understanding the underlying
+detailed physics in the BZ mechanism. Taking the simple monopole magnetic field
+configuration as an example, the solutions obtained from different approaches
+are in quantitative agreement,  see e.g.\cite{Komissarov2001,Komissarov2004,Komissarov2004e, McKinney2004}
+for general relativistic magnetohydrodynamic simulations,
+\cite{Tanabe2008,Pan2015,Pan2015b, Gralla2014, Gralla2015, Penna2015} for analytic solutions
+and \cite{Contopoulos2013,Nathanail2014,Mahlmann2018} for numerical solutions.
+
+But for other magnetic field configurations, there is no such good agreement, e.g.,
+different approaches do even reach a consensus on the solution uniqueness for uniform field configuration.
+Several force-free electrodynamic simulation \cite{Komissarov2004e, Komissarov2005,
+Komissarov2007,Palenzuela2010,Paschalidis2013, Yang2015,Carrasco2017} have been done
+for investigating this problem. Among these simulations, the BH magnetospheres
+all settle down to a steady state with similar field configuration.
+
+Analytic \cite{Yang2015}
 
 
-Uniform field solution \cite{Komissarov2004e, Komissarov2005, Komissarov2007,Palenzuela2010,Paschalidis2013,
-Yang2015,Carrasco2017}
+
+GS equation, one LS, two eigen functions  radiation condition \cite{Pan2017} 
+
+
+Recent sims, radiation condition and the equatorial boundary condition
 
 The paper is organized as follows.  In Section \ref{sec:basic}, we outline the basic governing equations.
 In Section \ref{sec:uni_sol}, we clarify the radiation condition, boundary conditions and numerical algorithm
@@ -373,7 +385,9 @@ It is straightforward to solve the GS equation and self-consistently
 impose the marginally force-free boundary condition following the
 algorithm detailed in Section \ref{subsec:algorithm}.
 
-The analysis of Section \ref{subsec:features}
+Numerical solutions for the general parabola field configuration are out of scope of this paper.
+The analysis of Section \ref{subsec:features} which is based on the radiation condition
+and the marginally force-free equatorial boundary condition.
 
 
 
@@ -387,7 +401,23 @@ the force-free condition breaks down.
 \section{Summary}
 \label{sec:summary}
 
-In this paper, we revisit the problem of the uniform field solution to the BZ mechanism.
+In the force-free limit, the structure of steady and axisymmetric BH magnetosphere is governed by
+the GS equation, which is a second-order differential equation about the magnetic flux $\Ap$, with two
+free functions $\Omega(\Ap)$ and $I(\Ap)$ to be determined by . For the uniform field configuration, there is only one
+LS, which is insufficient for determine both  $\Omega(\Ap)$ and $I(\Ap)$.
+Therefore the solution uniqueness has been a controversial problem.
+Recent high-accuracy force-free simulations done in Ref. \cite{East2018}
+undoubtedly show that the two functions are not independent;
+instead they are related by the radiation condition (\ref{eq:rad}).
+In addition, an equatorial current sheet within the ergosphere was readily confirmed
+in the simulations
+
+In this paper, we revisit the problem of the uniform field solution.
+From the radiation condition (\ref{eq:rad}) and the marginally force-free boundary
+condition (\ref{eq:bc3}), we derive the
+
+
+
 
 \bibliography{ms}
 
