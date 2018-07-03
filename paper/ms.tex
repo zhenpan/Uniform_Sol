@@ -99,7 +99,7 @@ But for the uniform field configuration, there is only one LS, which is insuffic
 the two eigenfunctions. Consequently there should exist infinitely many solutions \cite{Nathanail2014}.
 
 To explain the discrepancy about the solution uniqueness from different approaches, Pan et.al. \cite{Pan2017}
-proposed that the two eigenfunctions should be connected by the radiation condition at infinity instead of
+proposed that the two eigenfunctions are connected by the radiation condition at infinity instead of
 being independent, which was confirmed by recent FFE simulations done
 by East and Yang \cite{East2018}. In addition, there are other interesting features in the structure of the BH
 magnetosphere showing up in the simulations, e.g., an equatorial current sheet naturally develops
@@ -237,12 +237,12 @@ here we point out that from the radiation condition (\ref{eq:rad}) and the margi
 force-free boundary condition (\ref{eq:bc3})
 themselves contain rich information about the BH magnetosphere structure.
 
-Let's first find out where the LS intersect with the equator, $r_{\rm LS}|_{\mu=0}$.
+Let's first find out where the LS intersects with the equator, $r_{\rm LS}|_{\mu=0}$.
 From the expression of the LS function, it is straightforward to see $ r_{\rm LS}|_{\mu=0} \leq 2$ for $\Omega \geq 0$.
 On this point,  the LS function $\mathcal K$ vanishes,
 and $I$ must also vanish for satisfying the boundary condition (\ref{eq:bc3}),
 which in turns indicates a vanishing angular velocity $\Omega$ from
-the radiation condition (\ref{eq:rad}).  Due to the static limit, $\Omega$
+the radiation condition (\ref{eq:rad}).  Due to the frame-dragging effect, $\Omega$
 must be non-zero inside the ergosphere.  Therefore the only possibility is  $r_{\rm LS}|_{\mu=0} = 2$, i.e.
 to satisfy the boundary condition (\ref{eq:bc3}), the LS must interact the equator at $r=2$, which also
 justifies our choice of equatorial boundary conditions (\ref{eq:bc2},\ref{eq:bc3}) .
@@ -268,13 +268,13 @@ We aim to find a pair of $\Omega(A_\phi)$ and $I(A_\phi)$ satisfying the radiati
 and enabling field lines smoothly crossing the LS,
 and suitable normal derivative $\Am(\mu =0, r_+\leq r \leq 2)$ on the equator
 guaranteeing the boundary condition (\ref{eq:bc3}).
-The numerical algorithm for
-searching desired $\{\Omega(A_\phi), I(A_\phi), \Am(\mu =0, r_+\leq r \leq 2)\}$ is detailed
-in the following steps.
+
+The numerical algorithm for searching desired $\{\Omega(A_\phi), I(A_\phi), \Am(\mu =0, r_+\leq r \leq 2)\}$
+is detailed in the following steps.
 
 1. We choose an initial guess for the field configuration, functions
 $\{ \Omega(\Ap), I(\Ap)\}$
-and equatorial boundary condition as follows
+and equatorial boundary condition of Neumann type as follows
 \begin{subequations}
 \begin{align}
     \Ap &= \frac{B_0}{2}r^2 \sst,  \label{eq:gss1} \\
@@ -287,7 +287,7 @@ where $\WH = a/2r_+$ is the angular velocity of the BH.
 
 2. We evolve the GS equation (\ref{eq:GSg}) using the well-known relaxation method \cite{Press1987}
  and adjust $II'(\Ap)$ until  field lines smoothly cross the LS
-\cite[see e.g.][for more details]{Contopoulos2013, Nathanail2014, Pan2016a, Mahlmann2018}.
+\cite[see e.g.][for more details]{Contopoulos2013, Nathanail2014, Pan2017, Mahlmann2018}.
 
 3. Usually the current $I$ found in Step 2 neither satisfies the radiation condition (\ref{eq:rad})
 nor guarantees the boundary condition (\ref{eq:bc3}). We  adjust
@@ -323,19 +323,20 @@ achieved for $A_\phi\in (A_\phi^{\rm HE}, A_\phi^{\rm EE})$.
 \subsection{Numerical results}
 
 In Figure \ref{fig:field_lines}, we plot the magnetic field lines enclosing a BH with spin $a =0.99$ as an example,
-which explicitly displays the features we anticipated in Section \ref{subsec:features}.
+which explicitly displays the features we anticipated in Section \ref{subsec:features} and is consistent with
+the simulation results \cite{East2018}.
 
 In Figure \ref{fig:omega}, we show the angular velocity function $\Omega(A_\phi)$ for different BH spins and
-compare it with the counterpart obtained from recent high-resolution simulations done by East and Yang \cite{East2018}.
+compare it with the counterpart obtained from the simulations \cite{East2018}.
 For reference, we also plot the leading-order analytic solution in the slow-rotation
 limit \cite{Beskin2013, Pan2014, Gralla2015, East2018},
 \be
     \Omega = \WH\frac{\sqrt{1-\psi}} {1+\sqrt{1-\psi}},
 \ee
 where $\psi = \Ap/(2B_0M^2)$.
-From our numerical solutions, we find the magnetic flux entering the ergosphere $\AEE$ increases with BH spin and approach
-$2.75 B_0 M^2$ for extremal spins (upper panel of Figure \ref{fig:omega}),
-which is about $\approx 5\%$ lower than the simulation result (Figure 3 of \cite{East2018}),
+From our numerical solutions, we find the magnetic flux entering the ergosphere $\AEE$ increases with
+the BH spin and approaches $2.75 B_0 M^2$ for extremal spins (upper panel of Figure \ref{fig:omega}),
+which is about $\approx 5\%$ lower than the simulation result (Figure 3 in Ref. \cite{East2018}),
 while the angular velocity $\Omega$ as a function
 of normalized magnetic flux $\Ap/\AEE$ shows a good agreement with the simulation results.
 
@@ -380,7 +381,7 @@ In Figure \ref{fig:Edot}, we compare the energy extraction rate $\dot E(\WH)$
 derived from our numerical solutions with East and Yang's simulation results
 \cite{East2018}, where the data points are taken from either the simulations
 or our numerical solutions, while the solid lines are corresponding polynomial
-fitting curves which we require to approach Eq.(\ref{eq:lowEdot}) for small
+fitting curves which we require to approach Equation (\ref{eq:lowEdot}) for small
 spins and to be flat for extremal spins. As expected, our energy extraction
 rate $\dot E(\WH)$ is $\approx 10\%$ lower than the corresponding simulation results,
 due to the $\approx 5\%$ smaller magnetic flux $\AEE$.
@@ -398,19 +399,21 @@ equator within the ergosphere was intentionally excluded out of the computation 
 introducing a ``wall" extending from the horizon-equator intersection to infinity. Such
 simplification obviously misses magnetic field lines rooting on the
 equatorial current sheet, which contribute about half of the total BZ flux for extremal spins in
-the case of vertical field lines.
+the case of uniform field configuration.
 
 Due to the resemblance of the vertical field configuration and general parabolic field configurations,
-it is natural to expect an equatorial current develops within the ergosphere,
+it is reasonable to expect an equatorial current develops within the ergosphere,
 where the magnetic dominance loses, therefore the marginally force-free boundary
-condition (\ref{eq:bc3}) should also be a good work approximation here.
+condition (\ref{eq:bc3}) should also be a good work approximation for studying
+the BH magnetosphere structure with parabolic magnetic field lines.
 It is straightforward to solve the GS equation and self-consistently
 impose the marginally force-free boundary condition following the
 algorithm detailed in Section \ref{subsec:algorithm}.
 
-Numerical solutions for the general parabola field configuration are out of scope of this paper.
-The analysis of Section \ref{subsec:features} which is based on the radiation condition
-and the marginally force-free equatorial boundary condition.
+Though we do not numerically solve the GS equation for the general parabolic field configurations,
+the qualitative properties we summarized in Section \ref{subsec:features} also apply here,
+since they are dictated by the radiation condition and the marginally force-free equatorial boundary condition,
+and are independent of the GS equation.
 
 
 
@@ -458,7 +461,7 @@ parabolas instead of being strictly vertical. Due to the resemblance, we also ex
 force-free equatorial boundary condition to be a good working approximation. Though we do not
 numerically solve the GS equation for the parabolic configuration in this paper, the qualitative
 properties discussed in Section \ref{subsec:features} also apply here, since they are dictated by
-the radiation condition and the marginally force-free boundary condition, and GS equation only
+the radiation condition and the marginally force-free boundary condition, while the GS equation only
 serves to quantify these properties.
 
 
