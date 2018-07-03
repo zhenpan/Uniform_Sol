@@ -226,7 +226,7 @@ Explicitly, we have
  & B^2+E^2   \\
 =& \frac{1}{\Sigma \sst} \left[ \left(\mathcal{K}+\frac{\Delta\Sigma}{\beta} \right)
  \left(\Ar^2 +\frac{\sst}{\Delta}\Am^2 \right)
- +\frac{\Sigma}{\Delta}I^2\right]
+ +\frac{\Sigma}{\Delta}I^2\right] .
 \end{aligned}
 \ee
 
@@ -269,10 +269,10 @@ and enabling field lines smoothly crossing the LS,
 and suitable normal derivative $\Am(\mu =0, r_+\leq r \leq 2)$ on the equator
 guaranteeing the boundary condition (\ref{eq:bc3}).
 
-The numerical algorithm for searching desired $\{\Omega(A_\phi), I(A_\phi), \Am(\mu =0, r_+\leq r \leq 2)\}$
+The numerical algorithm of searching for the desired $\{\Omega(A_\phi), I(A_\phi), \Am(\mu =0, r_+\leq r \leq 2)\}$
 is detailed in the following steps.
 
-1. We choose an initial guess for the field configuration, functions
+1. We choose an initial guess for the field configuration, eigenfunctions
 $\{ \Omega(\Ap), I(\Ap)\}$
 and equatorial boundary condition of Neumann type as follows
 \begin{subequations}
@@ -323,8 +323,8 @@ achieved for $A_\phi\in (A_\phi^{\rm HE}, A_\phi^{\rm EE})$.
 \subsection{Numerical results}
 
 In Figure \ref{fig:field_lines}, we plot the magnetic field lines enclosing a BH with spin $a =0.99$ as an example,
-which explicitly displays the features we anticipated in Section \ref{subsec:features} and is consistent with
-the simulation results \cite{East2018}.
+which explicitly displays the features we anticipated in Section \ref{subsec:features} and agrees with
+the simulation results in detail \cite{East2018}.
 
 In Figure \ref{fig:omega}, we show the angular velocity function $\Omega(A_\phi)$ for different BH spins and
 compare it with the counterpart obtained from the simulations \cite{East2018}.
@@ -338,7 +338,7 @@ From our numerical solutions, we find the magnetic flux entering the ergosphere 
 the BH spin and approaches $2.75 B_0 M^2$ for extremal spins (upper panel of Figure \ref{fig:omega}),
 which is about $\approx 5\%$ lower than the simulation result (Figure 3 in Ref. \cite{East2018}),
 while the angular velocity $\Omega$ as a function
-of normalized magnetic flux $\Ap/\AEE$ shows a good agreement with the simulation results.
+of normalized magnetic flux $\Ap/\AEE$ is in agreement with the simulation results to high precision.
 
 
 \begin{figure}
@@ -351,9 +351,10 @@ the equator at $r=2 M$. }
 \begin{figure}
 \includegraphics[scale=0.7]{f2a}
 \includegraphics[scale=0.7]{f2b}
-\caption{\label{fig:omega} Upper panel: the angular velocity  $\Omega(\Ap)$ for different BH spins.
+\caption{\label{fig:omega} Upper panel: the angular velocity  $\Omega(\Ap)$ for different BH spins
+obtained from our numerical solutions.
 Lower Panel: comparison of our numerical results (solid lines) with the simulation results of
-Ref. \cite{East2018} (dashed lines). For reference, we also plot the leading order analytic solution in
+Ref.\cite{East2018} (dashed lines). For reference, we also plot the leading order analytic solution in
 dash-dotted lines.}
 \end{figure}
 
@@ -386,13 +387,17 @@ spins and to be flat for extremal spins. As expected, our energy extraction
 rate $\dot E(\WH)$ is $\approx 10\%$ lower than the corresponding simulation results,
 due to the $\approx 5\%$ smaller magnetic flux $\AEE$.
 
+To summarize, the uniform field solution is indeed unique as double confirmed by the high-accuracy FFE
+simulations and by our numerical solutions, where the radiation condition and the marginally force-free
+equatorial boundary condition largely shape the  structure of the BH magnetosphere.
+
 \section{Discussion}
 \label{sec:discussion}
 
 
 \subsection{Application to general field configurations}
-In real astrophysical environment, we expect the field lines are more close to parabolas instead of
-being strictly vertical. In many previous studies of such field
+In real astrophysical environment, we expect the field lines far away from the central BH
+are more close to parabolas instead of being strictly vertical. In several previous studies of such field
 configurations \cite[e.g.][]{Tchekhovskoy2010,Nathanail2014,Mahlmann2018},
 due to lacking knowledge of the equatorial boundary condition, the
 equator within the ergosphere was intentionally excluded out of the computation domain by manually
@@ -401,7 +406,7 @@ simplification obviously misses magnetic field lines rooting on the
 equatorial current sheet, which contribute about half of the total BZ flux for extremal spins in
 the case of uniform field configuration.
 
-Due to the resemblance of the vertical field configuration and general parabolic field configurations,
+Due to the resemblance of near-horizon field lines in the two cases,
 it is reasonable to expect an equatorial current develops within the ergosphere,
 where the magnetic dominance loses, therefore the marginally force-free boundary
 condition (\ref{eq:bc3}) should also be a good work approximation for studying
@@ -412,25 +417,27 @@ algorithm detailed in Section \ref{subsec:algorithm}.
 
 Though we do not numerically solve the GS equation for the general parabolic field configurations,
 the qualitative properties we summarized in Section \ref{subsec:features} also apply here,
-since they are dictated by the radiation condition and the marginally force-free equatorial boundary condition,
-and are independent of the GS equation.
+since these properties are the consequence of the radiation condition and the marginally force-free equatorial boundary condition,
+while the GS equation only serves to quantify them.
 
 
 
-\subsection{Near-horizon field configuration}
+\subsection{Near-horizon magnetic field lines}
 In one of our previous papers \cite{Pan2016a}, we made a claim that ``in the steady axisymmetric force-free magnetosphere
 around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface must intersect the event horizon",
 based on the radiation condition $I = \Omega \times \mathcal F(\Ap)$ and the assumption of no current sheet within the ergosphere,
 where the function $F(\Ap)$ is of $\mathcal O(\Ap)$ and  is field configuration dependent. The basic logic is:
-$\Omega$ must be nonzero for all field lines entering the ergosphere due to the static limit; as a result, $I$ must be nonzero
-for these field lines. If there is field line crossing the equator, the electric current either flows. Then
-the charge conservation is violated (if there exists no current sheet).
+$\Omega$ must be nonzero for all field lines entering the ergosphere due to the frame-dragging effect;
+as a result, $I$ must be nonzero for these field lines. If there is field line crossing the equator,
+the electric current either flows. Then the charge conservation is violated (if there exists no current sheet).
 
 However, simulations show that an equatorial current sheet inevitably develops within the ergosphere, where
 the force-free condition breaks down. Therefore the above claim should be generalized as
 ``in the steady axisymmetric force-free magnetosphere
 around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface
-must intersect the event horizon or end up on the equatorial current sheet".
+must intersect the event horizon or end up on the equatorial current sheet". Specifically,
+this claim excludes the existence of field lines entering the ergosphere and crossing the
+equator vertically.
 
 
 \section{Summary}
@@ -456,18 +463,19 @@ for numerically solving the GS equation and consistently imposing the marginally
 equatorial boundary condition. As a result, we find a good agreement between our numerical solutions
 with the high-accuracy FFE simulations.
 
-In realistic astrophysical environment, we expect the magnetic field lines are more close to
-parabolas instead of being strictly vertical. Due to the resemblance, we also expect the marginally
-force-free equatorial boundary condition to be a good working approximation. Though we do not
-numerically solve the GS equation for the parabolic configuration in this paper, the qualitative
-properties discussed in Section \ref{subsec:features} also apply here, since they are dictated by
-the radiation condition and the marginally force-free boundary condition, while the GS equation only
-serves to quantify these properties.
+In realistic astrophysical environment, we expect the magnetic field lines far away from the central BH
+are more close to parabolas instead of being strictly vertical. However, we also expect the marginally
+force-free equatorial boundary condition to be a good working approximation for the parabolic field configurations,
+due to the resemblance of the near-horizon field configurations in the two cases.
+Though we do not numerically solve the GS equation for the parabolic configurations in this paper, the qualitative
+properties of the uniform field solution summarized in Section \ref{subsec:features} also apply here,
+since these properties are dictated by the radiation condition $I = \Omega \times \mathcal F(\Ap)$
+and the marginally force-free boundary condition $B^2-E^2=0$, while the GS equation only serves to quantify them.
 
 
 \acknowledgements
-
-This research was supported by Perimeter Institute for Theoretical Physics.
+ZP was supported by the UC Davis Dissertation Year Fellowship when this work was started.
+This research was also supported by Perimeter Institute for Theoretical Physics.
 Research at Perimeter Institute is supported by the Government of Canada
 through the Department of Innovation, Science and Economic Development Canada
 and by the Province of Ontario through the Ministry of Research, Innovation and Science.
