@@ -50,17 +50,16 @@ marginally force-free equatorial boundary condition}
     recent high-accuracy general relativistic (GR) force-free electrodynamics (FFE) simulations \cite{East2018}
     show that there are both field lines entering the horizon and field lines ending up on
     the equatorial current sheet
-    within the ergosphere for asymptotic uniform field. For the latter, the equatorial boundary
+    within the ergosphere for asymptotic uniform field configuration. For the latter, the equatorial boundary
     condition is well approximated being marginally force-free, i.e., $B^2-E^2\approx 0$, where $B$ and
-    $E$ are the magnetic and electric field strength, respectively. In this paper, we revisit uniform field
+    $E$ are the magnetic and electric field strength, respectively. In this paper, we revisit the uniform field
     solution to the Kerr BH magnetosphere structure and investigate the role of the marginally force-free
-    equatorial boundary condition in the BH magnetosphere structure.  We find the major qualitative properties of the magnetosphere structure are attributed
-    to the marginally force-free condition without invoking the Grad-Shafranov (GS) equation which governs the structure of
-    the force-free magnetosphere in steady state. We propose an algorithm
-    for numerically solving the GR Grad-Shafranov equation and self-consistently imposing the marginally force-free equatorial
-    condition, and we find a good agreement between our numerical solutions and the high-accuracy FFE simulations.
-    We also discuss the applicability of this boundary condition and the numerical algorithm proposed
-    in this paper for general magnetic field configurations.
+    equatorial boundary condition.  We find this boundary condition plays an important role in
+    shaping the BH magnetosphere in various aspects, including the shape of the light surface, the near-horizon field
+    line configuration and the source of the Poynting flux.
+    We also propose an algorithm for numerically solving the GR Grad-Shafranov equation and self-consistently imposing the marginally force-free equatorial
+    condition. As a result, we find a good agreement between our numerical solutions and the high-accuracy FFE simulations.
+    We also discuss the applicability of the marginally force-free boundary condition and the numerical algorithm for general magnetic field configurations.
 \end{abstract}
 
 
@@ -76,31 +75,32 @@ we have studied the BZ mechanism from different approaches and the cross-check a
 these different approaches has facilitate substantial progress in understanding the underlying
 detailed physics. Taking the simple monopole magnetic field
 configuration as an example, the solutions obtained from different approaches
-are in quantitative agreement,  see e.g.\cite{Komissarov2001,Komissarov2004,Komissarov2004e, McKinney2004}
+are in quantitative agreement,  see e.g. \cite{Komissarov2001,Komissarov2004,Komissarov2004e, McKinney2004}
 for general relativistic magnetohydrodynamic simulations,
 \cite{Tanabe2008,Pan2015,Pan2015b, Gralla2014, Gralla2015, Penna2015, Grignani2018} for analytic solutions
 and \cite{Contopoulos2013,Nathanail2014,Mahlmann2018} for numerical solutions.
 
 But for other magnetic field configurations, there is no such good agreement, e.g.,
-different approaches do even reach a consensus on the solution uniqueness for uniform field configuration.
+different approaches do not even reach a consensus on the solution uniqueness for the uniform field configuration.
 Several force-free electrodynamics (FFE) simulation \cite{Komissarov2004e, Komissarov2005,
-Komissarov2007,Palenzuela2010,Paschalidis2013,Yang2015,Carrasco2017} have been done,
+Komissarov2007,Palenzuela2010,Paschalidis2013,Yang2015,Carrasco2017} have been done and
 the BH magnetospheres in these simulations all settle down to a steady state with similar final field configuration,
 which is an indicator for solution uniqueness.
-However, a family of analytic solutions were presented for slowly spinning BHs \cite{Yang2015, Pan2017}.
-But no instability mode was found for these solutions \cite{Yang2015}, therefore the solution stability
+However, a family of analytic solutions were presented for slowly spinning BHs,
+and no instability mode was found for any of these solutions \cite{Yang2015}. Therefore the solution stability
 is not likely the explanation for the solution uniqueness.
 
 From the viewpoint of numerical solutions, the structure of a BH magnetosphere in axisymmetric and
-steady state is governed by the GS equation, which is a second-order differential equation of
-the magnetic flux $\Ap(r,\theta)$, with two eigenfunctions $I(\Ap)$ and $\Omega(\Ap)$ to be self-consistently
-determined by requiring the magnetic field line smoothly cross the light surfaces (LSs).
-But for the uniform field configuration, there is only one LS, which is insufficient for determining
-the two eigenfunctions. Consequently there should exist infinitely many solutions \cite{Nathanail2014}.
+steady state is governed by the Grad-Shafranov (GS) equation, which is a second-order differential equation of
+the magnetic flux $\Ap(r,\theta)$, with two eigenfunctions $I(\Ap)$ and $\Omega(\Ap)$ to be
+determined. For common field configurations, the two eigenfunctions are determined by requiring the
+magnetic field line smoothly cross the light surfaces (LSs), where the GS equation degrades to be first-order.
+But for the uniform field configuration, there exits only one LS, which is insufficient for determining
+the two eigenfunctions. Following this argument, there should exist infinitely many solutions \cite{Nathanail2014}.
 
 To explain the discrepancy about the solution uniqueness from different approaches, Pan et.al. \cite{Pan2017}
 proposed that the two eigenfunctions are connected by the radiation condition at infinity instead of
-being independent, which was confirmed by recent FFE simulations done
+being independent, which was readily confirmed by recent FFE simulations done
 by East and Yang \cite{East2018}. In addition, there are other interesting features in the structure of the BH
 magnetosphere showing up in the simulations, e.g., an equatorial current sheet naturally develops
 with the ergosphere, and the magnetic dominance marginally loses on the current sheet, i.e. $B^2-E^2\approx 0$.
@@ -115,9 +115,8 @@ As a result, we find our numerical solutions are in good agreement with the FFE 
 
 The paper is organized as follows.  In Section \ref{sec:basic}, we outline the basic governing equations.
 In Section \ref{sec:uni_sol}, we clarify the radiation condition, boundary conditions and numerical algorithm
-for the uniform field solution. In Section \ref{sec:discussion}, we discuss the application
-to general field line configurations and near-horizon
-field line configuration. Summary is given in Section \ref{sec:summary}.
+for the uniform field solution. In Section \ref{sec:discussion}, we generalize the discussion
+to  more field configurations. Summary is given in Section \ref{sec:summary}.
 
 
 \section{basic equations}
@@ -153,9 +152,13 @@ the axisymmetric and steady GS equation can be written in a compact form \cite{P
 &&
 - \frac{\Sigma}{\Delta}II' = 0 \ ,
 \een
-with $\mathcal K(r,\theta; \Omega )= \left[\frac{\beta}{\Sigma}\Omega^2 \sst
+where the LS function
+\be
+\label{eq:ls}
+\mathcal K(r,\theta; \Omega )= \frac{\beta}{\Sigma}\Omega^2 \sst
 -\frac{4ra}{\Sigma}\Omega \sst
--\left(1-\frac{2r}{\Sigma}\right)\right]$ being the LS function,
+-\left(1-\frac{2r}{\Sigma}\right)\right,
+\ee
 $\mu\equiv\ct$,  and  the primes designate  derivatives with respect to $A_\phi$.
 $\partial_i^\Omega (i=r, \mu)$  denotes the partial derivative
 with respect to coordinate $i$ with $\Omega$ fixed, and $\partial_\Omega$ is the derivative with
@@ -165,18 +168,21 @@ respect to $\Omega$.
 \label{sec:uni_sol}
 
 \subsection{Solution uniqueness and radiation condition}
-For common field configurations, including split monopole and parabola, there exist two LSs where
+For common field configurations, there exists two LSs where
 the LS function vanishes and the GS equation degrades from second order to first order. As proposed
 by Contopoulos et.al. \cite{Contopoulos2013}, one can adjust the two eigenfunctions $\Omega(\Ap)$
 and $I(\Ap)$ enabling field lines smoothly cross the two LSs, then the solution
 $\{\Omega(\Ap), I(\Ap), \Ap(r,\theta)\}$  is uniquely found. But for the vertical field lines, their
-exist only one LS, which is insufficient to determine two eigenfunctions.
-Therefore many solutions are expected \cite{Nathanail2014, Mahlmann2018} but the many-solutions scenario is in
-conflict with several previous FFE simulations.
+exists only one LS, which is insufficient for determining two eigenfunctions.
+Therefore many solutions are expected \cite{Nathanail2014, Mahlmann2018}, but the many-solutions scenario is in
+conflict with several previous FFE simulations \cite{Komissarov2004e, Komissarov2005,
+Komissarov2007,Palenzuela2010,Paschalidis2013,Yang2015,Carrasco2017}.
 To tackle this problem,  Pan et. al. \cite{Pan2016a, Pan2017} proposed that the two eigenfunctions are not independent;
 instead, they are related by the radiation condition at infinity
 \be I = 2\Omega A_\phi, \label{eq:rad}\ee
 which has been readily confirmed by recent high-accuracy FFE simulations \cite{East2018}.
+Combining with suitable boundary conditions, we expect a unique uniform field solution as indicated
+by the previous FFE simulations.
 
 \subsection{Boundary conditions}
 
@@ -189,9 +195,9 @@ A_\phi|_{\mu = 1} &= 0,\\
 \end{aligned}
 \ee
 where $r_+$ is the radius of the event horizon,
-while the equatorial boundary conditions are more unclear until recent simulations \cite{East2018}
+while the equatorial boundary condition is more uncertain until recent simulations \cite{East2018}
 come out which show that there exists an equator current sheet within the ergosphere where the
-magnetic dominance marginally loses, i.e., $B^2-E^2\approx 0$. Motivated by these simulations,
+magnetic dominance marginally loses, i.e., $B^2-E^2\approx 0$. Motivated by the simulation results,
 we choose the following equatorial boundary condition in our numerical solutions,
 \begin{subequations}
 \begin{align}
@@ -208,7 +214,7 @@ is neither a Dirichlet nor a Neumann boundary condition, since
 \end{aligned}
 \ee
 which involves both derivatives $\Am$ and $\Ar$ on the boundary.
-Therefore, it is numerically non-trivial to impose this boundary condition in computation.
+As we will see later, it is numerically non-trivial to impose this boundary condition in computation.
 
 We note a coordinate singularity $1/\Delta$ in the expression of $B^2-E^2$.
 To avoid possible numerical difficulty, we use the prescription
@@ -217,9 +223,9 @@ To avoid possible numerical difficulty, we use the prescription
 \int_{A_\phi^{\rm HE}}^{A_\phi^{\rm EE}} \left(\frac{B^2-E^2}{B^2+E^2}\right)^2 dA_\phi \Bigg/ \left(A_\phi^{\rm EE}- A_\phi^{\rm HE}\right)  < 10^{-3},
 \ee
 in our computation, as a proxy of the marginally force-free equatorial boundary condition (\ref{eq:bc3}),
-where $\AHE$ and $\AEE$ are the magnetic flux entering the horizon and the ergosphere, respectively;
+where $\AHE$ and $\AEE$ are the magnetic flux enclosed by the horizon and by the ergosphere, respectively;
 ``HE" and ``EE" are short for Horizon-Equator and Ergosphere-Equator, respectively.
-For definiteness, we choose $B^2+E^2$ to be the energy density measured by the zero-angular-momentum-observers.
+For definiteness, we choose $B^2+E^2$ to be the energy density measured by zero-angular-momentum-observers.
 Explicitly, we have
 \be
 \begin{aligned}
@@ -238,13 +244,13 @@ force-free boundary condition (\ref{eq:bc3})
 themselves contain rich information about the BH magnetosphere structure.
 
 Let's first find out where the LS intersects with the equator, $r_{\rm LS}|_{\mu=0}$.
-From the expression of the LS function, it is straightforward to see $ r_{\rm LS}|_{\mu=0} \leq 2$ for $\Omega \geq 0$.
+From the expression of the LS function (\ref{eq:ls}), it is straightforward to see $ r_{\rm LS}|_{\mu=0} \leq 2$ for $\Omega \geq 0$.
 On this point,  the LS function $\mathcal K$ vanishes,
 and $I$ must also vanish for satisfying the boundary condition (\ref{eq:bc3}),
 which in turns indicates a vanishing angular velocity $\Omega$ from
 the radiation condition (\ref{eq:rad}).  Due to the frame-dragging effect, $\Omega$
 must be non-zero inside the ergosphere.  Therefore the only possibility is  $r_{\rm LS}|_{\mu=0} = 2$, i.e.
-to satisfy the boundary condition (\ref{eq:bc3}), the LS must interact the equator at $r=2$, which also
+to satisfy the boundary condition (\ref{eq:bc3}), the LS must intersect the equator at $r=2$, which also
 justifies our choice of equatorial boundary conditions (\ref{eq:bc2},\ref{eq:bc3}) .
 
 From above analysis, we expect several generic features in the magnetospheres that are independent
@@ -269,12 +275,13 @@ and enabling field lines smoothly crossing the LS,
 and suitable normal derivative $\Am(\mu =0, r_+\leq r \leq 2)$ on the equator
 guaranteeing the boundary condition (\ref{eq:bc3}).
 
-The numerical algorithm of searching for the desired $\{\Omega(A_\phi), I(A_\phi), \Am(\mu =0, r_+\leq r \leq 2)\}$
+The numerical algorithm of searching for the desired eigenfunctions and the equatorial
+boundary condition $\{\Omega(A_\phi), I(A_\phi), \Am(\mu =0, r_+\leq r \leq 2)\}$
 is detailed in the following steps.
 
 1. We choose an initial guess for the field configuration, eigenfunctions
 $\{ \Omega(\Ap), I(\Ap)\}$
-and equatorial boundary condition of Neumann type as follows
+and equatorial boundary condition  as follows
 \begin{subequations}
 \begin{align}
     \Ap &= \frac{B_0}{2}r^2 \sst,  \label{eq:gss1} \\
@@ -423,15 +430,24 @@ while the GS equation only serves to quantify them.
 
 
 \subsection{Near-horizon magnetic field lines}
-In one of our previous papers \cite{Pan2016a}, we made a claim that ``in the steady axisymmetric force-free magnetosphere
-around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface must intersect the event horizon",
-based on the radiation condition $I = \Omega \times \mathcal F(\Ap)$ and the assumption of no current sheet within the ergosphere,
-where the function $F(\Ap)$ is of $\mathcal O(\Ap)$ and  is field configuration dependent. The basic logic is:
+In a previous study \cite{Pan2016a}, we made a claim that ``in the steady axisymmetric force-free magnetosphere
+around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface must intersect the event horizon".
+This claim is based on the radiation condition
+\be
+\label{eq:Grad}
+I = \Omega \times \mathcal F(\Ap),
+\ee
+and the assumption of no current sheet within the ergosphere,
+where the function $\mathcal F(\Ap)$ is of $\mathcal O(\Ap)$ and  is field configuration dependent.
+The basic logic for obtaining the claim is as follows.
 $\Omega$ must be nonzero for all field lines entering the ergosphere due to the frame-dragging effect;
-as a result, $I$ must be nonzero for these field lines. If there is field line crossing the equator,
-the electric current either flows. Then the charge conservation is violated (if there exists no current sheet).
+as a result, $I$ must be nonzero for these field lines according to the radiation condition.
+If there is field line entering the ergosphere and crossing the equator, the electric current either flows
+towards the equator from both the $+z$ and $-z$ side, or flows away from the equator to infinity in
+both the $+z$ and $-z$ direction. For each case, the charge conservation is violated
+if there exists no equatorial current sheet.
 
-However, simulations show that an equatorial current sheet inevitably develops within the ergosphere, where
+However, the FFE simulations show that an equatorial current sheet inevitably develops within the ergosphere, where
 the force-free condition breaks down. Therefore the above claim should be generalized as
 ``in the steady axisymmetric force-free magnetosphere
 around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface
@@ -445,23 +461,25 @@ equator vertically.
 
 In the force-free limit, the structure of steady and axisymmetric BH magnetosphere is governed by
 the GS equation, which is a second-order differential equation about the magnetic flux $\Ap$, with two
-free functions $\Omega(\Ap)$ and $I(\Ap)$ to be determined by . For the uniform field configuration, there is only one
+eigenfunctions $\Omega(\Ap)$ and $I(\Ap)$ to be determined. For common field configurations, there exists
+two LSs on which the GS equation degrades to be first-order, and the two eigenfunctions are determined
+by the requirement that magnetic field lines should smoothly cross the two LSs.
+For the uniform field configuration, there is only one
 LS, which is insufficient for determine both  $\Omega(\Ap)$ and $I(\Ap)$.
-Therefore the solution uniqueness has been a controversial problem.
-Recent high-accuracy force-free simulations done in Ref. \cite{East2018}
-undoubtedly show that the two functions are not independent;
-instead they are related by the radiation condition (\ref{eq:rad}).
-In addition, an equatorial current sheet within the ergosphere was readily confirmed
-in the simulations
+Therefore the solution uniqueness of the uniform field configuration has been a controversial problem.
+To tackle this problem, we  proposed that the two functions are related by the radiation condition (\ref{eq:rad}),
+instead of being independent \cite{Pan2017}, which was readily confirmed by recent high-accuracy
+FFE simulations \cite{East2018}. In these simulations, an equatorial current sheet
+develops within the ergosphere and the magnetic dominance marginally loses, i.e. $B^2-E^2\approx 0$.
 
-In this paper, we revisit the problem of the uniform field solution.
+Motivated by these simulations, we revisit the problem of the uniform field solution in this paper.
 We find the radiation condition (\ref{eq:rad}) and the marginally force-free boundary
 condition (\ref{eq:bc3}) are rather informative, which dictate the BH magnetosphere structure
 in various aspects, including the shape of the LS, the near-horizon field line configuration and
-source of BZ flux (see Section \ref{subsec:features} for details). We also propose an algorithm
-for numerically solving the GS equation and consistently imposing the marginally force-free
-equatorial boundary condition. As a result, we find a good agreement between our numerical solutions
-with the high-accuracy FFE simulations.
+the source of BZ flux (see Section \ref{subsec:features} for details). Other than these qualitative properties,
+we also propose an algorithm for numerically solving the GS equation and consistently imposing
+the marginally force-free equatorial boundary condition. As a result, we find a good agreement
+between our numerical solutions with the high-accuracy FFE simulations.
 
 In realistic astrophysical environment, we expect the magnetic field lines far away from the central BH
 are more close to parabolas instead of being strictly vertical. However, we also expect the marginally
@@ -469,8 +487,8 @@ force-free equatorial boundary condition to be a good working approximation for 
 due to the resemblance of the near-horizon field configurations in the two cases.
 Though we do not numerically solve the GS equation for the parabolic configurations in this paper, the qualitative
 properties of the uniform field solution summarized in Section \ref{subsec:features} also apply here,
-since these properties are dictated by the radiation condition $I = \Omega \times \mathcal F(\Ap)$
-and the marginally force-free boundary condition $B^2-E^2=0$, while the GS equation only serves to quantify them.
+since these properties are dictated by the radiation condition
+and the marginally force-free boundary condition, while the GS equation only serves to quantify them.
 
 
 \acknowledgements

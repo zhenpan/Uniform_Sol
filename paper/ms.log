@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  3 JUL 2018 12:59
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  3 JUL 2018 17:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -387,47 +387,61 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 54.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (3.98956pt too wide) detected at line 136
+Overfull \hbox (3.98956pt too wide) detected at line 135
 [] []
  []
 
+./ms.tex:160: Missing delimiter (. inserted).
+<to be read again> 
+                   ,
+l.160 -\left(1-\frac{2r}{\Sigma}\right)\right,
+                                              
+I was expecting to see something like `(' or `\{' or
+`\}' here. If you typed, e.g., `{' instead of `\{', you
+should probably delete the `{' by typing `1' now, so that
+braces don't get unbalanced. Otherwise just proceed.
+Acceptable delimiters are characters whose \delcode is
+nonnegative, or you can use `\delimiter <delimiter code>'.
 
-Underfull \hbox (badness 2865) in paragraph at lines 168--178
-[]\OT1/cmr/m/n/10 For com-mon field con-fig-u-ra-tions, in-clud-ing split
- []
+./ms.tex:160: Extra \right.
+<to be read again> 
+                   ,
+l.160 -\left(1-\frac{2r}{\Sigma}\right)\right,
+                                              
+I'm ignoring a \right that had no matching \left.
 
-[2] [3] <f1.pdf, id=200, 361.35pt x 433.62pt>
+[2] [3] <f1.pdf, id=203, 361.35pt x 433.62pt>
 File: f1.pdf Graphic file (type pdf)
  <use f1.pdf>
-Package pdftex.def Info: f1.pdf used on input line 345.
+Package pdftex.def Info: f1.pdf used on input line 352.
 (pdftex.def)             Requested size: 216.81168pt x 260.17401pt.
- <f2a.pdf, id=201, 361.35pt x 260.17201pt>
+ <f2a.pdf, id=204, 361.35pt x 260.17201pt>
 File: f2a.pdf Graphic file (type pdf)
  <use f2a.pdf>
-Package pdftex.def Info: f2a.pdf used on input line 352.
+Package pdftex.def Info: f2a.pdf used on input line 359.
 (pdftex.def)             Requested size: 252.94327pt x 182.11914pt.
- <f2b.pdf, id=202, 361.35pt x 260.17201pt>
+ <f2b.pdf, id=205, 361.35pt x 260.17201pt>
 File: f2b.pdf Graphic file (type pdf)
  <use f2b.pdf>
-Package pdftex.def Info: f2b.pdf used on input line 353.
+Package pdftex.def Info: f2b.pdf used on input line 360.
 (pdftex.def)             Requested size: 252.94327pt x 182.11914pt.
 
-Overfull \hbox (6.94327pt too wide) in paragraph at lines 352--354
+Overfull \hbox (6.94327pt too wide) in paragraph at lines 359--361
  [][] 
  []
 
 
-Overfull \hbox (6.94327pt too wide) in paragraph at lines 352--354
+Overfull \hbox (6.94327pt too wide) in paragraph at lines 359--361
  [] 
  []
 
-<f3.pdf, id=205, 361.35pt x 260.17201pt>
+<f3.pdf, id=208, 361.35pt x 260.17201pt>
 File: f3.pdf Graphic file (type pdf)
  <use f3.pdf>
-Package pdftex.def Info: f3.pdf used on input line 375.
+Package pdftex.def Info: f3.pdf used on input line 382.
 (pdftex.def)             Requested size: 252.94327pt x 182.11914pt.
 
-Overfull \hbox (6.94327pt too wide) in paragraph at lines 375--376
+Overfull \hbox (6.94327pt too wide) in paragraph at lines 382--383
  [][] 
  []
 
@@ -439,7 +453,7 @@ pdfTeX warning: pdflatex (file ./f2a.pdf): PDF inclusion: multiple pdfs with pag
 pdfTeX warning: pdflatex (file ./f2b.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
 
-LaTeX Warning: A float is stuck (cannot be placed); try class option [floatfix] on input line 408.
+LaTeX Warning: A float is stuck (cannot be placed); try class option [floatfix] on input line 415.
 
 [5 <./f3.pdf>] (./ms.bbl
 Underfull \hbox (badness 3503) in paragraph at lines 147--153
@@ -452,27 +466,27 @@ Class revtex4-1 Warning: Environment acknowledgements is obsolete;
 Use acknowledgments instead.
 
 [6]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 488.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 506.
  (./ms.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 488.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 488.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 506.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 506.
 Package rerunfilecheck Info: File `ms.out' has not changed.
 (rerunfilecheck)             Checksum: 4DFE97F5E830B8E7D1D7B77D559D0A41;1165.
  ) 
 Here is how much of TeX's memory you used:
- 8321 strings out of 493304
- 116597 string characters out of 6139871
- 241919 words of memory out of 5000000
- 11590 multiletter control sequences out of 15000+600000
+ 8324 strings out of 493304
+ 116628 string characters out of 6139871
+ 243877 words of memory out of 5000000
+ 11591 multiletter control sequences out of 15000+600000
  16461 words of font info for 61 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  29i,11n,30p,450b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on ms.pdf (6 pages, 332470 bytes).
+Output written on ms.pdf (6 pages, 332965 bytes).
 PDF statistics:
- 563 PDF objects out of 1000 (max. 8388607)
- 422 compressed objects within 5 object streams
- 74 named destinations out of 1000 (max. 500000)
+ 568 PDF objects out of 1000 (max. 8388607)
+ 427 compressed objects within 5 object streams
+ 76 named destinations out of 1000 (max. 500000)
  149 words of extra memory for PDF output out of 10000 (max. 10000000)
 
