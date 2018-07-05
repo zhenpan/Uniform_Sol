@@ -1,0 +1,311 @@
+%merlin.mbs apsrev4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
+%Control: key (0)
+%Control: author (8) initials jnrlst
+%Control: editor formatted (1) identically to author
+%Control: production of article title (-1) disabled
+%Control: page (0) single
+%Control: year (1) truncated
+%Control: production of eprint (0) enabled
+\begin{thebibliography}{28}%
+\makeatletter
+\providecommand \@ifxundefined [1]{%
+ \@ifx{#1\undefined}
+}%
+\providecommand \@ifnum [1]{%
+ \ifnum #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \@ifx [1]{%
+ \ifx #1\expandafter \@firstoftwo
+ \else \expandafter \@secondoftwo
+ \fi
+}%
+\providecommand \natexlab [1]{#1}%
+\providecommand \enquote  [1]{``#1''}%
+\providecommand \bibnamefont  [1]{#1}%
+\providecommand \bibfnamefont [1]{#1}%
+\providecommand \citenamefont [1]{#1}%
+\providecommand \href@noop [0]{\@secondoftwo}%
+\providecommand \href [0]{\begingroup \@sanitize@url \@href}%
+\providecommand \@href[1]{\@@startlink{#1}\@@href}%
+\providecommand \@@href[1]{\endgroup#1\@@endlink}%
+\providecommand \@sanitize@url [0]{\catcode `\\12\catcode `\$12\catcode
+  `\&12\catcode `\#12\catcode `\^12\catcode `\_12\catcode `\%12\relax}%
+\providecommand \@@startlink[1]{}%
+\providecommand \@@endlink[0]{}%
+\providecommand \url  [0]{\begingroup\@sanitize@url \@url }%
+\providecommand \@url [1]{\endgroup\@href {#1}{\urlprefix }}%
+\providecommand \urlprefix  [0]{URL }%
+\providecommand \Eprint [0]{\href }%
+\providecommand \doibase [0]{http://dx.doi.org/}%
+\providecommand \selectlanguage [0]{\@gobble}%
+\providecommand \bibinfo  [0]{\@secondoftwo}%
+\providecommand \bibfield  [0]{\@secondoftwo}%
+\providecommand \translation [1]{[#1]}%
+\providecommand \BibitemOpen [0]{}%
+\providecommand \bibitemStop [0]{}%
+\providecommand \bibitemNoStop [0]{.\EOS\space}%
+\providecommand \EOS [0]{\spacefactor3000\relax}%
+\providecommand \BibitemShut  [1]{\csname bibitem#1\endcsname}%
+\let\auto@bib@innerbib\@empty
+%</preamble>
+\bibitem [{\citenamefont {East}\ and\ \citenamefont {Yang}(2018)}]{East2018}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.~E.}\ \bibnamefont
+  {East}}\ and\ \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {Yang}},\
+  }\href {http://arxiv.org/abs/1805.05952} {\  (\bibinfo {year} {2018})},\
+  \Eprint {http://arxiv.org/abs/1805.05952} {arXiv:1805.05952} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Blandford}\ and\ \citenamefont
+  {Znajek}(1977)}]{Blandford1977}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~D.}\ \bibnamefont
+  {Blandford}}\ and\ \bibinfo {author} {\bibfnamefont {R.~L.}\ \bibnamefont
+  {Znajek}},\ }\href {\doibase 10.1093/mnras/179.3.433} {\bibfield  {journal}
+  {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf {\bibinfo {volume}
+  {179}},\ \bibinfo {pages} {433} (\bibinfo {year} {1977})}\BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Komissarov}(2001)}]{Komissarov2001}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Komissarov}},\ }\href {\doibase 10.1046/j.1365-8711.2001.04863.x} {\bibfield
+   {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf
+  {\bibinfo {volume} {326}},\ \bibinfo {pages} {L41} (\bibinfo {year}
+  {2001})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Komissarov}(2004{\natexlab{a}})}]{Komissarov2004}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~S.}\ \bibnamefont
+  {Komissarov}},\ }\href {\doibase 10.1111/j.1365-2966.2004.07738.x} {\bibfield
+   {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf
+  {\bibinfo {volume} {350}},\ \bibinfo {pages} {1431} (\bibinfo {year}
+  {2004}{\natexlab{a}})},\ \Eprint {http://arxiv.org/abs/0402430}
+  {arXiv:0402430 [astro-ph]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Komissarov}(2004{\natexlab{b}})}]{Komissarov2004e}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~S.}\ \bibnamefont
+  {Komissarov}},\ }\href {\doibase 10.1111/j.1365-2966.2004.07598.x} {\bibfield
+   {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf
+  {\bibinfo {volume} {350}},\ \bibinfo {pages} {427} (\bibinfo {year}
+  {2004}{\natexlab{b}})},\ \Eprint {http://arxiv.org/abs/0402403}
+  {arXiv:0402403 [astro-ph]} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {McKinney}\ and\ \citenamefont
+  {Gammie}(2004)}]{McKinney2004}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {McKinney}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Gammie}},\ }\href {\doibase 10.1086/422244} {\bibfield  {journal} {\bibinfo
+  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {611}},\ \bibinfo
+  {pages} {977} (\bibinfo {year} {2004})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Tanabe}\ and\ \citenamefont
+  {Nagataki}(2008)}]{Tanabe2008}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {K.}~\bibnamefont
+  {Tanabe}}\ and\ \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Nagataki}},\ }\href {\doibase 10.1103/PhysRevD.78.024004} {\bibfield
+  {journal} {\bibinfo  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume}
+  {78}},\ \bibinfo {pages} {024004} (\bibinfo {year} {2008})},\ \Eprint
+  {http://arxiv.org/abs/0802.0908} {arXiv:0802.0908} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pan}\ and\ \citenamefont
+  {Yu}(2015{\natexlab{a}})}]{Pan2015}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
+  {Pan}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}},\
+  }\href {\doibase 10.1103/PhysRevD.91.064067} {\bibfield  {journal} {\bibinfo
+  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {91}},\ \bibinfo
+  {pages} {064067} (\bibinfo {year} {2015}{\natexlab{a}})},\ \Eprint
+  {http://arxiv.org/abs/1503.0524} {arXiv:1503.0524} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pan}\ and\ \citenamefont
+  {Yu}(2015{\natexlab{b}})}]{Pan2015b}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
+  {Pan}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}},\
+  }\href {\doibase 10.1088/0004-637X/812/1/57} {\bibfield  {journal} {\bibinfo
+  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {812}},\ \bibinfo
+  {pages} {57} (\bibinfo {year} {2015}{\natexlab{b}})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Gralla}\ and\ \citenamefont
+  {Jacobson}(2014)}]{Gralla2014}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~E.}\ \bibnamefont
+  {Gralla}}\ and\ \bibinfo {author} {\bibfnamefont {T.}~\bibnamefont
+  {Jacobson}},\ }\href {\doibase 10.1093/mnras/stu1690} {\bibfield  {journal}
+  {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf {\bibinfo {volume}
+  {445}},\ \bibinfo {pages} {2500} (\bibinfo {year} {2014})},\ \Eprint
+  {http://arxiv.org/abs/1401.6159} {arXiv:1401.6159} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Gralla}\ \emph {et~al.}(2015)\citenamefont {Gralla},
+  \citenamefont {Lupsasca},\ and\ \citenamefont {Rodriguez}}]{Gralla2015}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~E.}\ \bibnamefont
+  {Gralla}}, \bibinfo {author} {\bibfnamefont {A.}~\bibnamefont {Lupsasca}}, \
+  and\ \bibinfo {author} {\bibfnamefont {M.~J.}\ \bibnamefont {Rodriguez}},\
+  }\href {\doibase 10.1103/PhysRevD.92.044053} {\bibfield  {journal} {\bibinfo
+  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {92}},\ \bibinfo
+  {pages} {044053} (\bibinfo {year} {2015})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Penna}(2015)}]{Penna2015}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {R.~F.}\ \bibnamefont
+  {Penna}},\ }\href {\doibase 10.1103/PhysRevD.92.084017} {\bibfield  {journal}
+  {\bibinfo  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {92}},\
+  \bibinfo {pages} {084017} (\bibinfo {year} {2015})},\ \Eprint
+  {http://arxiv.org/abs/1504.0036} {arXiv:1504.0036} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Grignani}\ \emph {et~al.}(2018)\citenamefont
+  {Grignani}, \citenamefont {Harmark},\ and\ \citenamefont
+  {Orselli}}]{Grignani2018}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {G.}~\bibnamefont
+  {Grignani}}, \bibinfo {author} {\bibfnamefont {T.}~\bibnamefont {Harmark}}, \
+  and\ \bibinfo {author} {\bibfnamefont {M.}~\bibnamefont {Orselli}},\ }\href
+  {http://arxiv.org/abs/1804.05846} {\  (\bibinfo {year} {2018})},\ \Eprint
+  {http://arxiv.org/abs/1804.05846} {arXiv:1804.05846} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Contopoulos}\ \emph {et~al.}(2013)\citenamefont
+  {Contopoulos}, \citenamefont {Kazanas},\ and\ \citenamefont
+  {Papadopoulos}}]{Contopoulos2013}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {I.}~\bibnamefont
+  {Contopoulos}}, \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
+  {Kazanas}}, \ and\ \bibinfo {author} {\bibfnamefont {D.}~\bibnamefont
+  {Papadopoulos}},\ }\href {\doibase 10.1088/0004-637X/765/2/113} {\bibfield
+  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume}
+  {765}},\ \bibinfo {pages} {113} (\bibinfo {year} {2013})},\ \Eprint
+  {http://arxiv.org/abs/1212.0320} {arXiv:1212.0320 [astro-ph.HE]} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Nathanail}\ and\ \citenamefont
+  {Contopoulos}(2014)}]{Nathanail2014}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Nathanail}}\ and\ \bibinfo {author} {\bibfnamefont {I.}~\bibnamefont
+  {Contopoulos}},\ }\href {\doibase 10.1088/0004-637X/788/2/186} {\bibfield
+  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume}
+  {788}},\ \bibinfo {pages} {186} (\bibinfo {year} {2014})},\ \Eprint
+  {http://arxiv.org/abs/1404.0549} {arXiv:1404.0549 [astro-ph.HE]} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Mahlmann}\ \emph {et~al.}(2018)\citenamefont
+  {Mahlmann}, \citenamefont {Cerd{\'{a}}-Dur{\'{a}}n},\ and\ \citenamefont
+  {Aloy}}]{Mahlmann2018}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {J.~F.}\ \bibnamefont
+  {Mahlmann}}, \bibinfo {author} {\bibfnamefont {P.}~\bibnamefont
+  {Cerd{\'{a}}-Dur{\'{a}}n}}, \ and\ \bibinfo {author} {\bibfnamefont {M.~A.}\
+  \bibnamefont {Aloy}},\ }\href {\doibase 10.1093/mnras/sty858} {\bibfield
+  {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf
+  {\bibinfo {volume} {477}},\ \bibinfo {pages} {3927} (\bibinfo {year}
+  {2018})},\ \Eprint {http://arxiv.org/abs/1802.00815} {arXiv:1802.00815}
+  \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Komissarov}(2005)}]{Komissarov2005}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.}~\bibnamefont
+  {Komissarov}},\ }\href {\doibase 10.1111/j.1365-2966.2005.08974.x} {\bibfield
+   {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc.}\ }\textbf
+  {\bibinfo {volume} {359}},\ \bibinfo {pages} {801} (\bibinfo {year}
+  {2005})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Komissarov}\ and\ \citenamefont
+  {McKinney}(2007)}]{Komissarov2007}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {S.~S.}\ \bibnamefont
+  {Komissarov}}\ and\ \bibinfo {author} {\bibfnamefont {J.~C.}\ \bibnamefont
+  {McKinney}},\ }\href {\doibase 10.1111/j.1745-3933.2007.00301.x} {\bibfield
+  {journal} {\bibinfo  {journal} {Mon. Not. R. Astron. Soc. Lett.}\ }\textbf
+  {\bibinfo {volume} {377}},\ \bibinfo {pages} {L49} (\bibinfo {year}
+  {2007})},\ \Eprint {http://arxiv.org/abs/0702269} {arXiv:0702269 [astro-ph]}
+  \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Palenzuela}\ \emph {et~al.}(2010)\citenamefont
+  {Palenzuela}, \citenamefont {Garrett}, \citenamefont {Lehner},\ and\
+  \citenamefont {Liebling}}]{Palenzuela2010}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {C.}~\bibnamefont
+  {Palenzuela}}, \bibinfo {author} {\bibfnamefont {T.}~\bibnamefont {Garrett}},
+  \bibinfo {author} {\bibfnamefont {L.}~\bibnamefont {Lehner}}, \ and\ \bibinfo
+  {author} {\bibfnamefont {S.~L.}\ \bibnamefont {Liebling}},\ }\href {\doibase
+  10.1103/PhysRevD.82.044045} {\bibfield  {journal} {\bibinfo  {journal} {Phys.
+  Rev. D}\ }\textbf {\bibinfo {volume} {82}},\ \bibinfo {pages} {044045}
+  (\bibinfo {year} {2010})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Paschalidis}\ and\ \citenamefont
+  {Shapiro}(2013)}]{Paschalidis2013}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {V.}~\bibnamefont
+  {Paschalidis}}\ and\ \bibinfo {author} {\bibfnamefont {S.~L.}\ \bibnamefont
+  {Shapiro}},\ }\href {\doibase 10.1103/PhysRevD.88.104031} {\bibfield
+  {journal} {\bibinfo  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume}
+  {88}},\ \bibinfo {pages} {104031} (\bibinfo {year} {2013})},\ \Eprint
+  {http://arxiv.org/abs/1310.3274} {arXiv:1310.3274} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Yang}\ \emph {et~al.}(2015)\citenamefont {Yang},
+  \citenamefont {Zhang},\ and\ \citenamefont {Lehner}}]{Yang2015}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {H.}~\bibnamefont
+  {Yang}}, \bibinfo {author} {\bibfnamefont {F.}~\bibnamefont {Zhang}}, \ and\
+  \bibinfo {author} {\bibfnamefont {L.}~\bibnamefont {Lehner}},\ }\href
+  {\doibase 10.1103/PhysRevD.91.124055} {\bibfield  {journal} {\bibinfo
+  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {91}},\ \bibinfo
+  {pages} {124055} (\bibinfo {year} {2015})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Carrasco}\ and\ \citenamefont
+  {Reula}(2017)}]{Carrasco2017}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {F.~L.}\ \bibnamefont
+  {Carrasco}}\ and\ \bibinfo {author} {\bibfnamefont {O.~A.}\ \bibnamefont
+  {Reula}},\ }\href {\doibase 10.1103/PhysRevD.96.063006} {\bibfield  {journal}
+  {\bibinfo  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {96}},\
+  \bibinfo {pages} {063006} (\bibinfo {year} {2017})},\ \Eprint
+  {http://arxiv.org/abs/1703.10241} {arXiv:1703.10241} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pan}\ \emph {et~al.}(2017)\citenamefont {Pan},
+  \citenamefont {Yu},\ and\ \citenamefont {Huang}}]{Pan2017}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
+  {Pan}}, \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}}, \ and\
+  \bibinfo {author} {\bibfnamefont {L.}~\bibnamefont {Huang}},\ }\href
+  {\doibase 10.3847/1538-4357/aa5c36} {\bibfield  {journal} {\bibinfo
+  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {836}},\ \bibinfo
+  {pages} {193} (\bibinfo {year} {2017})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pan}\ and\ \citenamefont {Yu}(2016)}]{Pan2016a}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
+  {Pan}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}},\
+  }\href {\doibase 10.3847/0004-637X/816/2/77} {\bibfield  {journal} {\bibinfo
+  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume} {816}},\ \bibinfo
+  {pages} {77} (\bibinfo {year} {2016})}\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Press}\ \emph {et~al.}(1987)\citenamefont {Press},
+  \citenamefont {Teukolsky}, \citenamefont {Vetterling}, \citenamefont
+  {Flannery}, \citenamefont {Ziegel}, \citenamefont {Press}, \citenamefont
+  {Flannery}, \citenamefont {Teukolsky},\ and\ \citenamefont
+  {Vetterling}}]{Press1987}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.}~\bibnamefont
+  {Press}}, \bibinfo {author} {\bibfnamefont {S.}~\bibnamefont {Teukolsky}},
+  \bibinfo {author} {\bibfnamefont {W.}~\bibnamefont {Vetterling}}, \bibinfo
+  {author} {\bibfnamefont {B.}~\bibnamefont {Flannery}}, \bibinfo {author}
+  {\bibfnamefont {E.}~\bibnamefont {Ziegel}}, \bibinfo {author} {\bibfnamefont
+  {W.}~\bibnamefont {Press}}, \bibinfo {author} {\bibfnamefont
+  {B.}~\bibnamefont {Flannery}}, \bibinfo {author} {\bibfnamefont
+  {S.}~\bibnamefont {Teukolsky}}, \ and\ \bibinfo {author} {\bibfnamefont
+  {W.}~\bibnamefont {Vetterling}},\ }\href {\doibase 10.2307/1269484} {\emph
+  {\bibinfo {title} {{Numerical Recipes: The Art of Scientific Computing}}}}\
+  (\bibinfo  {publisher} {Cambridge University Press},\ \bibinfo {year}
+  {1987})\BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Beskin}\ and\ \citenamefont
+  {Zheltoukhov}(2013)}]{Beskin2013}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {V.~S.}\ \bibnamefont
+  {Beskin}}\ and\ \bibinfo {author} {\bibfnamefont {A.~A.}\ \bibnamefont
+  {Zheltoukhov}},\ }\href {\doibase 10.1134/S1063773713040014} {\bibfield
+  {journal} {\bibinfo  {journal} {Astron. Lett.}\ }\textbf {\bibinfo {volume}
+  {39}},\ \bibinfo {pages} {215} (\bibinfo {year} {2013})},\ \Eprint
+  {http://arxiv.org/abs/1303.1644} {arXiv:1303.1644} \BibitemShut {NoStop}%
+\bibitem [{\citenamefont {Pan}\ and\ \citenamefont {Yu}(2014)}]{Pan2014}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {Z.}~\bibnamefont
+  {Pan}}\ and\ \bibinfo {author} {\bibfnamefont {C.}~\bibnamefont {Yu}},\
+  }\href {http://arxiv.org/abs/1406.4936} {\  (\bibinfo {year} {2014})},\
+  \Eprint {http://arxiv.org/abs/1406.4936} {arXiv:1406.4936} \BibitemShut
+  {NoStop}%
+\bibitem [{\citenamefont {Tchekhovskoy}\ \emph {et~al.}(2010)\citenamefont
+  {Tchekhovskoy}, \citenamefont {Narayan},\ and\ \citenamefont
+  {McKinney}}]{Tchekhovskoy2010}%
+  \BibitemOpen
+  \bibfield  {author} {\bibinfo {author} {\bibfnamefont {A.}~\bibnamefont
+  {Tchekhovskoy}}, \bibinfo {author} {\bibfnamefont {R.}~\bibnamefont
+  {Narayan}}, \ and\ \bibinfo {author} {\bibfnamefont {J.}~\bibnamefont
+  {McKinney}},\ }\href {\doibase 10.1088/0004-637X/711/1/50} {\bibfield
+  {journal} {\bibinfo  {journal} {Astrophys. J.}\ }\textbf {\bibinfo {volume}
+  {711}},\ \bibinfo {pages} {50} (\bibinfo {year} {2010})},\ \Eprint
+  {http://arxiv.org/abs/0911.2228} {arXiv:0911.2228 [astro-ph.HE]} \BibitemShut
+  {NoStop}%
+\end{thebibliography}%

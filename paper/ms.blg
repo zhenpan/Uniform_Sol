@@ -1,0 +1,70 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: ms.aux
+The style file: apsrev4-1.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: msNotes.bib
+Database file #2: ms.bib
+control{REVTEX41Control}, control.key{N/A}, control.author{N/A}, control.editor{N/A}, control.title{N/A}, control.pages{N/A}, control.year{N/A}, control.eprint{N/A}, 
+control{apsrev41Control}, control.key{N/A}, control.author{08}, control.editor{1}, control.title{}, control.pages{0}, control.year{1}, control.eprint{N/A}, 
+Warning--jnrlst (dependency: not reversed) set 1
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+merlin.mbs apsrev4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
+Control: key (0) 
+Control: author (8) initials jnrlst
+Control: editor formatted (1) identically to author
+Control: production of article title (-1) disabled
+Control: page (0) single
+Control: year (1) truncated
+Control: production of eprint (0) enabled
+Warning--missing journal in East2018
+Warning--missing journal in Grignani2018
+Warning--missing journal in Pan2014
+You've used 30 entries,
+            5847 wiz_defined-function locations,
+            1851 strings with 20848 characters,
+and the built_in function-call counts, 27134 in all, are:
+= -- 1805
+> -- 609
+< -- 198
++ -- 199
+- -- 153
+* -- 4184
+:= -- 2696
+add.period$ -- 28
+call.type$ -- 30
+change.case$ -- 112
+chr.to.int$ -- 36
+cite$ -- 33
+duplicate$ -- 2599
+empty$ -- 1995
+format.name$ -- 370
+if$ -- 5295
+int.to.chr$ -- 3
+int.to.str$ -- 37
+missing$ -- 338
+newline$ -- 136
+num.names$ -- 84
+pop$ -- 1103
+preamble$ -- 1
+purify$ -- 140
+quote$ -- 0
+skip$ -- 1002
+stack$ -- 0
+substring$ -- 686
+swap$ -- 2420
+text.length$ -- 67
+text.prefix$ -- 0
+top$ -- 10
+type$ -- 386
+warning$ -- 4
+while$ -- 89
+width$ -- 0
+write$ -- 286
+(There were 4 warnings)
