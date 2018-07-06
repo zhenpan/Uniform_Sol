@@ -120,17 +120,17 @@ end
 function Ωpar_updater!(U::Array{Float64,2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I, ils::LS; Isf = 0.02)
     Ucol = reverse(ils.ULS); U_H =  Ucol[end]
 
-    Ueqt, B2mE2, B2mE2_exp, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
-    Icrt_spl  = Spline1D(Ueqt[2:end], B2mE2[2:end], bc="zero")
-    I_eqt = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*Icrt_spl(Ucol)
-    I_hrz = Ω_I.Ispl(Ucol)
-    I_new = I_hrz.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1]) + I_eqt.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1])
+    Ueqt, δ_B2mE2, fsq, fsq2_avg = Fsq(U, crd, grd, Ω_I)
+    Icrt_spl  = Spline1D(Ueqt[2:end], δ_B2mE2[2:end], bc="zero")
+    I_eqt     = 2*Ω_I.Ωspl(Ucol).*Ucol - Isf*Icrt_spl(Ucol)
+    I_hrz     = Ω_I.Ispl(Ucol)
+    I_new     = I_hrz.*(Ucol[end] -Ucol)/(Ucol[end]-Ucol[1]) + I_eqt.*(Ucol-Ucol[1])/(Ucol[end]-Ucol[1])
 
     xcol = Ucol/U_H;  Ω_H  = crd.Ω_H
     Ωmodel(x, p) = Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4)
     Imodel(x, p) = 2*(U_H*x).*(  Ω_H.*(1-x).*(0.5+p[1]*x + p[2]*x.^2 + p[3]*x.^3 + p[4]*x.^4) )
-    Ifit = curve_fit(Imodel, xcol, I_new, [0., 0., 0., 0.])
-    Ωnew = Ωmodel(xcol, Ifit.param)
+    Ifit         = curve_fit(Imodel, xcol, I_new, [0., 0., 0., 0.])
+    Ωnew         = Ωmodel(xcol, Ifit.param)
     return Ifit.param, fsq2_avg
 end
 
@@ -234,10 +234,11 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ + Icol.^2
     fsq   = B2mE2./B2pE2
 
-    fsq_exp   = 0. #0.1*exp(-(r-crd.rmin)/0.1)
+    fsq_exp   = 0.*exp(-(r-crd.rmin)/0.1)
     B2mE2_exp = B2pE2.*fsq_exp
+    δ_B2mE2   = B2mE2 - B2mE2_exp
 
-    fsq2_spl = Spline1D(Ucol[2:end], (fsq[2:end]-fsq_exp).^2)
+    fsq2_spl = Spline1D(Ucol[2:end], (fsq[2:end]-fsq_exp[2:end]).^2)
     fsq2_avg = integrate(fsq2_spl, Ucol[2], Ucol[end])/(Ucol[end]-Ucol[2])
 
     # plot(Ucol, Icol.^2, "k")
@@ -246,7 +247,7 @@ function Fsq(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     # plot(Ucol, κcol .* (∂μU.^2)./Σ, "r--")
     plot(Ucol, B2mE2)
     plot(Ucol, B2mE2_exp, "--")
-    return Ucol, B2mE2, B2mE2_exp, fsq, fsq2_avg
+    return Ucol, δ_B2mE2, fsq, fsq2_avg
 end
 
 function Fsq_only(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
@@ -269,5 +270,18 @@ function Fsq_only(U::Array{Float64, 2}, crd::Cord, grd::Grid, Ω_I::Ω_and_I)
     κcol = grd.κ[1,1:idx]
 
     B2mE2 = -κcol .* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ + Icol.^2
-    return Ucol, B2mE2
+    B2pE2 = (κcol  + Δ .* Σ ./β ).* (Δ .* ∂rU.^2 + ∂μU.^2)./Σ + Icol.^2
+
+    fsq_exp   = 0.*exp(-(r-crd.rmin)/0.1)
+    B2mE2_exp = B2pE2.*fsq_exp
+
+    δ_B2mE2 = B2mE2 - B2mE2_exp
+    return Ucol, δ_B2mE2
+end
+
+
+function Edot(Ubm, Ωbm)
+    Ibm = 2*Ωbm.*Ubm
+    xspl = Spline1D(Ubm, Ωbm.*Ibm)
+    return integrate(xspl, Ubm[1], Ubm[end]) * pi
 end
