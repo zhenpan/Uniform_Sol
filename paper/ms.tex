@@ -120,7 +120,8 @@ The paper is organized as follows.  In Section \ref{sec:basic}, we outline the b
 In Section \ref{sec:uni_sol}, we clarify the radiation condition, boundary conditions and the numerical algorithm
 for the uniform field solution. In Section \ref{sec:discussion}, we generalize the discussion
 to  more field configurations. Summary is given in Section \ref{sec:summary}.
-
+Throughout this paper, we use the convention $G=c=M=1$ if otherwise specified,
+where $M$ the mass of the BH.
 
 \section{basic equations}
 \label{sec:basic}
@@ -136,7 +137,7 @@ r}{\Sigma} \right) dr dt + \left(1+\frac{2r}{\Sigma} \right) dr^2 \\
 & + \frac{\beta}{\Sigma} \sst d\phi^2
 \end{aligned}
 \]
-where $\Sigma = r^2 + a^2 \mu^2$, $\Delta = r^2 -2r + a^2$,
+where $\mu\equiv\ct$, $\Sigma = r^2 + a^2 \mu^2$, $\Delta = r^2 -2r + a^2$,
 $\beta = \Delta\Sigma + 2r(r^2 + a^2)$, and $a$ is the dimensionless BH spin.
 In the force-free approximation, electromagnetic energy greatly exceeds that of matter.
 Consequently, the force-free magnetospheres is governed by energy
@@ -162,7 +163,7 @@ where the LS function
 -\frac{4ra}{\Sigma}\Omega \sst
 -\left(1-\frac{2r}{\Sigma}\right),
 \ee
-$\mu\equiv\ct$,  and  the primes designate  derivatives with respect to $A_\phi$.
+the primes designate  derivatives with respect to $A_\phi$.
 $\partial_i^\Omega (i=r, \mu)$  denotes the partial derivative
 with respect to coordinate $i$ with $\Omega$ fixed, and $\partial_\Omega$ is the derivative with
 respect to $\Omega$.
@@ -201,7 +202,8 @@ A_\phi|_{\mu = 1} &= 0,\\
 where $r_+$ is the radius of the event horizon,
 while the equatorial boundary condition is more uncertain until recent high-accuracy simulations
 come out showing that there exists an equator current sheet within the ergosphere where the
-magnetic dominance marginally loses, i.e., $B^2-E^2\approx 0$ \cite{East2018}. Motivated by the simulation results,
+magnetic dominance marginally loses, i.e., $(B^2-E^2)/B_0^2$ goes to a small positive value
+as approaching the current sheet, where $B_0$ is the uniform field strength at infinity  \cite{East2018}. Motivated by the simulation results,
 we choose the following equatorial boundary condition in our numerical solutions,
 \begin{subequations}
 \begin{align}
@@ -349,7 +351,11 @@ From our numerical solutions, we find the magnetic flux entering the ergosphere 
 the BH spin and approaches $2.75 B_0 M^2$ for extremal spins (upper panel of Figure \ref{fig:omega}),
 which is about $\approx 5\%$ lower than the simulation result (Figure 3 in Ref. \cite{East2018}),
 while the angular velocity $\Omega$ as a function
-of normalized magnetic flux $\Ap/\AEE$ is in agreement with the simulation results to high precision.
+of normalized magnetic flux $\Ap/\AEE$ is in agreement with the
+simulation results to high precision.\footnote{We have done a test and
+find that the $\approx 5\%$ difference in $\AEE$ is not arising from the slightly
+different equatorial boundary conditions used in this work and found from East and Yang's simulations.
+The difference is more likely due to the relative bias between the two codes. }
 
 
 \begin{figure}
@@ -497,7 +503,8 @@ and the marginally force-free boundary condition, while the GS equation only ser
 
 
 \acknowledgements
-ZP thanks ...
+ZP thanks William East and Huan Yang for sharing their simulation results,
+and for stimulating discussions.
 ZP was supported by the UC Davis Dissertation Year Fellowship when this work was started.
 This research was also supported by Perimeter Institute for Theoretical Physics.
 Research at Perimeter Institute is supported by the Government of Canada

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  5 JUL 2018 09:53
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2017.8.31)  6 JUL 2018 11:03
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -387,42 +387,42 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 54.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (3.98956pt too wide) detected at line 138
+Overfull \hbox (3.98956pt too wide) detected at line 139
 [] []
  []
 
-[2] [3] <f1.pdf, id=202, 361.35pt x 433.62pt>
+[2] [3] <f1.pdf, id=203, 361.35pt x 433.62pt>
 File: f1.pdf Graphic file (type pdf)
  <use f1.pdf>
-Package pdftex.def Info: f1.pdf used on input line 356.
+Package pdftex.def Info: f1.pdf used on input line 362.
 (pdftex.def)             Requested size: 216.81168pt x 260.17401pt.
- <f2a.pdf, id=203, 361.35pt x 260.17201pt>
+ <f2a.pdf, id=204, 361.35pt x 260.17201pt>
 File: f2a.pdf Graphic file (type pdf)
  <use f2a.pdf>
-Package pdftex.def Info: f2a.pdf used on input line 363.
+Package pdftex.def Info: f2a.pdf used on input line 369.
 (pdftex.def)             Requested size: 252.94327pt x 182.11914pt.
- <f2b.pdf, id=204, 361.35pt x 260.17201pt>
+ <f2b.pdf, id=205, 361.35pt x 260.17201pt>
 File: f2b.pdf Graphic file (type pdf)
  <use f2b.pdf>
-Package pdftex.def Info: f2b.pdf used on input line 364.
+Package pdftex.def Info: f2b.pdf used on input line 370.
 (pdftex.def)             Requested size: 252.94327pt x 182.11914pt.
 
-Overfull \hbox (6.94327pt too wide) in paragraph at lines 363--365
+Overfull \hbox (6.94327pt too wide) in paragraph at lines 369--371
  [][] 
  []
 
 
-Overfull \hbox (6.94327pt too wide) in paragraph at lines 363--365
+Overfull \hbox (6.94327pt too wide) in paragraph at lines 369--371
  [] 
  []
 
-<f3.pdf, id=207, 361.35pt x 260.17201pt>
+<f3.pdf, id=208, 361.35pt x 260.17201pt>
 File: f3.pdf Graphic file (type pdf)
  <use f3.pdf>
-Package pdftex.def Info: f3.pdf used on input line 386.
+Package pdftex.def Info: f3.pdf used on input line 392.
 (pdftex.def)             Requested size: 252.94327pt x 182.11914pt.
 
-Overfull \hbox (6.94327pt too wide) in paragraph at lines 386--387
+Overfull \hbox (6.94327pt too wide) in paragraph at lines 392--393
  [][] 
  []
 
@@ -434,40 +434,40 @@ pdfTeX warning: pdflatex (file ./f2a.pdf): PDF inclusion: multiple pdfs with pag
 pdfTeX warning: pdflatex (file ./f2b.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
 
-LaTeX Warning: A float is stuck (cannot be placed); try class option [floatfix] on input line 405.
+LaTeX Warning: A float is stuck (cannot be placed); try class option [floatfix] on input line 406.
 
 [5 <./f3.pdf>] (./ms.bbl
 Underfull \hbox (badness 3503) in paragraph at lines 147--153
  []\OT1/cmr/m/n/9 R. F. Penna, [][]Phys. Rev. D \OT1/cmr/bx/n/9 92\OT1/cmr/m/n/9 , 084017 (2015)[][],
  []
 
-)
+[6])
 
 Class revtex4-1 Warning: Environment acknowledgements is obsolete;
 Use acknowledgments instead.
 
-[6]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 512.
+[7]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 519.
  (./ms.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 512.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 512.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 519.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 519.
 Package rerunfilecheck Info: File `ms.out' has not changed.
 (rerunfilecheck)             Checksum: 4DFE97F5E830B8E7D1D7B77D559D0A41;1165.
  ) 
 Here is how much of TeX's memory you used:
- 8325 strings out of 493304
- 116638 string characters out of 6139871
- 245575 words of memory out of 5000000
- 11592 multiletter control sequences out of 15000+600000
+ 8328 strings out of 493304
+ 116679 string characters out of 6139871
+ 231148 words of memory out of 5000000
+ 11593 multiletter control sequences out of 15000+600000
  16461 words of font info for 61 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 29i,11n,30p,451b,397s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on ms.pdf (6 pages, 333367 bytes).
+ 29i,11n,30p,451b,558s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
+Output written on ms.pdf (7 pages, 354545 bytes).
 PDF statistics:
- 568 PDF objects out of 1000 (max. 8388607)
- 427 compressed objects within 5 object streams
- 76 named destinations out of 1000 (max. 500000)
+ 584 PDF objects out of 1000 (max. 8388607)
+ 440 compressed objects within 5 object streams
+ 78 named destinations out of 1000 (max. 500000)
  149 words of extra memory for PDF output out of 10000 (max. 10000000)
 
