@@ -203,7 +203,11 @@ where $r_+$ is the radius of the event horizon,
 while the equatorial boundary condition is more uncertain until recent high-accuracy simulations
 come out showing that there exists an equator current sheet within the ergosphere where the
 magnetic dominance marginally loses, i.e., $(B^2-E^2)/B_0^2$ goes to a small positive value
-as approaching the current sheet, where $B_0$ is the uniform field strength at infinity  \cite{East2018}. Motivated by the simulation results,
+as approaching the current sheet, where $B_0$ is the uniform field strength
+at infinity  \cite{East2018}.\footnote{The marginally force-free equatorial boundary condition
+is not a unique feature of BH magnetospheres, which is also found in dissipative pulsar magnetospheres
+\cite[see e.g.][]{Gruzinov2008, Gruzinov2011}.}
+Motivated by the simulation results,
 we choose the following equatorial boundary condition in our numerical solutions,
 \begin{subequations}
 \begin{align}
@@ -355,7 +359,7 @@ of normalized magnetic flux $\Ap/\AEE$ is in agreement with the
 simulation results to high precision.\footnote{We have done a test and
 find that the $\approx 5\%$ difference in $\AEE$ is not arising from the slightly
 different equatorial boundary conditions used in this work and found from East and Yang's simulations.
-The difference is more likely due to the relative bias between the two codes. }
+The difference is more likely due to the relative numerical bias between the two algorithms. }
 
 
 \begin{figure}
@@ -395,7 +399,7 @@ three different approaches: the leading-order analytic solution (\ref{eq:lowEdot
 our numerical solutions and  the high-resolution force-free simulations \cite{East2018}.}
 \end{figure}
 
-In Figure \ref{fig:Edot}, we compare the energy extraction rate $\dot E(\WH)$
+In Figure \ref{fig:Edot}, we compare the energy extraction rates $\dot E(\WH)$
 derived from our numerical solutions with East and Yang's simulation results
 \cite{East2018}, where the data points are taken from either the simulations
 or our numerical solutions, while the solid lines are corresponding polynomial
@@ -459,7 +463,7 @@ both the $+z$ and $-z$ direction. For each case, the charge conservation is viol
 if there exists no equatorial current sheet.
 
 However, the high-accuracy FFE simulations show that an equatorial current sheet inevitably develops within the ergosphere, where
-the force-free condition breaks down. Therefore the above claim should be generalized as
+the force-free condition marginally breaks down. Therefore the above claim should be generalized as
 ``in the steady axisymmetric force-free magnetosphere
 around a Kerr BH, all magnetic field lines that cross the infinite-redshift surface
 must intersect the event horizon or end up on the equatorial current sheet". Specifically,
@@ -503,7 +507,8 @@ and the marginally force-free boundary condition, while the GS equation only ser
 
 
 \acknowledgements
-ZP thanks William East and Huan Yang for stimulating discussions and for sharing their simulation results.
+ZP thanks William East and Huan Yang for stimulating discussions and sharing their simulation results.
+ZP also thanks Cong Yu and Lei Huang for reading through a previous version of this manuscript and providing useful suggestions.
 ZP was supported by the UC Davis Dissertation Year Fellowship when this work was started.
 This research was also supported by Perimeter Institute for Theoretical Physics.
 Research at Perimeter Institute is supported by the Government of Canada
