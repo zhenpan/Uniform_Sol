@@ -54,9 +54,10 @@
   \BibitemOpen
   \bibfield  {author} {\bibinfo {author} {\bibfnamefont {W.~E.}\ \bibnamefont
   {East}}\ and\ \bibinfo {author} {\bibfnamefont {H.}~\bibnamefont {Yang}},\
-  }\href {http://arxiv.org/abs/1805.05952} {\  (\bibinfo {year} {2018})},\
-  \Eprint {http://arxiv.org/abs/1805.05952} {arXiv:1805.05952} \BibitemShut
-  {NoStop}%
+  }\href {\doibase 10.1103/PhysRevD.98.023008} {\bibfield  {journal} {\bibinfo
+  {journal} {Phys. Rev. D}\ }\textbf {\bibinfo {volume} {98}},\ \bibinfo
+  {pages} {023008} (\bibinfo {year} {2018})},\ \Eprint
+  {http://arxiv.org/abs/1805.05952} {arXiv:1805.05952} \BibitemShut {NoStop}%
 \bibitem [{\citenamefont {Blandford}\ and\ \citenamefont
   {Znajek}(1977)}]{Blandford1977}%
   \BibitemOpen
