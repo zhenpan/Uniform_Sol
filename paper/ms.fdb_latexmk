@@ -1,14 +1,14 @@
 # Fdb version 3
-["bibtex ms"] 1531867864 "ms.aux" "ms.bbl" "ms" 1531867900
+["bibtex ms"] 1531867864 "ms.aux" "ms.bbl" "ms" 1534696641
   "/usr/share/texlive/texmf-dist/bibtex/bst/revtex/apsrev4-1.bst" 1480098436 71518 fec93f06df0c073f83d2330456bd19c2 ""
   "ms.aux" 1531867900 8918 4e65f4f1d465ba9cff4a14d1c9193315 ""
   "ms.bcf" 0 -1 0 ""
   "ms.bib" 1531867631 145878 c17370670139b8da5dc364b36bf0fc31 ""
   "msNotes.bib" 1531867900 103 48ad29797468f16e2853d8797278d7af ""
   (generated)
-  "ms.bbl"
   "ms.blg"
-["pdflatex"] 1531867899 "ms.tex" "/home/zhen/Astro/Uniform_Sol/paper/ms.pdf" "ms" 1531867900
+  "ms.bbl"
+["pdflatex"] 1531867899 "ms.tex" "/home/zhen/Astro/Uniform_Sol/paper/ms.pdf" "ms" 1534696641
   "/etc/texmf/web2c/texmf.cnf" 1531419841 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/zhen/Astro/Uniform_Sol/paper/ms.aux" 1531867900 8918 4e65f4f1d465ba9cff4a14d1c9193315 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
@@ -130,10 +130,10 @@
   "ms.out" 1531867900 1165 4dfe97f5e830b8e7d1d7b77d559d0a41 ""
   "ms.tex" 1531867899 29201 e748f9878bc628fe35fe373b511d1860 ""
   (generated)
-  "msNotes.bib"
-  "ms.log"
-  "ms.out"
-  "/home/zhen/Astro/Uniform_Sol/paper/ms.log"
-  "/home/zhen/Astro/Uniform_Sol/paper/ms.pdf"
   "ms.aux"
+  "/home/zhen/Astro/Uniform_Sol/paper/ms.pdf"
+  "ms.log"
+  "msNotes.bib"
+  "/home/zhen/Astro/Uniform_Sol/paper/ms.log"
+  "ms.out"
   "ms.pdf"
