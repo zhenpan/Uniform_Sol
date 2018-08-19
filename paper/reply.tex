@@ -40,35 +40,54 @@ However, I have some concerns I would like to first see addressed:
 1) There should be more discussion of the physical meaning of the “radiation condition” (3). What
 is the relationship to radiation, and what does it mean? }
 
-Pan et al.  proposed that the two eigenfunctions are not independent;
+To give more information about the radiation condition, I revise the relevant statement as follows:
+
+``Pan et al.  proposed that the two eigenfunctions are not independent;
 instead, they are related by the radiation condition at infinity, which is formulated as
 $\hat E_\theta = \hat B_\phi$, with $\hat E_\theta$ and $\hat B_\phi$ being the $\theta$
 component of electric field and $\phi$ component of the magnetic field measured
 by zero-angular-momentum-observers, respectively.
 As for the uniform field solution, the radiation condition is explicitly expressed as
 \[ I = 2\Omega A_\phi, \]
-which has been readily confirmed by recent high-accuracy FFE simulations (East2018).
+which has been readily confirmed by recent high-accuracy FFE simulations. " \\
 
 
 {\bf 2) The notion of a light surface (LS) is not defined anywhere, as far as I can tell. Also, it would help
 to state the meaning of the LS function (it vanishes at LS’s) right when it is defined.}
 
+To clarify the definition of LS, I have added a sentence following the LS function formula:
+
+``The GS equation degrades to first order on the LS, where $\mathcal K(r,\theta; \Omega )$
+vanishes. " \\
+
 
 {\bf 3) The argument for the LS intersecting the ergosphere boundary on the equator needs
 clarification. I found it hard to follow, and I was easily able to find a counter-example to the first
-statement (a=.1, Omega=.15; there are two zeros of K on the equator, both at r>2). }
+statement (a=.1, Omega=.15; there are two zeros of K on the equator, both at $r>2$). }
 
+The referee's comment makes me realize the problem of the original argument, which I have reorginized as follows:
+
+``Let's first find out where the LS intersects with the equator, $r_{\rm LS}|_{\mu=0}$.
+On this point $r_{\rm LS}|_{\mu=0}$ where the LS function $\mathcal K$ vanishes,
+$I$ must also vanish for satisfying the marginally boundary condition (see Equation [6]),
+which in turns indicates a vanishing angular velocity $\Omega$ from
+the radiation condition (3), i.e. $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$.
+Plugging $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$ back into $\mathcal K = 0$,
+we obtain $r_{\rm LS}|_{\mu=0}=2$"
 
 {\bf Finally, a suggestion:
-• The proof that the inner light cylinder intersects the ergosphere boundary at the equator is
+The proof that the inner light cylinder intersects the ergosphere boundary at the equator is
 a very nice result (assuming it is correct). A few groups have seen that the current sheet
 ends at the ergosphere in full simulations but people seem sheepish about making the claim
 because of numerical resolution. The analytical argument is a big help here, so the author
 might consider emphasizing the point more somehow.}
 
+To emphasize this point, I have added a sentence in the Summary:
 
+``Especially we find the LS
+intersects with the ergosphere at the equator, which was also observed in previous simulations
+[e.g. Carrasco2017, East2018] and now we understand its underlying physics. "
 
-We thank the referee for comments that we feel have .
 
 
 \end{document}

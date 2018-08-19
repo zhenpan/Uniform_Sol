@@ -257,19 +257,15 @@ force-free boundary condition (\ref{eq:bc3})
 themselves contain rich information about the BH magnetosphere structure.
 
 Let's first find out where the LS intersects with the equator, $r_{\rm LS}|_{\mu=0}$.
-{\bf On this point $r_{\rm LS}|_{\mu=0}$,  the LS function $\mathcal K$ vanishes,
-and $I$ must also vanish for satisfying the boundary condition (\ref{eq:bc3}),
+{\bf On this point $r_{\rm LS}|_{\mu=0}$ where the LS function $\mathcal K$ vanishes,
+$I$ must also vanish for satisfying the marginally boundary condition (see Equation [\ref{eq:B2mE2}]),
 which in turns indicates a vanishing angular velocity $\Omega$ from
-the radiation condition (\ref{eq:rad}), i.e. $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$. 
-Plugging $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$ into $\mathcal K = 0$,
+the radiation condition (\ref{eq:rad}), i.e., $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$.
+Plugging $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$ back into $\mathcal K = 0$,
 we obtain $r_{\rm LS}|_{\mu=0}=2$. i.e.
 to satisfy the boundary condition (\ref{eq:bc3}), the LS must intersect the equator at $r=2$, which also
 justifies our choice of equatorial boundary conditions (\ref{eq:bc2},\ref{eq:bc3}) . }
-% From the expression of the LS function (\ref{eq:ls}), it is straightforward to see
-% $ r_+ \leq r_{\rm LS}|_{\mu=0} \leq 2$ for $0 \leq \Omega \leq \Omega_{\rm H}$.
-%  Due to the frame-dragging effect, $\Omega$
-% must be non-zero inside the ergosphere.
-%Therefore the only possibility is  $r_{\rm LS}|_{\mu=0} = 2$,
+
 
 
 From above analysis, we expect several generic properties in the magnetospheres that are independent
@@ -501,7 +497,10 @@ Motivated by these simulation results, we revisit the problem of the uniform fie
 We find the radiation condition (\ref{eq:rad}) and the marginally force-free boundary
 condition (\ref{eq:bc3}) are rather informative, which dictate the BH magnetosphere structure
 in various aspects, including the shape of the LS, the near-horizon field line configuration and
-the source of BZ flux (see Section \ref{subsec:features} for details). Other than these qualitative properties,
+the source of BZ flux (see Section \ref{subsec:features} for details). {\bf Especially we find the LS
+intersects with the ergosphere at the equator, which was also observed in previous simulations \cite[e.g.][]{Carrasco2017, East2018}
+and now we understand its underlying physics.}
+Other than these qualitative properties,
 we also propose an algorithm for numerically solving the GS equation and consistently imposing
 the marginally force-free equatorial boundary condition. As a result, we find a good agreement
 between our numerical solutions with the high-accuracy FFE simulations.
