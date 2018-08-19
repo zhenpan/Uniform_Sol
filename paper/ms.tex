@@ -166,7 +166,7 @@ where the LS function
 the primes designate  derivatives with respect to $A_\phi$.
 $\partial_i^\Omega (i=r, \mu)$  denotes the partial derivative
 with respect to coordinate $i$ with $\Omega$ fixed, and $\partial_\Omega$ is the derivative with
-respect to $\Omega$.
+respect to $\Omega$. {\bf The GS equation degrades to first order on the LS, where $\mathcal K(r,\theta; \Omega )$ vanishes.}
 
 \section{Uniform field solution}
 \label{sec:uni_sol}
@@ -183,7 +183,10 @@ conflict with several previous FFE simulations \cite{Komissarov2004e, Komissarov
 Komissarov2007,Palenzuela2010,Paschalidis2013,Yang2015,Carrasco2017}.
 To explain the discrepancy on the uniqueness of uniform field solution,
 Pan et al. \cite{Pan2016a, Pan2017} proposed that the two eigenfunctions are not independent;
-instead, they are related by the radiation condition at infinity
+instead, they are related by the radiation condition at infinity, {\bf which is formulated as
+$\hat E_\theta = \hat B_\phi$, with $\hat E_\theta$ and $\hat B_\phi$ being the $\theta$
+component of electric field and $\phi$ component of the magnetic field measured by zero-angular-momentum-observers, respectively.
+As for the uniform field solution, the radiation condition is explicitly expressed as }
 \be I = 2\Omega A_\phi, \label{eq:rad}\ee
 which has been readily confirmed by recent high-accuracy FFE simulations \cite{East2018}.
 Combining with suitable boundary conditions, we expect a unique uniform field solution as indicated
@@ -219,7 +222,7 @@ In fact, Equation (\ref{eq:bc3})
 is neither a Dirichlet nor a Neumann boundary condition, since
 \be
 \begin{aligned}
-&B^2-E^2 \\
+&B^2-E^2 \label{eq:B2mE2}\\
 = & \frac{1}{\Sigma \sst} \left[ -\mathcal{K} \left(\Ar^2 +\frac{\sst}{\Delta}\Am^2 \right)+\frac{\Sigma}{\Delta}I^2\right],
 \end{aligned}
 \ee
@@ -254,14 +257,20 @@ force-free boundary condition (\ref{eq:bc3})
 themselves contain rich information about the BH magnetosphere structure.
 
 Let's first find out where the LS intersects with the equator, $r_{\rm LS}|_{\mu=0}$.
-From the expression of the LS function (\ref{eq:ls}), it is straightforward to see $ r_{\rm LS}|_{\mu=0} \leq 2$ for $\Omega \geq 0$.
-At this point,  the LS function $\mathcal K$ vanishes,
+{\bf On this point $r_{\rm LS}|_{\mu=0}$,  the LS function $\mathcal K$ vanishes,
 and $I$ must also vanish for satisfying the boundary condition (\ref{eq:bc3}),
 which in turns indicates a vanishing angular velocity $\Omega$ from
-the radiation condition (\ref{eq:rad}).  Due to the frame-dragging effect, $\Omega$
-must be non-zero inside the ergosphere.  Therefore the only possibility is  $r_{\rm LS}|_{\mu=0} = 2$, i.e.
+the radiation condition (\ref{eq:rad}), i.e. $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$. 
+Plugging $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$ into $\mathcal K = 0$,
+we obtain $r_{\rm LS}|_{\mu=0}=2$. i.e.
 to satisfy the boundary condition (\ref{eq:bc3}), the LS must intersect the equator at $r=2$, which also
-justifies our choice of equatorial boundary conditions (\ref{eq:bc2},\ref{eq:bc3}) .
+justifies our choice of equatorial boundary conditions (\ref{eq:bc2},\ref{eq:bc3}) . }
+% From the expression of the LS function (\ref{eq:ls}), it is straightforward to see
+% $ r_+ \leq r_{\rm LS}|_{\mu=0} \leq 2$ for $0 \leq \Omega \leq \Omega_{\rm H}$.
+%  Due to the frame-dragging effect, $\Omega$
+% must be non-zero inside the ergosphere.
+%Therefore the only possibility is  $r_{\rm LS}|_{\mu=0} = 2$,
+
 
 From above analysis, we expect several generic properties in the magnetospheres that are independent
 of the GS equation:
