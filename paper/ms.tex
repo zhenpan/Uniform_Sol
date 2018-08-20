@@ -120,7 +120,7 @@ The paper is organized as follows.  In Section \ref{sec:basic}, we outline the b
 In Section \ref{sec:uni_sol}, we clarify the radiation condition, boundary conditions and the numerical algorithm
 for the uniform field solution. In Section \ref{sec:discussion}, we generalize the discussion
 to  more field configurations. Summary is given in Section \ref{sec:summary}.
-Throughout this paper, we use the convention $G=c=M=1$ only if otherwise specified,
+Throughout this paper, we use the convention $G=c=M=1$ unless otherwise specified,
 where $M$ the mass of the BH.
 
 \section{basic equations}
@@ -166,7 +166,8 @@ where the LS function
 the primes designate  derivatives with respect to $A_\phi$.
 $\partial_i^\Omega (i=r, \mu)$  denotes the partial derivative
 with respect to coordinate $i$ with $\Omega$ fixed, and $\partial_\Omega$ is the derivative with
-respect to $\Omega$. {\bf The GS equation degrades to first order on the LS, where $\mathcal K(r,\theta; \Omega )$ vanishes.}
+respect to $\Omega$. {\bf The GS equation degrades to first order on the LS,
+where the LS function $\mathcal K(r,\theta; \Omega )$ vanishes.}
 
 \section{Uniform field solution}
 \label{sec:uni_sol}
@@ -258,11 +259,11 @@ themselves contain rich information about the BH magnetosphere structure.
 
 Let's first find out where the LS intersects with the equator, $r_{\rm LS}|_{\mu=0}$.
 {\bf On this point $r_{\rm LS}|_{\mu=0}$ where the LS function $\mathcal K$ vanishes,
-$I$ must also vanish for satisfying the marginally boundary condition (see Equation [\ref{eq:B2mE2}]),
+$I$ must also vanish for satisfying the marginally force-free boundary condition (see Equation [\ref{eq:B2mE2}]),
 which in turns indicates a vanishing angular velocity $\Omega$ from
 the radiation condition (\ref{eq:rad}), i.e., $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$.
 Plugging $\Omega(\mu=0, r= r_{\rm LS}|_{\mu=0}) =0$ back into $\mathcal K = 0$,
-we obtain $r_{\rm LS}|_{\mu=0}=2$. i.e.
+we obtain $r_{\rm LS}|_{\mu=0}=2$, i.e.
 to satisfy the boundary condition (\ref{eq:bc3}), the LS must intersect the equator at $r=2$, which also
 justifies our choice of equatorial boundary conditions (\ref{eq:bc2},\ref{eq:bc3}) . }
 
@@ -499,7 +500,7 @@ condition (\ref{eq:bc3}) are rather informative, which dictate the BH magnetosph
 in various aspects, including the shape of the LS, the near-horizon field line configuration and
 the source of BZ flux (see Section \ref{subsec:features} for details). {\bf Especially we find the LS
 intersects with the ergosphere at the equator, which was also observed in previous simulations \cite[e.g.][]{Carrasco2017, East2018}
-and now we understand its underlying physics.}
+and now we understand its underlying physics: the radiation condition and the marginally force-free condition.}
 Other than these qualitative properties,
 we also propose an algorithm for numerically solving the GS equation and consistently imposing
 the marginally force-free equatorial boundary condition. As a result, we find a good agreement

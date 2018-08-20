@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1534716484 "reply.tex" "/home/zhen/Astro/Uniform_Sol/paper/reply.pdf" "reply" 1534716553
+["pdflatex"] 1534773550 "reply.tex" "/home/zhen/Astro/Uniform_Sol/paper/reply.pdf" "reply" 1534774207
   "/etc/texmf/web2c/texmf.cnf" 1531419841 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/zhen/Astro/Uniform_Sol/paper/reply.aux" 1534716484 8 a94a2480d3289e625eea47cd1b285758 ""
+  "/home/zhen/Astro/Uniform_Sol/paper/reply.aux" 1534773550 8 a94a2480d3289e625eea47cd1b285758 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1480098698 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -46,11 +46,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1520210507 32485 c64754543d8ac501bea6e75e209ea521 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1531419882 2700761 ac0584cc9514ab21918550a6948c4ee2 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1531419911 4129510 66e91e84d1c3f874b6c62117560d0344 ""
-  "reply.aux" 1534716484 8 a94a2480d3289e625eea47cd1b285758 ""
-  "reply.tex" 1534716483 4000 10f3fb0b21ebb74289b819e2b531e61a ""
+  "reply.aux" 1534773550 8 a94a2480d3289e625eea47cd1b285758 ""
+  "reply.tex" 1534773550 4218 f95e19028315217fe681975af299e97f ""
   (generated)
-  "/home/zhen/Astro/Uniform_Sol/paper/reply.log"
-  "/home/zhen/Astro/Uniform_Sol/paper/reply.pdf"
   "reply.log"
+  "/home/zhen/Astro/Uniform_Sol/paper/reply.pdf"
   "reply.pdf"
+  "/home/zhen/Astro/Uniform_Sol/paper/reply.log"
   "reply.aux"

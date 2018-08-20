@@ -1,16 +1,16 @@
 # Fdb version 3
-["bibtex ms"] 1534716307 "ms.aux" "ms.bbl" "ms" 1534716308
+["bibtex ms"] 1534773327 "ms.aux" "ms.bbl" "ms" 1534773960
   "/usr/share/texlive/texmf-dist/bibtex/bst/revtex/apsrev4-1.bst" 1480098436 71518 fec93f06df0c073f83d2330456bd19c2 ""
-  "ms.aux" 1534716307 8997 05aeb99637ac40df51d456adebc0824b ""
+  "ms.aux" 1534773327 8997 1fa27d418a0d8dfa50a39ce5ae92ad80 ""
   "ms.bcf" 0 -1 0 ""
   "ms.bib" 1531867631 145878 c17370670139b8da5dc364b36bf0fc31 ""
-  "msNotes.bib" 1534716307 103 48ad29797468f16e2853d8797278d7af ""
+  "msNotes.bib" 1534773327 103 48ad29797468f16e2853d8797278d7af ""
   (generated)
-  "ms.blg"
   "ms.bbl"
-["pdflatex"] 1534716307 "ms.tex" "/home/zhen/Astro/Uniform_Sol/paper/ms.pdf" "ms" 1534716308
+  "ms.blg"
+["pdflatex"] 1534773327 "ms.tex" "/home/zhen/Astro/Uniform_Sol/paper/ms.pdf" "ms" 1534773960
   "/etc/texmf/web2c/texmf.cnf" 1531419841 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/zhen/Astro/Uniform_Sol/paper/ms.aux" 1534716307 8997 05aeb99637ac40df51d456adebc0824b ""
+  "/home/zhen/Astro/Uniform_Sol/paper/ms.aux" 1534773327 8997 1fa27d418a0d8dfa50a39ce5ae92ad80 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy5.tfm" 1480098698 1120 1e8878807317373affa7f7bba4cf2f6a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1480098698 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
@@ -126,15 +126,15 @@
   "f2a.pdf" 1531430077 24533 6071bdd95fe5da64bd31e5d3b83c8bf5 ""
   "f2b.pdf" 1531430077 22141 d018adadb9e2bf2409e9152bd7f12684 ""
   "f3.pdf" 1531430077 25886 88fc64f233a0760237ce5f89020c6488 ""
-  "ms.aux" 1534716307 8997 05aeb99637ac40df51d456adebc0824b ""
-  "ms.bbl" 1534716307 19288 d8dee7fea4f8e4db99f8d4c69dbb29e3 "bibtex ms"
-  "ms.out" 1534716307 1165 4dfe97f5e830b8e7d1d7b77d559d0a41 ""
-  "ms.tex" 1534716306 29812 f4bfea80578831ec5e2827dd7531751e ""
+  "ms.aux" 1534773327 8997 1fa27d418a0d8dfa50a39ce5ae92ad80 ""
+  "ms.bbl" 1534773327 19288 d8dee7fea4f8e4db99f8d4c69dbb29e3 "bibtex ms"
+  "ms.out" 1534773327 1165 4dfe97f5e830b8e7d1d7b77d559d0a41 ""
+  "ms.tex" 1534773326 29903 101ead70197df5424b3318ebbb6e4811 ""
   (generated)
-  "/home/zhen/Astro/Uniform_Sol/paper/ms.log"
   "ms.pdf"
-  "ms.out"
-  "msNotes.bib"
   "ms.log"
+  "ms.out"
   "ms.aux"
   "/home/zhen/Astro/Uniform_Sol/paper/ms.pdf"
+  "msNotes.bib"
+  "/home/zhen/Astro/Uniform_Sol/paper/ms.log"
