@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.7.12)  20 AUG 2018 09:55
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2018.9.17)  23 SEP 2018 13:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
 **ms.tex
-(/home/zhen/Astro/Uniform_Sol/paper/ms.tex
+(/home/zpan/Astro/Uniform_Sol/paper/ms.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 84 language(s) loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/revtex/revtex4-1.cls
@@ -313,7 +313,7 @@ Class revtex4-1 Info: Robustifying \LaTeX's \boldmath command on input line 37.
 Class revtex4-1 Info: cite was not loaded (OK!) on input line 37.
 Class revtex4-1 Info: mcite was not loaded (OK!) on input line 37.
 Class revtex4-1 Info: multicol was not loaded (OK!) on input line 37.
- (/home/zhen/Astro/Uniform_Sol/paper/ms.aux)
+ (/home/zpan/Astro/Uniform_Sol/paper/ms.aux)
 \openout1 = `ms.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 37.
@@ -367,7 +367,7 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 37.
 LaTeX Info: Redefining \pageref on input line 37.
 LaTeX Info: Redefining \nameref on input line 37.
- (/home/zhen/Astro/Uniform_Sol/paper/ms.out) (/home/zhen/Astro/Uniform_Sol/paper/ms.out)
+ (/home/zpan/Astro/Uniform_Sol/paper/ms.out) (/home/zpan/Astro/Uniform_Sol/paper/ms.out)
 \@outlinefile=\write4
 \openout4 = `ms.out'.
 
@@ -422,17 +422,17 @@ Overfull \hbox (6.94327pt too wide) in paragraph at lines 403--404
  [][] 
  []
 
-[4 </home/zhen/Astro/Uniform_Sol/paper/f1.pdf>]
+[4 </home/zpan/Astro/Uniform_Sol/paper/f1.pdf>]
 
 LaTeX Warning: A float is stuck (cannot be placed); try class option [floatfix] on input line 437.
 
-[5 </home/zhen/Astro/Uniform_Sol/paper/f2a.pdf> </home/zhen/Astro/Uniform_Sol/paper/f2b.pdf
+[5 </home/zpan/Astro/Uniform_Sol/paper/f2a.pdf> </home/zpan/Astro/Uniform_Sol/paper/f2b.pdf
 
-pdfTeX warning: pdflatex (file /home/zhen/Astro/Uniform_Sol/paper/f2b.pdf): PDF inclusion: multiple pdfs with page group included in a single page
-> </home/zhen/Astro/Uniform_Sol/paper/f3.pdf
+pdfTeX warning: pdflatex (file /home/zpan/Astro/Uniform_Sol/paper/f2b.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+> </home/zpan/Astro/Uniform_Sol/paper/f3.pdf
 
-pdfTeX warning: pdflatex (file /home/zhen/Astro/Uniform_Sol/paper/f3.pdf): PDF inclusion: multiple pdfs with page group included in a single page
->] (/home/zhen/Astro/Uniform_Sol/paper/ms.bbl
+pdfTeX warning: pdflatex (file /home/zpan/Astro/Uniform_Sol/paper/f3.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+>] (/home/zpan/Astro/Uniform_Sol/paper/ms.bbl
 Underfull \hbox (badness 3503) in paragraph at lines 148--154
  []\OT1/cmr/m/n/9 R. F. Penna, [][]Phys. Rev. D \OT1/cmr/bx/n/9 92\OT1/cmr/m/n/9 , 084017 (2015)[][],
  []
@@ -444,23 +444,23 @@ Use acknowledgments instead.
 
 [7]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 533.
- (/home/zhen/Astro/Uniform_Sol/paper/ms.aux)
+ (/home/zpan/Astro/Uniform_Sol/paper/ms.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 533.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 533.
 Package rerunfilecheck Info: File `ms.out' has not changed.
-(rerunfilecheck)             Checksum: 4DFE97F5E830B8E7D1D7B77D559D0A41;1165.
+(rerunfilecheck)             Checksum: EE502DB5C19806E8B8A2CB420121BD30;1161.
  ) 
 Here is how much of TeX's memory you used:
  8354 strings out of 492982
  117626 string characters out of 6134896
- 231106 words of memory out of 5000000
+ 231100 words of memory out of 5000000
  11727 multiletter control sequences out of 15000+600000
  16461 words of font info for 61 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  28i,11n,30p,451b,522s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
 m/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb>
-Output written on /home/zhen/Astro/Uniform_Sol/paper/ms.pdf (7 pages, 375606 bytes).
+Output written on /home/zpan/Astro/Uniform_Sol/paper/ms.pdf (7 pages, 375721 bytes).
 PDF statistics:
  604 PDF objects out of 1000 (max. 8388607)
  459 compressed objects within 5 object streams
